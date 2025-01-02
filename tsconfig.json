@@ -7,7 +7,7 @@
     ".plasmo/index.d.ts",
     "./**/*.ts",
     "./**/*.tsx"
-, "components/Button.jsx"  ],
+, "components/Button.jsx", "contextAPI/RootState.js"  ],
   "compilerOptions": {
     "paths": {
       "~*": [

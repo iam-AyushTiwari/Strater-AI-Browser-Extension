@@ -1,6 +1,6 @@
 import { StyleProvider } from "@ant-design/cssinjs"
-import { Button, Modal, Space } from "antd"
 import Folders from "components/Folders"
+import Providers from "components/Providers"
 import tailwindcss from "data-text:~style.css"
 import antdResetCssText from "data-text:antd/dist/reset.css"
 import type {
@@ -8,8 +8,6 @@ import type {
   PlasmoGetInlineAnchor,
   PlasmoGetShadowHostId
 } from "plasmo"
-
-import { ThemeProvider } from "./theme"
 
 export const config: PlasmoCSConfig = {
   matches: ["https://www.youtube.com/*"]
@@ -36,13 +34,13 @@ export const getShadowHostId: PlasmoGetShadowHostId = () => HOST_ID
 const Main = () => {
   return (
     <>
-      <ThemeProvider>
+      <Providers>
         <StyleProvider container={document.getElementById(HOST_ID).shadowRoot}>
           <div className="py-4 bg-inherit rounded-xl">
             <Folders />
           </div>
         </StyleProvider>
-      </ThemeProvider>
+      </Providers>
     </>
   )
 }

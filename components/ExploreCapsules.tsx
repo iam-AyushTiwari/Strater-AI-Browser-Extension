@@ -1,8 +1,8 @@
 import { Button, Modal } from "antd"
-import React, { useState } from "react"
+import React from "react"
 
 const ExploreCapsules: React.FC = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false)
 
   const showModal = () => {
     setIsModalOpen(true)
@@ -22,11 +22,11 @@ const ExploreCapsules: React.FC = () => {
         Explore Capsules
       </Button>
       <Modal
-        title="Basic Modal"
+        title={<p>Explore Capsules</p>}
+        footer={null}
         open={isModalOpen}
         onOk={handleOk}
-        onCancel={handleCancel}
-        style={{ zIndex: 9999 }}>
+        onCancel={handleCancel}>
         <p>Some contents...</p>
         <p>Some contents...</p>
         <p>Some contents...</p>

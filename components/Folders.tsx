@@ -58,7 +58,6 @@ const Folders: React.FC = () => {
       onSelect={onSelect}
       onExpand={onExpand}
       treeData={treeData}
-      style={{ backgroundColor: "inherit" }}
     />
   )
 }
