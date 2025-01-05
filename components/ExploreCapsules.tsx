@@ -26,7 +26,8 @@ const ExploreCapsules: React.FC = () => {
         footer={null}
         open={isModalOpen}
         onOk={handleOk}
-        onCancel={handleCancel}>
+        onCancel={handleCancel}
+        style={{ position: "relative" }}>
         <p>Some contents...</p>
         <p>Some contents...</p>
         <p>Some contents...</p>

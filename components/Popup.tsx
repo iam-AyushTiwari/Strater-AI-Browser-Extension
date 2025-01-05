@@ -1,5 +1,7 @@
 // import { useRootContext } from "contextAPI/RootState"
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
+
+import { Storage } from "@plasmohq/storage"
 
 // @ts-ignore
 import logo from "../assets/icon.png"
@@ -7,8 +9,24 @@ import logo from "../assets/icon.png"
 // Context Api for the Popup and the Content Script works seperately to communicate with them use message API or Storage
 
 const Popup = () => {
-  // const { isFocusMode } = useRootContext()
-  let isFocusMode = true
+  const [isFocusMode, setisFocusMode] = useState(false)
+
+  const storage = new Storage()
+
+  useEffect(() => {
+    const fetchFocusMode = async () => {
+      const storedFocusMode = (await storage.get("isFocusMode")) as
+        | boolean
+        | undefined
+      if (storedFocusMode !== undefined) {
+        setisFocusMode(storedFocusMode)
+      } else {
+        setisFocusMode(false)
+      }
+      console.log("storage: ", storedFocusMode)
+    }
+    fetchFocusMode()
+  }, [])
 
   return (
     <div className="flex items-center justify-center p-4 bg-red-500/30">

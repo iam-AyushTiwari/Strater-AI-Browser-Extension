@@ -1,10 +1,13 @@
 import { Switch } from "antd"
 import React, { useEffect } from "react"
 
+import { Storage } from "@plasmohq/storage"
+
 import { useRootContext } from "../contextAPI/RootState"
 
 // context is not working or what happening it is not showing in the console
 // need to fix a bug here
+const storage = new Storage()
 
 const FocusModeBtn = () => {
   const { isFocusMode, toggleFocusMode } = useRootContext()

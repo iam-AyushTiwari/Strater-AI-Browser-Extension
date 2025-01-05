@@ -16,8 +16,8 @@ const PanelButtons = () => {
     <div>
       <Drawer
         style={{
-          zIndex:
-            "99999999999999999999999999999999999999999999999999999999999999999999999999999999"
+          zIndex: 99999999999999999999999999999999999999999999999999,
+          position: "relative"
         }}
         title="Basic Drawer"
         placement="right"
@@ -29,8 +29,8 @@ const PanelButtons = () => {
         <p>Some contents...</p>
         <p>Some contents...</p>
       </Drawer>
-      <div className="flex flex-col gap-4 top-32 right-9 fixed">
-        <FloatButton
+      <div className="flex flex-col gap-4 top-32 right-5 fixed">
+        {/* <FloatButton
           shape="circle"
           className="bg-inherit border-2 border-primary/60 flex items-center justify-center text-white rounded-full h-16 w-16 cursor-pointer"
           tooltip={"My Schedule"}
@@ -43,7 +43,7 @@ const PanelButtons = () => {
           tooltip={"Show Bookmarks"}
           icon={<BsBookmarks className="text-white text-3xl" />}
           onClick={showDrawer}
-        />
+        /> */}
         <FloatButton
           shape="circle"
           className="bg-inherit border-2 border-primary/60 flex items-center justify-center text-white rounded-full h-16 w-16 cursor-pointer"

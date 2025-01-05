@@ -36,7 +36,7 @@ const Main = () => {
     <>
       <Providers>
         <StyleProvider container={document.getElementById(HOST_ID).shadowRoot}>
-          <div className="py-4 bg-inherit rounded-xl">
+          <div className="py-4 ">
             <Folders />
           </div>
         </StyleProvider>

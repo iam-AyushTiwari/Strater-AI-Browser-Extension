@@ -10,6 +10,7 @@ const treeData: TreeDataNode[] = [
   {
     title: "parent 0",
     key: "0-0",
+    style: { color: "red" },
     children: [
       {
         title: "child 0-0",

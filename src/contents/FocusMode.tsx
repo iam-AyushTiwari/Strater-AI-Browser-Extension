@@ -1,21 +1,69 @@
-// import { useRootContext } from "contextAPI/RootState"
-// import { useContext, useEffect } from "react"
+import type { PlasmoCSConfig } from "plasmo"
+import React, { useEffect, useState } from "react"
 
-// const FocusMode = () => {
-//   const { isFocusMode } = useRootContext()
+import { Storage } from "@plasmohq/storage"
 
-//   useEffect(() => {
-//     if (isFocusMode) {
-//       const elementsToHide = document.querySelectorAll(
-//         ".ytp-title-link, .ytp-time-display, .ytp-button, .ytp-ad-overlay-container, .ytp-sponsorships, .video-ads, #related, #movie_player .ytp-gradient-top, #movie_player .ytp-gradient-bottom, #movie_player .ytp-gradient-left, #movie_player .ytp-gradient-right"
-//       )
-//       elementsToHide.forEach((element) => {
-//         element.style.display = "none"
-//       })
-//     }
-//   }, [isFocusMode])
+const storage = new Storage()
 
-//   return null
-// }
+export const config: PlasmoCSConfig = {
+  matches: ["https://www.youtube.com/*"]
+}
 
-// export default FocusMode
+const ContentScript = () => {
+  const [isFocusMode, setisFocusMode] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    const fetchFocusMode = async (): Promise<void> => {
+      const storedFocusMode = (await storage.get("isFocusMode")) as
+        | boolean
+        | undefined
+      setisFocusMode(storedFocusMode !== undefined ? storedFocusMode : false)
+      console.log("storage *****: ", storedFocusMode)
+    }
+
+    fetchFocusMode()
+
+    const handleMutation = (mutations: MutationRecord[]) => {
+      for (const mutation of mutations) {
+        if (mutation.type === "childList") {
+          const getTheFeed = document.querySelector(
+            "#primary .ytd-two-column-browse-results-renderer"
+          )
+          const watchFeed = document.querySelector(
+            "#secondary .ytd-watch-flexy"
+          )
+          if (getTheFeed) {
+            if (isFocusMode) {
+              ;(getTheFeed as HTMLElement).style.display = "none" // Hide the feed
+            } else {
+              ;(getTheFeed as HTMLElement).style.display = "" // Reset display
+            }
+          }
+          if (watchFeed) {
+            if (isFocusMode) {
+              ;(watchFeed as HTMLElement).style.display = "none" // Hide the feed
+            } else {
+              ;(watchFeed as HTMLElement).style.display = "" // Reset display
+            }
+          }
+        }
+      }
+    }
+
+    const observer = new MutationObserver(handleMutation)
+
+    const observeTarget = document.body // Observe changes in the body
+    observer.observe(observeTarget, {
+      childList: true,
+      subtree: true // Observe changes in child nodes as well
+    })
+
+    return () => {
+      observer.disconnect() // Clean up observer on unmount
+    }
+  }, [isFocusMode])
+
+  return null
+}
+
+export default ContentScript
