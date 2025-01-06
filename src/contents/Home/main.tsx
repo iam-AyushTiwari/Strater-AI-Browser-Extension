@@ -9,6 +9,10 @@ import type {
   PlasmoGetShadowHostId
 } from "plasmo"
 
+import { Storage } from "@plasmohq/storage"
+
+const storage = new Storage()
+
 export const config: PlasmoCSConfig = {
   matches: ["https://www.youtube.com/*"]
 }

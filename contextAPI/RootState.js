@@ -8,7 +8,7 @@ const storage = new Storage()
 
 export const RootStateProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false)
-  const [isFocusMode, setIsFocusMode] = useState(false)
+  const [isFocusMode, setIsFocusMode] = useState(true)
   const [theme, setTheme] = useState("light")
 
   useEffect(() => {

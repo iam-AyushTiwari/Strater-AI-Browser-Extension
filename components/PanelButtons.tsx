@@ -1,5 +1,5 @@
 import { Drawer, FloatButton } from "antd"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { BsBookmarks, BsLayoutTextSidebarReverse } from "react-icons/bs"
 import { GrSchedule } from "react-icons/gr"
 
@@ -12,13 +12,22 @@ const PanelButtons = () => {
   const onClose = () => {
     setOpen(false)
   }
+
+  useEffect(() => {
+    const shadowRoot = document.querySelector(
+      ".ant-drawer.ant-drawer-right.css-dev-only-do-not-override-hpgy62.ant-drawer-open"
+    )
+    if (shadowRoot) {
+      console.log("got the shadow root", shadowRoot)
+      // @ts-ignore
+      shadowRoot.style.zIndex = 99999999999
+    } else {
+      console.log("shadowRoot not found")
+    }
+  }, [open])
   return (
     <div>
       <Drawer
-        style={{
-          zIndex: 99999999999999999999999999999999999999999999999999,
-          position: "relative"
-        }}
         title="Basic Drawer"
         placement="right"
         closable={true}
