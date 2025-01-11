@@ -1,3 +1,5 @@
+import { ScheduleOutlined } from "@ant-design/icons"
+import { Modal } from "antd"
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react"
 import { useState } from "react"
 
@@ -45,6 +47,10 @@ const mockSchedule: ScheduleItem[] = [
 export function TodaySchedule() {
   const [currentDate, setCurrentDate] = useState(new Date())
 
+  const [open, setOpen] = useState(false)
+  const [confirmLoading, setConfirmLoading] = useState(false)
+  const [modalText, setModalText] = useState("Content of the modal")
+
   const goToPreviousDay = () => {
     setCurrentDate((prev) => {
       const newDate = new Date(prev)
@@ -59,6 +65,24 @@ export function TodaySchedule() {
       newDate.setDate(prev.getDate() + 1)
       return newDate
     })
+  }
+
+  const showModal = () => {
+    setOpen(true)
+  }
+
+  const handleOk = () => {
+    setModalText("The modal will be closed after two seconds")
+    setConfirmLoading(true)
+    setTimeout(() => {
+      setOpen(false)
+      setConfirmLoading(false)
+    }, 2000)
+  }
+
+  const handleCancel = () => {
+    console.log("Clicked cancel button")
+    setOpen(false)
   }
 
   return (
@@ -91,11 +115,21 @@ export function TodaySchedule() {
           ))}
         </div>
         <button
+          onClick={showModal}
           className="w-full py-4 px-4 bg-[#dc3545] hover:bg-[#dc3545] text-white rounded-md flex items-center justify-center space-x-2 transition-colors"
           aria-label="Add new schedule item">
-          <Plus size={16} />
-          <span className="text-3xl">Add Video</span>
+          <ScheduleOutlined className="text-3xl" />
+          <span className="text-2xl">View Schedule</span>
         </button>
+        <Modal
+          title="Today Schedule"
+          open={open}
+          onOk={handleOk}
+          confirmLoading={confirmLoading}
+          className="bg-[#0f0f0f] text-white"
+          onCancel={handleCancel}>
+          <p>{modalText}</p>
+        </Modal>
       </div>
     </Card>
   )

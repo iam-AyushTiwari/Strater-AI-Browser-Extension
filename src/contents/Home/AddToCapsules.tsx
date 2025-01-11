@@ -9,6 +9,7 @@ import type {
   PlasmoGetInlineAnchorList,
   PlasmoGetShadowHostId
 } from "plasmo"
+import { useEffect } from "react"
 import { BsClock, BsEye } from "react-icons/bs"
 import { FaRegFolderOpen } from "react-icons/fa"
 
@@ -39,6 +40,24 @@ const HOST_ID = "add-to-button-csui"
 export const getShadowHostId: PlasmoGetShadowHostId = () => HOST_ID
 
 const Main = () => {
+  useEffect(() => {
+    const plusIcons = document.querySelectorAll("#add-to-button-csui")
+
+    if (plusIcons.length > 0) {
+      plusIcons.forEach((plusIcon) => {
+        const shadowContainer = plusIcon.shadowRoot?.querySelector(
+          "#plasmo-shadow-container"
+        ) as HTMLElement
+
+        if (shadowContainer) {
+          shadowContainer.style.zIndex = "inherit"
+        }
+      })
+    } else {
+      console.log("plusIcon not found")
+    }
+  }, [])
+
   const menuItems: MenuProps["items"] = [
     {
       label: (

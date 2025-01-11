@@ -1,3 +1,4 @@
+import { NotesFolder } from "components/feed/NotesFolder"
 import { TodaySchedule } from "components/feed/TodaySchedule"
 import Providers from "components/Providers"
 import tailwindcss from "data-text:~style.css"
@@ -48,17 +49,17 @@ const FeedStrater = () => {
         className="w-full p-8 bg-none text-white flex justify-center items-center mb-0"
         style={{ height: "calc(100vh - 70px)" }}>
         <div className="grid grid-cols-2 w-full marker:gap-8">
-          <div className="w-full">
+          <div className="w-full p-4">
             <TodaySchedule />
           </div>
           <div className="w-full p-40 text-white flex justify-center items-center text-4xl font-extrabold">
-            Coming Soon...
+            Coming Soon..
+          </div>
+          <div className="w-full p-4">
+            <NotesFolder />
           </div>
           <div className="w-full p-40 text-white flex justify-center items-center text-4xl font-extrabold">
-            Coming Soon...
-          </div>
-          <div className="w-full p-40 text-white flex justify-center items-center text-4xl font-extrabold">
-            Coming Soon...
+            Coming Soon..
           </div>
         </div>
       </div>

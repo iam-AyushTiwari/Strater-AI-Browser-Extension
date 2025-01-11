@@ -1,9 +1,32 @@
-import { Drawer, FloatButton } from "antd"
+import { Drawer, FloatButton, Segmented, Tabs, type TabsProps } from "antd"
+import tailwindcss from "data-text:~style.css"
+import { Folder } from "lucide-react"
 import React, { useEffect, useState } from "react"
 import { BsBookmarks, BsLayoutTextSidebarReverse } from "react-icons/bs"
-import { GrSchedule } from "react-icons/gr"
+import { FaArrowRightFromBracket } from "react-icons/fa6"
 
 const PanelButtons = () => {
+  const onChange = (key: string) => {
+    console.log(key)
+  }
+  const items: TabsProps["items"] = [
+    {
+      key: "1",
+      label: <BsBookmarks className="text-white" />,
+      children: "Folders"
+    },
+    {
+      key: "2",
+      label: <BsBookmarks className="text-white" />,
+      children: "Notes Folder"
+    },
+    {
+      key: "3",
+      label: <BsBookmarks className="text-white" />,
+      children: "Bookmarks"
+    }
+  ]
+
   const [open, setOpen] = useState(false)
 
   const showDrawer = () => {
@@ -17,6 +40,15 @@ const PanelButtons = () => {
     const shadowRoot = document.querySelector(
       ".ant-drawer.ant-drawer-right.css-dev-only-do-not-override-hpgy62.ant-drawer-open"
     )
+    // const drawer = document.querySelector(".ant-drawer-mask")
+    // const drawerStyle = document.createElement("style")
+    // if (drawer) {
+    //   drawerStyle.textContent = tailwindcss
+    //   drawer.appendChild(drawerStyle)
+    //   console.log("drawerStyle added")
+    // } else {
+    //   console.log("drawer not found")
+    // }
     if (shadowRoot) {
       console.log("got the shadow root", shadowRoot)
       // @ts-ignore
@@ -28,15 +60,27 @@ const PanelButtons = () => {
   return (
     <div>
       <Drawer
-        title="Basic Drawer"
         placement="right"
-        closable={true}
+        closable={false}
         onClose={onClose}
+        style={{ backgroundColor: "#0f0f0f", color: "white" }}
         open={open}
         key={"top"}>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
+        <div className="py-4 flex items-center justify-center">
+          <div
+            className="bg-zinc-800 p-4 rounded-xl cursor-pointer hover:bg-zinc-700 absolute left-7"
+            onClick={onClose}>
+            <FaArrowRightFromBracket />
+          </div>
+          <Tabs
+            defaultActiveKey="1"
+            items={items}
+            onChange={onChange}
+            indicator={{ size: (origin) => origin - 20 }}
+            style={{ color: "white" }}
+          />
+        </div>
+        <h1 className="text-red-500">Some content will appear here </h1>
       </Drawer>
       <div className="flex flex-col gap-4 top-32 right-5 fixed">
         {/* <FloatButton

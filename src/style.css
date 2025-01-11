@@ -13,3 +13,8 @@
     scrollbar-width: none; /* Firefox */
   }
 }
+
+:root {
+  --surface-color: "#0f0f0f";
+  --primary-color: "#ff0042";
+}

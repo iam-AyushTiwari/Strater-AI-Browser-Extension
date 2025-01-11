@@ -1,12 +1,10 @@
 import { PlusOutlined, PushpinOutlined, ReadOutlined } from "@ant-design/icons"
 import { Button } from "antd"
-import React from "react"
+import React, { useEffect } from "react"
 
 const WatchVideoButtons = () => {
   return (
-    <div
-      className="my-2 flex justify-between items-center bg-inherit rounded-xl text-6xl w-full"
-      style={{ position: "relative", zIndex: 999999 }}>
+    <div className="my-2 flex justify-between items-center bg-inherit rounded-xl text-6xl w-full">
       <div className="flex gap-4">
         <Button type="primary" className="flex gaap-4">
           <PushpinOutlined />

@@ -8,6 +8,7 @@ import type {
   PlasmoGetInlineAnchor,
   PlasmoGetShadowHostId
 } from "plasmo"
+import { useEffect } from "react"
 
 export const config: PlasmoCSConfig = {
   matches: ["https://www.youtube.com/*"]
@@ -30,6 +31,15 @@ const HOST_ID = "take-note-csui"
 export const getShadowHostId: PlasmoGetShadowHostId = () => HOST_ID
 
 const Main = () => {
+  useEffect(() => {
+    const buttons = document
+      .querySelector("#take-note-csui")
+      ?.shadowRoot?.querySelector("#plasmo-shadow-container")
+    if (buttons !== undefined) {
+      // @ts-ignore
+      buttons.style.zIndex = "inherit"
+    }
+  }, [])
   return (
     <>
       <Providers>

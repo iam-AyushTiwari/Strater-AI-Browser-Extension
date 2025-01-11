@@ -8,33 +8,36 @@ const { DirectoryTree } = Tree
 
 const treeData: TreeDataNode[] = [
   {
-    title: "parent 0",
+    title: "Web Development",
     key: "0-0",
-    style: { color: "red" },
     children: [
       {
-        title: "child 0-0",
+        title: "Basics",
         key: "0-0-0",
-        children: [{ title: "leaf 0-0-0", key: "0-0-0-0", isLeaf: true }]
+        children: [
+          { title: "How to start web dev", key: "0-0-0-0", isLeaf: true }
+        ]
       },
       {
-        title: "child 0-1",
+        title: "JavaScript Advanced",
         key: "0-0-1",
-        children: [{ title: "leaf 0-1-0", key: "0-0-1-0", isLeaf: true }]
+        children: [
+          { title: "Sample javaScript video", key: "0-0-1-0", isLeaf: true }
+        ]
       }
     ]
   },
   {
-    title: "parent 1",
+    title: "Graphics Desigining ",
     key: "0-1",
     children: [
       {
-        title: "child 1-0",
+        title: "Day - 1",
         key: "0-1-0",
         children: [{ title: "leaf 1-0-0", key: "0-1-0-0", isLeaf: true }]
       },
       {
-        title: "child 1-1",
+        title: "Day - 2",
         key: "0-1-1",
         children: [{ title: "leaf 1-1-0", key: "0-1-1-0", isLeaf: true }]
       }
@@ -59,6 +62,10 @@ const Folders: React.FC = () => {
       onSelect={onSelect}
       onExpand={onExpand}
       treeData={treeData}
+      style={{
+        backgroundColor: "#0f0f0f",
+        color: "white"
+      }}
     />
   )
 }
