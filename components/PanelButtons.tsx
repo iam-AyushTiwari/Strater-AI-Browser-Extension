@@ -37,9 +37,7 @@ const PanelButtons = () => {
   }
 
   useEffect(() => {
-    const shadowRoot = document.querySelector(
-      ".ant-drawer.ant-drawer-right.css-dev-only-do-not-override-hpgy62.ant-drawer-open"
-    )
+    const shadowRoot = document.querySelector(".ant-drawer.ant-drawer-right")
     // const drawer = document.querySelector(".ant-drawer-mask")
     // const drawerStyle = document.createElement("style")
     // if (drawer) {

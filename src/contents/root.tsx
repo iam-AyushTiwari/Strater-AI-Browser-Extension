@@ -28,20 +28,15 @@ const observer = new MutationObserver(() => {
     // @ts-ignore
     // modal.style.zIndex = "9999999999999"
     console.log("modal found")
-  } else {
-    console.log("modal not found")
   }
 
-  const sideBar = document.querySelector(".ant-drawer-body")
-  if (sideBar) {
-    // @ts-ignore
-    const style = document.createElement("style")
-    style.textContent = tailwindcss
-    sideBar.appendChild(style)
-    console.log("sideBar found")
-  } else {
-    console.log("sideBar not found")
-  }
+  // const sideBar = document.querySelector(".ant-drawer-body")
+  // if (sideBar) {
+  //   // @ts-ignore
+  //   const style = document.createElement("style")
+  //   style.textContent = tailwindcss
+  //   sideBar.appendChild(style)
+  // }
 })
 
 observer.observe(document.body, {
