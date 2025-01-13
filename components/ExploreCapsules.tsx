@@ -28,7 +28,7 @@ const ExploreCapsules: React.FC = () => {
         onOk={handleOk}
         onCancel={handleCancel}
         style={{ position: "relative" }}>
-        <p>Some contents...</p>
+        <p className="text-red-600 text-xl">Some contents...</p>
         <p>Some contents...</p>
         <p>Some contents...</p>
       </Modal>

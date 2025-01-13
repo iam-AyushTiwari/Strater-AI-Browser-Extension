@@ -5,6 +5,8 @@ import React, { useEffect, useState } from "react"
 import { BsBookmarks, BsLayoutTextSidebarReverse } from "react-icons/bs"
 import { FaArrowRightFromBracket } from "react-icons/fa6"
 
+import Providers from "./Providers"
+
 const PanelButtons = () => {
   const onChange = (key: string) => {
     console.log(key)
@@ -56,7 +58,7 @@ const PanelButtons = () => {
     }
   }, [open])
   return (
-    <div>
+    <Providers>
       <Drawer
         placement="right"
         closable={false}
@@ -103,7 +105,7 @@ const PanelButtons = () => {
           onClick={showDrawer}
         />
       </div>
-    </div>
+    </Providers>
   )
 }
 
