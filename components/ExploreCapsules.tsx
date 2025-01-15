@@ -25,6 +25,7 @@ const ExploreCapsules: React.FC = () => {
         title={<p>Explore Capsules</p>}
         footer={null}
         open={isModalOpen}
+        zIndex={999999999999}
         onOk={handleOk}
         onCancel={handleCancel}
         style={{ position: "relative" }}>

@@ -52,14 +52,20 @@ const FeedStrater = () => {
           <div className="w-full p-4">
             <TodaySchedule />
           </div>
-          <div className="w-full p-40 text-white flex justify-center items-center text-4xl font-extrabold">
-            Coming Soon..
+          <div className="w-full p-40 text-white flex flex-col gap-4 justify-center items-center">
+            <h1 className=" text-4xl font-extrabold">Coming Soon..</h1>
+            <span className="text-zinc-700 text-2xl">
+              We're working nonstop to bring you an amazing experience
+            </span>
           </div>
           <div className="w-full p-4">
             <NotesFolder />
           </div>
-          <div className="w-full p-40 text-white flex justify-center items-center text-4xl font-extrabold">
-            Coming Soon..
+          <div className="w-full p-40 text-white flex flex-col gap-4 justify-center items-center">
+            <h1 className=" text-4xl font-extrabold">Coming Soon..</h1>
+            <span className="text-zinc-700 text-2xl">
+              We're working nonstop to bring you an amazing experience
+            </span>
           </div>
         </div>
       </div>

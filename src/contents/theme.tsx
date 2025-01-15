@@ -18,6 +18,24 @@ export const ThemeProvider = ({ children = null as ReactNode }) => (
         },
         Tooltip: {
           colorBgSpotlight: "rgba(48,48,48,0.85)"
+        },
+        Modal: {
+          contentBg: "#282828",
+          headerBg: "#282828"
+        },
+        Drawer: {
+          colorBgElevated: "#282828"
+        },
+        Tree: {
+          directoryNodeSelectedBg: "inherit",
+          nodeSelectedBg: "inherit",
+          indentSize: 12,
+          paddingXS: 0,
+          colorBgContainer: "inherit"
+        },
+        Dropdown: {
+          zIndexPopup: 9999999999999,
+          colorBgElevated: "#282828"
         }
       }
     }}>

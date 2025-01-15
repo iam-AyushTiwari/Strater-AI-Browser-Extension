@@ -40,15 +40,6 @@ const PanelButtons = () => {
 
   useEffect(() => {
     const shadowRoot = document.querySelector(".ant-drawer.ant-drawer-right")
-    // const drawer = document.querySelector(".ant-drawer-mask")
-    // const drawerStyle = document.createElement("style")
-    // if (drawer) {
-    //   drawerStyle.textContent = tailwindcss
-    //   drawer.appendChild(drawerStyle)
-    //   console.log("drawerStyle added")
-    // } else {
-    //   console.log("drawer not found")
-    // }
     if (shadowRoot) {
       console.log("got the shadow root", shadowRoot)
       // @ts-ignore
@@ -56,14 +47,34 @@ const PanelButtons = () => {
     } else {
       console.log("shadowRoot not found")
     }
+
+    const sideBar = document.querySelector(".ant-drawer-body")
+    let applied = false
+    if (sideBar && !applied) {
+      // @ts-ignore
+      const style = document.createElement("style")
+      style.textContent = tailwindcss
+      sideBar.appendChild(style)
+      applied = true
+      console.log("got the sidebar", sideBar)
+    } else {
+      console.log("sideBar not found")
+    }
   }, [open])
+
   return (
     <Providers>
       <Drawer
         placement="right"
         closable={false}
         onClose={onClose}
-        style={{ backgroundColor: "#0f0f0f", color: "white" }}
+        zIndex={99999999999}
+        // @ts-ignore
+        getContainer={() => document.body}
+        style={{
+          backgroundColor: "#0f0f0f",
+          color: "white"
+        }}
         open={open}
         key={"top"}>
         <div className="py-4 flex items-center justify-center">

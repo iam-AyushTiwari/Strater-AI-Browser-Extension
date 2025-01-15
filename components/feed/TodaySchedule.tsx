@@ -125,8 +125,9 @@ export function TodaySchedule() {
           title="Today Schedule"
           open={open}
           onOk={handleOk}
+          zIndex={999999999999}
           confirmLoading={confirmLoading}
-          className="bg-[#0f0f0f] text-white"
+          className=" text-white"
           onCancel={handleCancel}>
           <p>{modalText}</p>
         </Modal>
