@@ -24,13 +24,13 @@ export const config: PlasmoCSConfig = {
 
 const observer = new MutationObserver(() => {
   const modal = document.querySelector(".ant-modal-mask")
-  if (modal) {
-    // @ts-ignore
-    // modal.style.zIndex = "9999999999999"
-    console.log("modal found")
-  } else {
-    console.log("modal not found")
-  }
+  // if (modal) {
+  //   // @ts-ignore
+  //   // modal.style.zIndex = "9999999999999"
+  //   // console.log("modal found")
+  // } else {
+  //   // console.log("modal not found")
+  // }
 
   const sideBar = document.querySelector(".ant-drawer-body")
   if (sideBar) {
