@@ -30,6 +30,7 @@ const PanelButtons = () => {
   ]
 
   const [open, setOpen] = useState(false)
+  const [applied, setApplied] = useState(false)
 
   const showDrawer = () => {
     setOpen(true)
@@ -49,13 +50,12 @@ const PanelButtons = () => {
     }
 
     const sideBar = document.querySelector(".ant-drawer-body")
-    let applied = false
     if (sideBar && !applied) {
       // @ts-ignore
       const style = document.createElement("style")
       style.textContent = tailwindcss
       sideBar.appendChild(style)
-      applied = true
+      setApplied(true)
       console.log("got the sidebar", sideBar)
     } else {
       console.log("sideBar not found")

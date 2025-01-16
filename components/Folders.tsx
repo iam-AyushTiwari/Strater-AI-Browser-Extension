@@ -1,6 +1,6 @@
 import { Dropdown, Menu, Tree } from "antd"
 import type { GetProps, TreeDataNode, TreeProps } from "antd"
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { AiOutlineVideoCameraAdd } from "react-icons/ai"
 import { IoColorPaletteOutline } from "react-icons/io5"
 import {
@@ -93,6 +93,45 @@ const Folders: React.FC = () => {
   const onExpand: TreeProps["onExpand"] = (keys, info) => {
     console.log("Trigger Expand", keys, info)
   }
+
+  // fetching the capsuels data from teh backend andh thewo rld of thea
+
+  const [capsules, setCapsules] = useState([])
+  const [user, setUser] = useState([])
+
+  useEffect(() => {
+    fetch("https://strater-app.vercel.app/api/Capsules/fetch_capsules", {
+      method: "GET",
+      credentials: "include"
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setCapsules(data)
+      })
+  }, [])
+
+  useEffect(() => {
+    fetch("https://strater-app.vercel.app/api/User/fetch_me", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "https://www.youtube.com/"
+      }
+    }).then((res) => {
+      res.json().then((data) => {
+        setUser(data)
+        console.log("user ******", data)
+      })
+    })
+  }, [])
+
+  useEffect(() => {
+    console.log("User fetched from the beackend", user)
+  }, [user])
+
+  useEffect(() => {
+    console.log("Capsules fetched from the beackend", capsules)
+  }, [capsules])
 
   return (
     <Tree

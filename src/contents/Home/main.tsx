@@ -60,10 +60,6 @@ const Main = () => {
               <Popover
                 zIndex={99999999999999999999}
                 placement="left"
-                getPopupContainer={() =>
-                  // @ts-ignore
-                  document.getElementById(HOST_ID).shadowRoot
-                }
                 content={
                   <div>
                     <Input
