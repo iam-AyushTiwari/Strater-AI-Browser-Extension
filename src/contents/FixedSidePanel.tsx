@@ -3,7 +3,7 @@ import PanelButtons from "components/PanelButtons"
 import Providers from "components/Providers"
 import tailwindcss from "data-text:~style.css"
 import antdResetCssText from "data-text:antd/dist/reset.css"
-import type { PlasmoCSConfig } from "plasmo"
+import type { PlasmoCSConfig, PlasmoGetShadowHostId } from "plasmo"
 
 export const config: PlasmoCSConfig = {
   matches: ["https://www.youtube.com/*"]
@@ -15,6 +15,10 @@ export const getStyle = () => {
   style.textContent = antdResetCssText + updatedCssText
   return style
 }
+
+const HOST_ID = "drawer-sidebar-csui"
+
+export const getShadowHostId: PlasmoGetShadowHostId = () => HOST_ID
 
 const PlasmoOverlay = () => {
   return (

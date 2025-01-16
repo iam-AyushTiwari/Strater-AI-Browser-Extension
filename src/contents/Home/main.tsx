@@ -1,5 +1,5 @@
 import { StyleProvider } from "@ant-design/cssinjs"
-import { Popover } from "antd"
+import { Button, Input, Popover } from "antd"
 import Folders from "components/Folders"
 import Providers from "components/Providers"
 import tailwindcss from "data-text:~style.css"
@@ -57,12 +57,25 @@ const Main = () => {
           <div className="py-4 gap-4 w-full">
             <div className="flex justify-between items-center text-white px-2">
               <span className="text-2xl">Capsules</span>
-
               <Popover
+                zIndex={99999999999999999999}
+                placement="left"
                 content={
-                  <div className="bg-blue-500 p-2 text-white">Content</div>
+                  <div>
+                    <Input
+                      placeholder="Capsule Name"
+                      style={{
+                        width: 200,
+                        border: "1px solid #ccc",
+                        borderRadius: "5px"
+                      }}
+                    />
+                    <Button type="primary" style={{ marginTop: "10px" }}>
+                      Create
+                    </Button>
+                  </div>
                 }
-                trigger="hover">
+                trigger="click">
                 <span className="cursor-pointer p-2 rounded-xl bg-zinc-700 hover:bg-zinc-600">
                   <IoMdAdd className="text-2xl" />
                 </span>

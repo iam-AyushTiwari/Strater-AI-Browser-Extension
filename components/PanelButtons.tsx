@@ -5,6 +5,8 @@ import React, { useEffect, useState } from "react"
 import { BsBookmarks, BsLayoutTextSidebarReverse } from "react-icons/bs"
 import { FaArrowRightFromBracket } from "react-icons/fa6"
 
+import Providers from "./Providers"
+
 const PanelButtons = () => {
   const onChange = (key: string) => {
     console.log(key)
@@ -28,6 +30,7 @@ const PanelButtons = () => {
   ]
 
   const [open, setOpen] = useState(false)
+  const [applied, setApplied] = useState(false)
 
   const showDrawer = () => {
     setOpen(true)
@@ -37,18 +40,7 @@ const PanelButtons = () => {
   }
 
   useEffect(() => {
-    const shadowRoot = document.querySelector(
-      ".ant-drawer.ant-drawer-right.css-dev-only-do-not-override-hpgy62.ant-drawer-open"
-    )
-    // const drawer = document.querySelector(".ant-drawer-mask")
-    // const drawerStyle = document.createElement("style")
-    // if (drawer) {
-    //   drawerStyle.textContent = tailwindcss
-    //   drawer.appendChild(drawerStyle)
-    //   console.log("drawerStyle added")
-    // } else {
-    //   console.log("drawer not found")
-    // }
+    const shadowRoot = document.querySelector(".ant-drawer.ant-drawer-right")
     if (shadowRoot) {
       console.log("got the shadow root", shadowRoot)
       // @ts-ignore
@@ -56,14 +48,33 @@ const PanelButtons = () => {
     } else {
       console.log("shadowRoot not found")
     }
+
+    const sideBar = document.querySelector(".ant-drawer-body")
+    if (sideBar && !applied) {
+      // @ts-ignore
+      const style = document.createElement("style")
+      style.textContent = tailwindcss
+      sideBar.appendChild(style)
+      setApplied(true)
+      console.log("got the sidebar", sideBar)
+    } else {
+      console.log("sideBar not found")
+    }
   }, [open])
+
   return (
-    <div>
+    <Providers>
       <Drawer
         placement="right"
         closable={false}
         onClose={onClose}
-        style={{ backgroundColor: "#0f0f0f", color: "white" }}
+        zIndex={99999999999}
+        // @ts-ignore
+        getContainer={() => document.body}
+        style={{
+          backgroundColor: "#0f0f0f",
+          color: "white"
+        }}
         open={open}
         key={"top"}>
         <div className="py-4 flex items-center justify-center">
@@ -105,7 +116,7 @@ const PanelButtons = () => {
           onClick={showDrawer}
         />
       </div>
-    </div>
+    </Providers>
   )
 }
 

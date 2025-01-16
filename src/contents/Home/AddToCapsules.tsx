@@ -53,38 +53,57 @@ const Main = () => {
           shadowContainer.style.zIndex = "inherit"
         }
       })
-    } else {
-      console.log("plusIcon not found")
     }
   }, [])
 
   const menuItems: MenuProps["items"] = [
     {
       label: (
-        <div className="flex items-center justify-center">
-          <FaRegFolderOpen className="text-xl mr-2" />
+        <div
+          className="flex items-center justify-center"
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 2
+          }}>
           <span>Add to Capsules</span>
         </div>
       ),
-      key: "1"
+      key: "1",
+      icon: <FaRegFolderOpen className="text-xl mr-2" />
     },
     {
       label: (
-        <div className="flex items-center justify-center">
-          <BsClock className="text-xl mr-2" />
+        <div
+          className="flex items-center justify-center"
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 2
+          }}>
           <span>Schedule Later</span>
         </div>
       ),
-      key: "2"
+      key: "2",
+      icon: <BsClock className="text-xl mr-2" />
     },
     {
       label: (
-        <div className="flex items-center justify-center">
-          <BsEye className="text-xl mr-2" />
+        <div
+          className="flex items-center justify-center"
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 2
+          }}>
           <span>Show Flash Card</span>
         </div>
       ),
-      key: "3"
+      key: "3",
+      icon: <BsEye className="text-xl mr-2" />
     }
   ]
   const menu = <Menu items={menuItems} className="text-white bg-slate-900" />
