@@ -1,31 +1,48 @@
-import { Drawer, FloatButton, Segmented, Tabs, type TabsProps } from "antd"
+import { CloudDownloadOutlined } from "@ant-design/icons"
+import { Drawer, FloatButton, Tabs, type TabsProps } from "antd"
+import Folders from "components/Folders"
 import tailwindcss from "data-text:~style.css"
-import { Folder } from "lucide-react"
+import {
+  BookmarkIcon,
+  Cloud,
+  CloudCog,
+  Edit3Icon,
+  Folder,
+  User
+} from "lucide-react"
 import React, { useEffect, useState } from "react"
 import { BsBookmarks, BsLayoutTextSidebarReverse } from "react-icons/bs"
 import { FaArrowRightFromBracket } from "react-icons/fa6"
+import { HiArrowTurnRightDown } from "react-icons/hi2"
 
+import { NotesFolder } from "./feed/NotesFolder"
 import Providers from "./Providers"
 
 const PanelButtons = () => {
   const onChange = (key: string) => {
     console.log(key)
   }
+
   const items: TabsProps["items"] = [
     {
       key: "1",
-      label: <BsBookmarks className="text-white" />,
-      children: "Folders"
+      label: <Folder className="text-white text-lg p-1" />,
+      children: <Folders />
     },
     {
       key: "2",
-      label: <BsBookmarks className="text-white" />,
-      children: "Notes Folder"
+      label: <Edit3Icon className="text-white text-lg p-1" />,
+      children: <NotesFolder />
     },
     {
       key: "3",
-      label: <BsBookmarks className="text-white" />,
-      children: "Bookmarks"
+      label: <BookmarkIcon className="text-white text-lg p-1" />,
+      children: <div className="p-4">Bookmarks Content</div>
+    },
+    {
+      key: "4",
+      label: <User className="text-white text-lg p-1" />,
+      children: <div className="p-4">Bookmarks Content</div>
     }
   ]
 
@@ -71,43 +88,45 @@ const PanelButtons = () => {
         zIndex={99999999999}
         // @ts-ignore
         getContainer={() => document.body}
+        footer={
+          <div className="rounded-lg w-full p-2 gap-2">
+            <p className="text-center text-base flex items-center justify-center gap-2 text-zinc-300">
+              Not connected to Strater yet? - Sync your contents to Strater
+              <HiArrowTurnRightDown />
+            </p>
+            <div className="w-full bg-zinc-900 hover:bg-zinc-800/50 border-2 border-white mt-2 rounded-xl py-4 text-center cursor-pointer flex justify-center items-center gap-4">
+              <CloudCog size={18} />
+              <p>Connect to Strater</p>
+            </div>
+          </div>
+        }
         style={{
           backgroundColor: "#0f0f0f",
           color: "white"
         }}
         open={open}
         key={"top"}>
-        <div className="py-4 flex items-center justify-center">
-          <div
-            className="bg-zinc-800 p-4 rounded-xl cursor-pointer hover:bg-zinc-700 absolute left-7"
-            onClick={onClose}>
-            <FaArrowRightFromBracket />
-          </div>
+        <div
+          className="bg-zinc-800 p-3 rounded-xl cursor-pointer hover:bg-zinc-700 absolute z-[999999999999999] left-8 top-14"
+          onClick={onClose}>
+          <FaArrowRightFromBracket />
+        </div>
+        <div className="flex justify-center items-center">
           <Tabs
             defaultActiveKey="1"
             items={items}
             onChange={onChange}
-            indicator={{ size: (origin) => origin - 20 }}
-            style={{ color: "white" }}
+            tabBarStyle={{
+              borderRadius: "8px",
+              overflow: "hidden"
+            }}
+            tabBarGutter={12}
+            centered={true}
+            style={{ color: "white", width: "100%" }}
           />
         </div>
-        <h1 className="text-red-500">Some content will appear here </h1>
       </Drawer>
       <div className="flex flex-col gap-4 top-32 right-5 fixed">
-        {/* <FloatButton
-          shape="circle"
-          className="bg-inherit border-2 border-primary/60 flex items-center justify-center text-white rounded-full h-16 w-16 cursor-pointer"
-          tooltip={"My Schedule"}
-          icon={<GrSchedule className="text-white text-3xl" />}
-          onClick={showDrawer}
-        />
-        <FloatButton
-          shape="circle"
-          className="bg-inherit border-2 border-primary/60 flex items-center justify-center text-white rounded-full h-16 w-16 cursor-pointer"
-          tooltip={"Show Bookmarks"}
-          icon={<BsBookmarks className="text-white text-3xl" />}
-          onClick={showDrawer}
-        /> */}
         <FloatButton
           shape="circle"
           className="bg-inherit border-2 border-primary/60 flex items-center justify-center text-white rounded-full h-16 w-16 cursor-pointer"
