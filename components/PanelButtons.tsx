@@ -1,15 +1,7 @@
-import { CloudDownloadOutlined } from "@ant-design/icons"
 import { Drawer, FloatButton, Tabs, type TabsProps } from "antd"
 import Folders from "components/Folders"
 import tailwindcss from "data-text:~style.css"
-import {
-  BookmarkIcon,
-  Cloud,
-  CloudCog,
-  Edit3Icon,
-  Folder,
-  User
-} from "lucide-react"
+import { BookmarkIcon, CloudCog, Edit3Icon, Folder, User } from "lucide-react"
 import React, { useEffect, useState } from "react"
 import { BsBookmarks, BsLayoutTextSidebarReverse } from "react-icons/bs"
 import { FaArrowRightFromBracket } from "react-icons/fa6"
@@ -17,6 +9,8 @@ import { HiArrowTurnRightDown } from "react-icons/hi2"
 
 import { NotesFolder } from "./feed/NotesFolder"
 import Providers from "./Providers"
+import Account from "./sidebar/Account"
+import Bookmark from "./sidebar/Bookmark"
 
 const PanelButtons = () => {
   const onChange = (key: string) => {
@@ -37,12 +31,12 @@ const PanelButtons = () => {
     {
       key: "3",
       label: <BookmarkIcon className="text-white text-lg p-1" />,
-      children: <div className="p-4">Bookmarks Content</div>
+      children: <Bookmark />
     },
     {
       key: "4",
       label: <User className="text-white text-lg p-1" />,
-      children: <div className="p-4">Bookmarks Content</div>
+      children: <Account />
     }
   ]
 

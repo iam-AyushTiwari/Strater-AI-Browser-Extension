@@ -19,7 +19,7 @@ const ExploreCapsules: React.FC = () => {
   return (
     <>
       <Button type="primary" onClick={showModal}>
-        Explore Capsules
+        Explore
       </Button>
       <Modal
         title={<p>Explore Capsules</p>}
