@@ -1,4 +1,4 @@
-import { Drawer, FloatButton, Tabs, type TabsProps } from "antd"
+import { Drawer, FloatButton, Tabs, Tooltip, type TabsProps } from "antd"
 import Folders from "components/Folders"
 import tailwindcss from "data-text:~style.css"
 import { BookmarkIcon, CloudCog, Edit3Icon, Folder, User } from "lucide-react"
@@ -20,22 +20,38 @@ const PanelButtons = () => {
   const items: TabsProps["items"] = [
     {
       key: "1",
-      label: <Folder className="text-white text-lg p-1" />,
+      label: (
+        <Tooltip title="Folders">
+          <Folder className="text-white text-lg p-1" />
+        </Tooltip>
+      ),
       children: <Folders />
     },
     {
       key: "2",
-      label: <Edit3Icon className="text-white text-lg p-1" />,
+      label: (
+        <Tooltip title="Notes">
+          <Edit3Icon className="text-white text-lg p-1" />
+        </Tooltip>
+      ),
       children: <NotesFolder />
     },
     {
       key: "3",
-      label: <BookmarkIcon className="text-white text-lg p-1" />,
+      label: (
+        <Tooltip title="Bookmarks">
+          <BookmarkIcon className="text-white text-lg p-1" />
+        </Tooltip>
+      ),
       children: <Bookmark />
     },
     {
       key: "4",
-      label: <User className="text-white text-lg p-1" />,
+      label: (
+        <Tooltip title="Account">
+          <User className="text-white text-lg p-1" />
+        </Tooltip>
+      ),
       children: <Account />
     }
   ]
@@ -100,11 +116,13 @@ const PanelButtons = () => {
         }}
         open={open}
         key={"top"}>
-        <div
-          className="bg-zinc-800 p-3 rounded-xl cursor-pointer hover:bg-zinc-700 absolute z-[999999999999999] left-8 top-14"
-          onClick={onClose}>
-          <FaArrowRightFromBracket />
-        </div>
+        <Tooltip title={"Close"}>
+          <div
+            className="bg-zinc-800 p-3 rounded-xl cursor-pointer hover:bg-zinc-700 absolute z-[999999999999999] left-8 top-14"
+            onClick={onClose}>
+            <FaArrowRightFromBracket />
+          </div>
+        </Tooltip>
         <div className="flex justify-center items-center">
           <Tabs
             defaultActiveKey="1"
