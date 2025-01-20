@@ -1,7 +1,14 @@
 import { Drawer, FloatButton, Tabs, Tooltip, type TabsProps } from "antd"
 import Folders from "components/Folders"
 import tailwindcss from "data-text:~style.css"
-import { BookmarkIcon, CloudCog, Edit3Icon, Folder, User } from "lucide-react"
+import {
+  BookmarkIcon,
+  CloudCog,
+  Edit3Icon,
+  Folder,
+  PanelRight,
+  User
+} from "lucide-react"
 import React, { useEffect, useState } from "react"
 import { BsBookmarks, BsLayoutTextSidebarReverse } from "react-icons/bs"
 import { FaArrowRightFromBracket } from "react-icons/fa6"
@@ -138,15 +145,22 @@ const PanelButtons = () => {
           />
         </div>
       </Drawer>
-      <div className="flex flex-col gap-4 top-32 right-5 fixed">
+      {/* <div className="flex flex-col gap-4 top-32 right-5 fixed">
         <FloatButton
           shape="circle"
           className="bg-inherit border-2 border-primary/60 flex items-center justify-center text-white rounded-full h-16 w-16 cursor-pointer"
           tooltip={"Capsules Sidebar"}
-          icon={<BsLayoutTextSidebarReverse className="text-white text-3xl" />}
+          icon={}
           onClick={showDrawer}
         />
-      </div>
+      </div> */}
+      <Tooltip title={"Strater Sidebar"} placement="left">
+        <div
+          className="gap-4 top-32 right-5 fixed bg-inherit border-2 border-primary/60 flex items-center justify-center text-white rounded-full h-16 w-16 cursor-pointer"
+          onClick={showDrawer}>
+          <PanelRight className="text-white" size={18} />
+        </div>
+      </Tooltip>
     </Providers>
   )
 }
