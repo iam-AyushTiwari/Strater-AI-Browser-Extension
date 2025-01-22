@@ -145,15 +145,6 @@ const PanelButtons = () => {
           />
         </div>
       </Drawer>
-      {/* <div className="flex flex-col gap-4 top-32 right-5 fixed">
-        <FloatButton
-          shape="circle"
-          className="bg-inherit border-2 border-primary/60 flex items-center justify-center text-white rounded-full h-16 w-16 cursor-pointer"
-          tooltip={"Capsules Sidebar"}
-          icon={}
-          onClick={showDrawer}
-        />
-      </div> */}
       <Tooltip title={"Strater Sidebar"} placement="left">
         <div
           className="gap-4 top-32 right-5 fixed bg-inherit border-2 border-primary/60 flex items-center justify-center text-white rounded-full h-16 w-16 cursor-pointer"
