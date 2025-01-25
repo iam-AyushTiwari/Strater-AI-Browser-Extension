@@ -35,7 +35,11 @@ export const ThemeProvider = ({ children = null as ReactNode }) => (
         },
         Dropdown: {
           zIndexPopup: 9999999999999,
-          colorBgElevated: "#282828"
+          colorBgElevated: "#282828",
+          colorSplit: "rgba(39,39,39,0.54)"
+        },
+        Tabs: {
+          lineType: "none"
         }
       }
     }}>
