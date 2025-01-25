@@ -115,7 +115,7 @@ const Folders: React.FC = () => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "https://www.youtube.com/"
+        // "Access-Control-Allow-Origin": "https://www.youtube.com/"
       }
     }).then((res) => {
       res.json().then((data) => {
