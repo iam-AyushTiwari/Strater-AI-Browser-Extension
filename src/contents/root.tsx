@@ -1,45 +1,75 @@
-// import tailwindcss from "data-text:~style.css"
-// import antdResetCssText from "data-text:antd/dist/reset.css"
-// import type { PlasmoGetInlineAnchor } from "plasmo"
-
-import tailwindcss from "data-text:~style.css"
 import type { PlasmoCSConfig } from "plasmo"
-
-// export const getStyle = () => {
-//   const style = document.createElement("style")
-//   style.textContent = antdResetCssText + tailwindcss
-//   return style
-// }
-
-// export const getInlineAnchor: PlasmoGetInlineAnchor = async () => ({
-//   element: document.querySelector("head"),
-//   insertPosition: "beforeend"
-// })
-
-/// code for body and apply mutation observer on body for any changes appear such as modal and all
 
 export const config: PlasmoCSConfig = {
   matches: ["https://www.youtube.com/*"]
 }
 
-const observer = new MutationObserver(() => {
-  const modal = document.querySelector(".ant-modal-mask")
+function setupNodeToggle(dropdownTrigger: Element, nodeSwitcher: HTMLElement) {
+  dropdownTrigger.addEventListener('click', () => {
+    if (nodeSwitcher.classList.contains('ant-tree-switcher_close')) {
+      nodeSwitcher.click(); // Expand node
+    } else if (nodeSwitcher.classList.contains('ant-tree-switcher_open')) {
+      nodeSwitcher.click(); // Collapse node
+    }
+  });
+}
+
+function checkAndSetupElements(root: Document | ShadowRoot) {
+  const modal = root.querySelector(".ant-modal-mask");
   if (modal) {
-    // @ts-ignore
-    // modal.style.zIndex = "9999999999999"
-    console.log("modal found")
+    console.log("Modal found!");
   }
 
-  // const sideBar = document.querySelector(".ant-drawer-body")
-  // if (sideBar) {
-  //   // @ts-ignore
-  //   const style = document.createElement("style")
-  //   style.textContent = tailwindcss
-  //   sideBar.appendChild(style)
-  // }
-})
+  const dropdownTriggers = root.querySelectorAll('.ant-dropdown-trigger');
+  const nodeSwitchers = root.querySelectorAll('.ant-tree-switcher_close, .ant-tree-switcher_open');
 
-observer.observe(document.body, {
+  dropdownTriggers.forEach((trigger, index) => {
+    const switcher = nodeSwitchers[index] as HTMLElement;
+    if (trigger && switcher && !trigger.hasAttribute('data-event-attached')) {
+      console.log("Dropdown Trigger and Node Switcher found!");
+      setupNodeToggle(trigger, switcher);
+      trigger.setAttribute('data-event-attached', 'true');
+    }
+  });
+}
+
+function observeShadowRoot() {
+  const shadowRootContainer = document.getElementById('custom-sidebar-injected') as HTMLElement;
+  if (shadowRootContainer && shadowRootContainer.shadowRoot) {
+    const observer = new MutationObserver((mutationsList) => {
+      for (const mutation of mutationsList) {
+        if (mutation.type === "childList") {
+          console.log("Mutation activated in shadow root");
+          checkAndSetupElements(shadowRootContainer.shadowRoot);
+        }
+      }
+    });
+
+    observer.observe(shadowRootContainer.shadowRoot, {
+      childList: true,
+      subtree: true,
+    });
+
+    // Initial check for the shadow root
+    checkAndSetupElements(shadowRootContainer.shadowRoot);
+  } else {
+    console.log("Shadow root not found, retrying in 500ms");
+    setTimeout(observeShadowRoot, 500);
+  }
+}
+
+// Start observing the shadow root
+observeShadowRoot();
+
+// Observe the main document as well
+const documentObserver = new MutationObserver(() => {
+  checkAndSetupElements(document);
+});
+
+documentObserver.observe(document.body, {
   childList: true,
-  subtree: true
-})
+  subtree: true,
+});
+
+// Initial check for the main document
+checkAndSetupElements(document);

@@ -10,7 +10,7 @@ import logo from "../assets/icon.png"
 
 const Popup = () => {
   const [isFocusMode, setisFocusMode] = useState(false)
-
+  
   const storage = new Storage()
 
   useEffect(() => {

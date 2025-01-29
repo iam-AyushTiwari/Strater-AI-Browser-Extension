@@ -34,7 +34,7 @@ export const getStyle = () => {
   return style
 }
 
-const HOST_ID = "engage-csui"
+const HOST_ID = "custom-sidebar-injected"
 
 export const getShadowHostId: PlasmoGetShadowHostId = () => HOST_ID
 
@@ -81,12 +81,9 @@ const Main = () => {
                 </span>
               </Popover>
             </div>
-            <input
-              type="text"
-              placeholder="Search Capsules..."
-              className="w-full p-3 text-white bg-zinc-800 rounded-xl outline-none text-2xl placeholder:text-gray-400 my-2"
-            />
+           
             <Folders />
+            
           </div>
         </StyleProvider>
       </Providers>
