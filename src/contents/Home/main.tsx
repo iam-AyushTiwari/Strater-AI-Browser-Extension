@@ -81,9 +81,8 @@ const Main = () => {
                 </span>
               </Popover>
             </div>
-           
+
             <Folders />
-            
           </div>
         </StyleProvider>
       </Providers>
