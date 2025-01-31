@@ -1,10 +1,8 @@
 import { StyleProvider } from "@ant-design/cssinjs"
-import { Button, Tooltip } from "antd"
-import NotesArea from "components/notesBar/NotesArea"
 import Providers from "components/Providers"
+import AddToBookmark from "components/videoPlayer/AddToBookmark"
 import tailwindcss from "data-text:~style.css"
 import antdResetCssText from "data-text:antd/dist/reset.css"
-import { Bookmark, Scissors } from "lucide-react"
 import type {
   PlasmoCSConfig,
   PlasmoGetInlineAnchor,
@@ -52,14 +50,7 @@ const TakeNote = () => {
   return (
     <Providers>
       <StyleProvider container={document.getElementById(HOST_ID).shadowRoot}>
-        <div className="p-2 text-white flex justify-center items-center h-full">
-          <Tooltip
-            placement="top"
-            title="Add to bookmark"
-            className="cursor-pointer flex justify-center items-center mt-3 mx-2">
-            <Bookmark size={24} />
-          </Tooltip>
-        </div>
+        <AddToBookmark />
       </StyleProvider>
     </Providers>
   )
