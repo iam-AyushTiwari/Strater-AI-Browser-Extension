@@ -10,22 +10,38 @@ export const RootStateProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [isFocusMode, setIsFocusMode] = useState(true)
   const [theme, setTheme] = useState("light")
+  const [treeData, setTreeData] = useState([])
+  const [localTreeData, setLocalTreeData] = useState([])
 
   useEffect(() => {
     const fetchFocusMode = async () => {
       const storedFocusMode = await storage.get("isFocusMode")
+      const storedTreeData = await storage.get("treeData");
+      setLocalTreeData(storedTreeData ?? [])
       if (storedFocusMode) {
         await setIsFocusMode(storedFocusMode)
       } else {
         setIsFocusMode(false)
       }
     }
+
     fetchFocusMode()
+    setLocalTreeData(storage.get("treeData"))
   }, [])
+
+  useEffect(() => {
+    if (treeData.length > 0) {
+      storage.set("treeData", treeData);
+    }
+  }, [treeData]);
+
+
 
   toggleLoading = () => {
     setIsLoading(!isLoading)
   }
+
+
 
   const toggleFocusMode = async () => {
     const newFocusMode = !isFocusMode
@@ -46,7 +62,11 @@ export const RootStateProvider = ({ children }) => {
         theme,
         toggleLoading,
         toggleFocusMode,
-        toggleTheme
+        toggleTheme,
+        treeData,
+        setTreeData,
+        localTreeData,
+
       }}>
       {children}
     </RootStateContext.Provider>
