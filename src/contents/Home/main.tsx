@@ -81,14 +81,6 @@ const Main = () => {
       <Providers>
         <StyleProvider container={document.getElementById(HOST_ID).shadowRoot}>
           <div className="py-4 gap-4 w-full">
-            <Folders
-              newItem={buttonClicked ? newItem : null}
-              onTreeUpdate={setTreeData}
-              onItemAdded={() => {
-                setNewItem(null)
-                setButtonClicked(false)
-              }}
-            />
           </div>
         </StyleProvider>
       </Providers>
