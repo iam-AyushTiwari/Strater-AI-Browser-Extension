@@ -13,6 +13,7 @@ import { RiFolderAddLine } from "react-icons/ri"
 import { Storage } from "@plasmohq/storage"
 import { Button, Popover } from "antd"
 import { IoMdAdd } from "react-icons/io"
+import { StyleProvider } from "@ant-design/cssinjs"
 
 const storage = new Storage()
 
@@ -326,51 +327,47 @@ const treeData: TreeDataNode[] = [
   }
 ]
 
-interface FoldersProps {
-  newItem: string | null
-  onItemAdded: () => void
-  onTreeUpdate: (data: TreeDataNode[]) => void
-  // treeData1: TreeDataNode[];
-}
+// interface FoldersProps {
+//   newItem: string | null
+//   onItemAdded: () => void
+//   onTreeUpdate: (data: TreeDataNode[]) => void
+//   // treeData1: TreeDataNode[];
+// }
 
-const Folders: React.FC<FoldersProps> = ({
-  newItem,
-  onItemAdded,
-  onTreeUpdate
-}) => {
+const Folders: React.FC = ({}) => {
   const [searchTerm, setSearchTerm] = useState<string>("")
   const [searchData, setSearchData] = useState<TreeDataNode[]>([])
   const [totalCount, setTotalCount] = useState<number>(0)
   const [localTreeData, setLocalTreeData] = useState<TreeDataNode[]>(treeData)
 
   // Handle new item prop changes
-  useEffect(() => {
-    if (newItem) {
-      const newTree = [
-        ...treeData,
-        {
-          key: `new-${Date.now()}`,
-          title: (
-            <Dropdown overlay={menu} trigger={["contextMenu"]}>
-              <div className="bg-[#ffa726] w-full text-white px-2 mb-1 rounded-lg flex items-center justify-between py-2">
-                <h2 className="break-words font-semibold line-clamp-1">
-                  {newItem}
-                </h2>
-                <span className="text-sm opacity-80 font-medium ml-4 flex items-center">
-                  0 items
-                </span>
-              </div>
-            </Dropdown>
-          ),
-          children: []
-        }
-      ]
-      // treeData = newTree;
-      setLocalTreeData(newTree)
-      onTreeUpdate(newTree) // Pass updated tree back
-      onItemAdded()
-    }
-  }, [newItem])
+  // useEffect(() => {
+  //   if (newItem) {
+  //     const newTree = [
+  //       ...treeData,
+  //       {
+  //         key: `new-${Date.now()}`,
+  //         title: (
+  //           <Dropdown overlay={menu} trigger={["contextMenu"]}>
+  //             <div className="bg-[#ffa726] w-full text-white px-2 mb-1 rounded-lg flex items-center justify-between py-2">
+  //               <h2 className="break-words font-semibold line-clamp-1">
+  //                 {newItem}
+  //               </h2>
+  //               <span className="text-sm opacity-80 font-medium ml-4 flex items-center">
+  //                 0 items
+  //               </span>
+  //             </div>
+  //           </Dropdown>
+  //         ),
+  //         children: []
+  //       }
+  //     ]
+  //     // treeData = newTree;
+  //     setLocalTreeData(newTree)
+  //     onTreeUpdate(newTree) // Pass updated tree back
+  //     onItemAdded()
+  //   }
+  // }, [newItem])
 
   console.log("tree data hun123", treeData)
 
@@ -446,12 +443,12 @@ const Folders: React.FC<FoldersProps> = ({
 
   return (
     <>
+    <StyleProvider container={document.getElementById("custom-sidebar-injected").shadowRoot}>
       <div className="flex justify-between items-center text-white px-2">
         <span className="text-2xl">Capsules</span>
         <Popover
           getPopupContainer={() =>
-            document.getElementById("custom-sidebar-injected")
-              .shadowRoot as unknown as HTMLElement
+            document.body
           }
           zIndex={999999999999999999999999999999999}
           placement="right"
@@ -479,6 +476,7 @@ const Folders: React.FC<FoldersProps> = ({
           </span>
         </Popover>
       </div>
+      </StyleProvider>
       <input
         type="text"
         placeholder="Search Capsules..."
@@ -513,7 +511,7 @@ const Folders: React.FC<FoldersProps> = ({
         draggable
         onSelect={onSelect}
         onExpand={onExpand}
-        treeData={localTreeData}
+        treeData={treeData} //will change
         blockNode={true}
         onDrop={onDrop}
         className="rounded-xl mt-1 mb-2"

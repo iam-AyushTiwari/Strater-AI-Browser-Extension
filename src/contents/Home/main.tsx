@@ -41,9 +41,9 @@ const HOST_ID = "custom-sidebar-injected"
 export const getShadowHostId: PlasmoGetShadowHostId = () => HOST_ID
 
 const Main = () => {
-  const [newItem, setNewItem] = useState<string | null>(null)
-  const [buttonClicked, setButtonClicked] = useState<boolean>(false)
-  const [treeData, setTreeData] = useState<TreeDataNode[]>([])
+  // const [newItem, setNewItem] = useState<string | null>(null)
+  // const [buttonClicked, setButtonClicked] = useState<boolean>(false)
+  // const [treeData, setTreeData] = useState<TreeDataNode[]>([])
   // useEffect(() => {
   //   const head = document.querySelector("head")
   //   if (head) {
@@ -55,10 +55,10 @@ const Main = () => {
   //   }
   // }, [])
 
-  const handleCreateNewItem = (name: string) => {
-    setNewItem(name) // Pass the new item name to Folders via prop
-    setButtonClicked(true) // Set button clicked to true
-  }
+  // const handleCreateNewItem = (name: string) => {
+  //   setNewItem(name) // Pass the new item name to Folders via prop
+  //   setButtonClicked(true) // Set button clicked to true
+  // }
 
   // useEffect(() => {
   //  storage.set("treeData",treeData)
@@ -81,14 +81,7 @@ const Main = () => {
       <Providers>
         <StyleProvider container={document.getElementById(HOST_ID).shadowRoot}>
           <div className="py-4 gap-4 w-full">
-            <Folders
-              newItem={buttonClicked ? newItem : null}
-              onTreeUpdate={setTreeData}
-              onItemAdded={() => {
-                setNewItem(null)
-                setButtonClicked(false)
-              }}
-            />
+            <Folders />
           </div>
         </StyleProvider>
       </Providers>
