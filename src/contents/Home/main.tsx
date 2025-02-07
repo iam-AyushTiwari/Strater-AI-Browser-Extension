@@ -1,5 +1,5 @@
 import { StyleProvider } from "@ant-design/cssinjs"
-import { Button, Input, Popover } from "antd"
+import { Button, Input, Popover, type TreeDataNode } from "antd"
 import Folders from "components/Folders"
 import Providers from "components/Providers"
 import tailwindcss from "data-text:~style.css"
@@ -9,7 +9,7 @@ import type {
   PlasmoGetInlineAnchor,
   PlasmoGetShadowHostId
 } from "plasmo"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { IoMdAdd } from "react-icons/io"
 
 import { Storage } from "@plasmohq/storage"
