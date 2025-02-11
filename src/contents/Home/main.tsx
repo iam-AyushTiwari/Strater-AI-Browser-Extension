@@ -2,6 +2,7 @@ import { StyleProvider } from "@ant-design/cssinjs"
 import { Button, Input, Popover, type TreeDataNode } from "antd"
 import Folders from "components/Folders"
 import Providers from "components/Providers"
+import { MainContextProvider, useMainContext } from "contextAPI/MainContext"
 import tailwindcss from "data-text:~style.css"
 import antdResetCssText from "data-text:antd/dist/reset.css"
 import type {
@@ -9,10 +10,12 @@ import type {
   PlasmoGetInlineAnchor,
   PlasmoGetShadowHostId
 } from "plasmo"
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { IoMdAdd } from "react-icons/io"
 
 import { Storage } from "@plasmohq/storage"
+
+import Root from "./Root"
 
 const storage = new Storage()
 
@@ -76,13 +79,17 @@ const Main = () => {
 
   return (
     <>
-      <Providers>
-        <StyleProvider container={document.getElementById(HOST_ID).shadowRoot}>
-          <div className="py-4 gap-4 w-full">
-            <Folders />
-          </div>
-        </StyleProvider>
-      </Providers>
+      <MainContextProvider>
+        <Providers>
+          <StyleProvider
+            container={document.getElementById(HOST_ID).shadowRoot}>
+            <div className="py-4 gap-4 w-full">
+              <Folders />
+            </div>
+            <Root />
+          </StyleProvider>
+        </Providers>
+      </MainContextProvider>
     </>
   )
 }

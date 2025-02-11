@@ -1,6 +1,7 @@
 // import { useRootContext } from "contextAPI/RootState"
 import React, { useEffect, useState } from "react"
 
+import { sendToBackground } from "@plasmohq/messaging"
 import { Storage } from "@plasmohq/storage"
 
 // @ts-ignore
@@ -9,9 +10,25 @@ import logo from "../assets/icon.png"
 // Context Api for the Popup and the Content Script works seperately to communicate with them use message API or Storage
 
 const Popup = () => {
-  const [isFocusMode, setisFocusMode] = useState(false)
-  
   const storage = new Storage()
+
+  const [isFocusMode, setisFocusMode] = useState(false)
+  const [user, setUser] = useState(null)
+  const [capsules, setCapsules] = useState<any[]>([])
+  const [notesFolder, setNotesFolder] = useState<any[]>([])
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const isUser = (await storage.get("user")) as any | undefined
+      if (isUser !== undefined) {
+        setUser(isUser)
+        console.log("user in the storage: ", isUser)
+      } else {
+        setUser(null)
+      }
+    }
+    fetchUser()
+  }, [])
 
   useEffect(() => {
     const fetchFocusMode = async () => {
@@ -46,7 +63,7 @@ const Popup = () => {
                 </div>
                 <div>
                   <h3 className="font-semibold text-white">
-                    Your Strater Plan
+                    Hey {user?.fullName},
                   </h3>
                   <p className="text-sm text-slate-400">
                     Today's focus hours: 3
