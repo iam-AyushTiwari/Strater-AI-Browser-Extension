@@ -1,5 +1,5 @@
 import { StyleProvider } from "@ant-design/cssinjs"
-import { Button, Dropdown, Menu, Popover, Tree } from "antd"
+import { Button, Dropdown, Menu, Popover, Tooltip, Tree } from "antd"
 import type { GetProps, TreeDataNode, TreeProps } from "antd"
 import React, { useEffect, useState } from "react"
 import { AiOutlineVideoCameraAdd } from "react-icons/ai"
@@ -18,7 +18,21 @@ const storage = new Storage()
 
 type DirectoryTreeProps = GetProps<typeof Tree.DirectoryTree>
 
-const { DirectoryTree } = Tree
+const popoverData = () => {
+  return (
+    <div className="p-4 flex flex-col gap-4">
+      <h1 className="font-semibold">Add to Bookmark</h1>
+      <input
+        className="bg-zinc-950 text-xl text-white px-4 py-4 rounded-xl focus:outline-none"
+        type="text"
+        placeholder="Your Bookmark Name"
+      />
+      <Button type="primary" block>
+        Add to Bookmark
+      </Button>
+    </div>
+  )
+}
 
 const menu = (
   <Menu>
@@ -443,33 +457,19 @@ const Folders: React.FC = ({}) => {
         }>
         <div className="flex justify-between items-center text-white px-2">
           <span className="text-2xl">Capsules</span>
-          <Popover
-            getPopupContainer={() => document.body}
-            zIndex={999999999999999999999999999999999}
-            placement="right"
-            content={
-              <div className="flex flex-col items-center justify-center">
-                <input
-                  type="text"
-                  placeholder="Capsule name..."
-                  className="w-full p-3 text-white bg-zinc-800 rounded-xl outline-none text-2xl placeholder:text-gray-400 my-2"
-                  // onChange={(e) => setNewItem(e.target.value)}
-                />
-
-                <Button
-                  type="primary"
-                  className="w-full"
-                  // onClick={() => handleCreateNewItem(newItem)}
-                  style={{ marginTop: "10px" }}>
-                  Create
-                </Button>
-              </div>
+          <Tooltip
+            getPopupContainer={() =>
+              // @ts-ignore
+              document.querySelector("open-capsule")
             }
+            placement="right"
+            color="#282828"
+            title={popoverData}
             trigger="click">
-            <span className="cursor-pointer p-2 rounded-xl bg-zinc-700 hover:bg-zinc-600">
+            <span className="cursor-pointer open-capsule p-2 rounded-xl bg-zinc-700 hover:bg-zinc-600">
               <IoMdAdd className="text-2xl" />
             </span>
-          </Popover>
+          </Tooltip>
         </div>
       </StyleProvider>
       <input
