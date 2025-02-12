@@ -120,7 +120,10 @@ const PanelButtons = () => {
             <div
               className="w-full bg-zinc-900 hover:bg-zinc-800/50 border-2 border-white mt-2 rounded-xl py-4 text-center cursor-pointer flex justify-center items-center gap-4"
               onClick={() =>
-                window.open("https://strater-app.vercel.app/sign-in")
+                window.open(
+                  "https://strater-app.vercel.app/sign-in?redirect_url=https%3A%2F%2Fwww.youtube.com",
+                  "_blank"
+                )
               }>
               <CloudCog size={18} />
               <p>Connect to Strater</p>
