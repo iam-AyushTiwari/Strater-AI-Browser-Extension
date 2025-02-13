@@ -16,33 +16,12 @@ import { BsBookmarks, BsLayoutTextSidebarReverse } from "react-icons/bs"
 import { FaArrowRightFromBracket } from "react-icons/fa6"
 import { HiArrowTurnRightDown } from "react-icons/hi2"
 
-import { sendToBackground } from "@plasmohq/messaging"
-
 import { NotesFolder } from "./feed/NotesFolder"
 import Providers from "./Providers"
 import Account from "./sidebar/Account"
 import Bookmark from "./sidebar/Bookmark"
 
 const PanelButtons = () => {
-  useEffect(() => {
-    const getuser = async () => {
-      const resp = await sendToBackground({
-        // @ts-ignore
-        name: "default",
-        body: {
-          action: "fetchMe"
-        }
-      })
-      if (resp.success) {
-        console.log(resp.data)
-      } else {
-        console.log("Error got in API call")
-      }
-    }
-
-    getuser()
-  }, [])
-
   const onChange = (key: string) => {
     console.log(key)
   }
@@ -57,15 +36,6 @@ const PanelButtons = () => {
       ),
       children: (
         <>
-          {/* <div className="flex items-center justify-between">
-            <div className="text-2xl font-bold">Your Capsules</div>
-            <Tooltip
-              title="Add new capsule"
-              placement="left"
-              className="bg-zinc-800 hover:bg-zinc-900 p-2 rounded-xl cursor-pointer">
-              <Plus size={28} />
-            </Tooltip>
-          </div> */}
           <Folders />
         </>
       )
@@ -150,7 +120,10 @@ const PanelButtons = () => {
             <div
               className="w-full bg-zinc-900 hover:bg-zinc-800/50 border-2 border-white mt-2 rounded-xl py-4 text-center cursor-pointer flex justify-center items-center gap-4"
               onClick={() =>
-                window.open("https://strater-app.vercel.app/sign-in")
+                window.open(
+                  "https://strater-app.vercel.app/sign-in?redirect_url=https%3A%2F%2Fwww.youtube.com",
+                  "_blank"
+                )
               }>
               <CloudCog size={18} />
               <p>Connect to Strater</p>

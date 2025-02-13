@@ -1,7 +1,9 @@
-import { Dropdown, Menu, Tree } from "antd"
+import { StyleProvider } from "@ant-design/cssinjs"
+import { Button, Dropdown, Menu, Popover, Tooltip, Tree } from "antd"
 import type { GetProps, TreeDataNode, TreeProps } from "antd"
 import React, { useEffect, useState } from "react"
 import { AiOutlineVideoCameraAdd } from "react-icons/ai"
+import { IoMdAdd } from "react-icons/io"
 import { IoColorPaletteOutline } from "react-icons/io5"
 import {
   MdDeleteOutline,
@@ -11,15 +13,26 @@ import {
 import { RiFolderAddLine } from "react-icons/ri"
 
 import { Storage } from "@plasmohq/storage"
-import { Button, Popover } from "antd"
-import { IoMdAdd } from "react-icons/io"
-import { StyleProvider } from "@ant-design/cssinjs"
 
 const storage = new Storage()
 
 type DirectoryTreeProps = GetProps<typeof Tree.DirectoryTree>
 
-const { DirectoryTree } = Tree
+const popoverData = () => {
+  return (
+    <div className="p-4 flex flex-col gap-4">
+      <h1 className="font-semibold">Add to Bookmark</h1>
+      <input
+        className="bg-zinc-950 text-xl text-white px-4 py-4 rounded-xl focus:outline-none"
+        type="text"
+        placeholder="Your Bookmark Name"
+      />
+      <Button type="primary" block>
+        Add to Bookmark
+      </Button>
+    </div>
+  )
+}
 
 const menu = (
   <Menu>
@@ -385,10 +398,9 @@ const Folders: React.FC = ({}) => {
 
   const filterTreeData = (
     data: TreeDataNode[],
-    term: string,
-    count: { value: number } = { value: 0 }
-  ): [TreeDataNode[], number] => {
-    const filteredData = data
+    term: string
+  ): TreeDataNode[] => {
+    return data
       .map((node) => {
         let matchesSearch = false
 
@@ -405,18 +417,18 @@ const Folders: React.FC = ({}) => {
           matchesSearch = node.title.toLowerCase().includes(term.toLowerCase())
         }
 
-        const [filteredChildren, childrenCount] = node.children
-          ? filterTreeData(node.children, term, count)
-          : [[], 0]
+        const filteredChildren = node.children
+          ? filterTreeData(node.children, term)
+          : []
 
         if (matchesSearch) {
-          count.value += 1 // Increment count for this matching node
+          // If the node matches, return it with all its original children
           return {
             ...node,
-            children: node.children, // Keep all original children
             expanded: term !== ""
           }
         } else if (filteredChildren.length > 0) {
+          // If any children match, return the node with filtered children
           return {
             ...node,
             children: filteredChildren,
@@ -426,15 +438,11 @@ const Folders: React.FC = ({}) => {
         return null
       })
       .filter(Boolean) as TreeDataNode[]
-
-    return [filteredData, count.value]
   }
 
   useEffect(() => {
-    const [filteredData, totalCount] = filterTreeData(treeData, searchTerm)
-    console.log("Filtered data", filteredData)
+    const filteredData = filterTreeData(treeData, searchTerm)
     setSearchData(filteredData)
-    setTotalCount(totalCount) // Add this line to set the total count
   }, [searchTerm])
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -443,39 +451,26 @@ const Folders: React.FC = ({}) => {
 
   return (
     <>
-    <StyleProvider container={document.getElementById("custom-sidebar-injected").shadowRoot}>
-      <div  className="flex justify-between items-center text-white px-2">
-        <span className="text-2xl">Capsules</span>
-        <Popover
-        getPopupContainer={()=>document.getElementById("custom-sidebar-injected").shadowRoot as unknown as HTMLElement }
-        
-          zIndex={99999999999999999999999999999999999999999999999999999999999999999999999999}
-          placement="topLeft"
-          content={
-            <div className="flex flex-col items-center justify-center">
-              <span className="text-white text-xl font-semibold mt-1 mb-1">Capsule Name</span>
-              <input  
-                type="text"
-                placeholder="Capsule name..."
-                className="w-full p-3 text-white bg-zinc-800 rounded-xl outline-none text-2xl placeholder:text-gray-400 my-2"
-                // onChange={(e) => setNewItem(e.target.value)}
-              />
-
-              <Button
-                type="primary"
-                className="w-full"
-                // onClick={() => handleCreateNewItem(newItem)}
-                style={{ marginTop: "10px" }}>
-                Create
-              </Button>
-            </div>
-          }
-          trigger="click">
-          <span className="cursor-pointer p-2 rounded-xl bg-zinc-700 hover:bg-zinc-600">
-            <IoMdAdd className="text-2xl" />
-          </span>
-        </Popover>
-      </div>
+      <StyleProvider
+        container={
+          document.getElementById("custom-sidebar-injected").shadowRoot
+        }>
+        <div className="flex justify-between items-center text-white px-2">
+          <span className="text-2xl">Capsules</span>
+          <Tooltip
+            getPopupContainer={() =>
+              // @ts-ignore
+              document.querySelector("open-capsule")
+            }
+            placement="right"
+            color="#282828"
+            title={popoverData}
+            trigger="click">
+            <span className="cursor-pointer open-capsule p-2 rounded-xl bg-zinc-700 hover:bg-zinc-600">
+              <IoMdAdd className="text-2xl" />
+            </span>
+          </Tooltip>
+        </div>
       </StyleProvider>
       <input
         type="text"
@@ -487,9 +482,9 @@ const Folders: React.FC = ({}) => {
 
       {searchTerm && (
         <div className="mb-4 bg-zinc-800 rounded-xl p-2">
-          <span className="p-[4px] mt-1 mb-2 text-white text-2xl font-medium rounded-md ">
-            {totalCount ? totalCount : "No"} results
-          </span>
+          <h1 className="mt-1 mb-1 text-white text-2xl font-medium">
+            Search Results...{" "}
+          </h1>
           <Tree
             multiple
             draggable
