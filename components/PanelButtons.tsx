@@ -57,7 +57,7 @@ const PanelButtons = () => {
       ),
       children: (
         <>
-          <div className="flex items-center justify-between">
+          {/* <div className="flex items-center justify-between">
             <div className="text-2xl font-bold">Your Capsules</div>
             <Tooltip
               title="Add new capsule"
@@ -65,7 +65,7 @@ const PanelButtons = () => {
               className="bg-zinc-800 hover:bg-zinc-900 p-2 rounded-xl cursor-pointer">
               <Plus size={28} />
             </Tooltip>
-          </div>
+          </div> */}
           <Folders />
         </>
       )

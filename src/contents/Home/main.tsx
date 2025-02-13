@@ -64,7 +64,7 @@ const Main = () => {
   //  storage.set("treeData",treeData)
   // },[])
 
-  const [passTreeData, setPassTreeData] = useState<TreeDataNode[]>([])
+  // const [passTreeData, setPassTreeData] = useState<TreeDataNode[]>([])
 
   // useEffect(() => {
   //   const fetchTreeData = async () => {
@@ -74,7 +74,7 @@ const Main = () => {
   //   fetchTreeData();
   // }, []);
 
-  console.log("passTreeData", passTreeData)
+  // console.log("passTreeData", passTreeData)
 
   return (
     <>

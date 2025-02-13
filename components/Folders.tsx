@@ -444,17 +444,17 @@ const Folders: React.FC = ({}) => {
   return (
     <>
     <StyleProvider container={document.getElementById("custom-sidebar-injected").shadowRoot}>
-      <div className="flex justify-between items-center text-white px-2">
+      <div  className="flex justify-between items-center text-white px-2">
         <span className="text-2xl">Capsules</span>
         <Popover
-          getPopupContainer={() =>
-            document.body
-          }
-          zIndex={999999999999999999999999999999999}
-          placement="right"
+        getPopupContainer={()=>document.getElementById("custom-sidebar-injected").shadowRoot as unknown as HTMLElement }
+        
+          zIndex={99999999999999999999999999999999999999999999999999999999999999999999999999}
+          placement="topLeft"
           content={
             <div className="flex flex-col items-center justify-center">
-              <input
+              <span className="text-white text-xl font-semibold mt-1 mb-1">Capsule Name</span>
+              <input  
                 type="text"
                 placeholder="Capsule name..."
                 className="w-full p-3 text-white bg-zinc-800 rounded-xl outline-none text-2xl placeholder:text-gray-400 my-2"
