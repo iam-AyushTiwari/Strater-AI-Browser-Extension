@@ -40,6 +40,11 @@ export const ThemeProvider = ({ children = null as ReactNode }) => (
         },
         Tabs: {
           lineType: "none"
+        },
+        Message: {
+          zIndexPopup: 100000000000000020000,
+          contentBg: "#282828",
+          colorText: "#ffffff"
         }
       }
     }}>
