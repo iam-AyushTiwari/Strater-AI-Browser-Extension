@@ -136,23 +136,21 @@ const PanelButtons = () => {
         getContainer={() => document.body}
         footer={
           !user ? (
-            <div className="rounded-xl w-full p-4">
-              <p className="text-center text-sm flex items-center justify-center gap-2 text-zinc-500">
+            <div className="rounded-lg w-full p-2 gap-2">
+              <p className="text-center text-base flex items-center justify-center gap-2 text-zinc-300">
                 Not connected to Strater yet? - Sync your contents to Strater
-                <HiArrowTurnRightDown className="text-zinc-500" />
+                <HiArrowTurnRightDown />
               </p>
               <div
-                className="w-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 mt-2 rounded-xl py-3 text-center cursor-pointer flex justify-center items-center gap-3 transition-colors duration-200"
+                className="w-full bg-zinc-900 hover:bg-zinc-800/50 border-2 border-white mt-2 rounded-xl py-4 text-center cursor-pointer flex justify-center items-center gap-4"
                 onClick={() =>
                   window.open(
                     "https://strater-app.vercel.app/sign-in?redirect_url=https%3A%2F%2Fwww.youtube.com",
                     "_blank"
                   )
                 }>
-                <CloudCog size={16} className="text-zinc-500" />
-                <p className="text-zinc-400 text-sm font-medium">
-                  Connect to Strater
-                </p>
+                <CloudCog size={18} />
+                <p>Connect to Strater</p>
               </div>
             </div>
           ) : (
@@ -193,7 +191,7 @@ const PanelButtons = () => {
             <FaArrowRightFromBracket />
           </div>
         </Tooltip>
-        <div className="flex justify-center items-center">
+        <div className="flex justify-center items-center relative">
           <Tabs
             defaultActiveKey="1"
             items={items}
@@ -204,7 +202,10 @@ const PanelButtons = () => {
             }}
             tabBarGutter={12}
             centered={true}
-            style={{ color: "white", width: "100%" }}
+            style={{
+              color: "white",
+              width: "100%"
+            }}
           />
         </div>
       </Drawer>
