@@ -3,7 +3,6 @@ import type { ReactNode } from "react"
 
 export const ThemeProvider = ({ children = null as ReactNode }) => (
   <ConfigProvider
-  getPopupContainer={() => document.getElementById("custom-sidebar-injected")?.shadowRoot as any}
     theme={{
       token: {
         colorPrimary: "#ff0042",

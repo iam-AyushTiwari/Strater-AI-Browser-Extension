@@ -16,10 +16,11 @@ import { BsBookmarks, BsLayoutTextSidebarReverse } from "react-icons/bs"
 import { FaArrowRightFromBracket } from "react-icons/fa6"
 import { HiArrowTurnRightDown } from "react-icons/hi2"
 
-import { NotesFolder } from "./feed/NotesFolder"
+import  NotesFolders  from "./feed/NotesFolder"
 import Providers from "./Providers"
 import Account from "./sidebar/Account"
 import Bookmark from "./sidebar/Bookmark"
+
 
 const PanelButtons = () => {
   const onChange = (key: string) => {
@@ -47,7 +48,7 @@ const PanelButtons = () => {
           <Edit3Icon className="text-white text-lg p-1" />
         </Tooltip>
       ),
-      children: <NotesFolder />
+      children: <NotesFolders />
     },
     {
       key: "3",

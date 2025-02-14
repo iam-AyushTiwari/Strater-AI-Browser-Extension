@@ -21,14 +21,14 @@ type DirectoryTreeProps = GetProps<typeof Tree.DirectoryTree>
 const popoverData = () => {
   return (
     <div className="p-4 flex flex-col gap-4">
-      <h1 className="font-semibold">Add to Bookmark</h1>
+      <h1 className="font-semibold">Add to Capsule</h1>
       <input
         className="bg-zinc-950 text-xl text-white px-4 py-4 rounded-xl focus:outline-none"
         type="text"
         placeholder="Your Bookmark Name"
       />
-      <Button type="primary" block>
-        Add to Bookmark
+      <Button className="bg-[#FF0042]/90 rounded-xl p-2 hover:bg-[#FF0042]" type="primary" block>
+        Add to Capsule
       </Button>
     </div>
   )
