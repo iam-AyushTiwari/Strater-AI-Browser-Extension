@@ -18,11 +18,14 @@ interface BookmarkData {
 
 const Bookmark = () => {
   const [bookmarks, setBookmarks] = useState<BookmarkData[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchBookmarks = async () => {
+      setLoading(true)
       const savedBookmarks = (await storage.get("bookmarks")) as BookmarkData[]
       setBookmarks(savedBookmarks || [])
+      setLoading(false)
     }
 
     fetchBookmarks()
