@@ -20,16 +20,51 @@ type DirectoryTreeProps = GetProps<typeof Tree.DirectoryTree>
 
 const popoverData = () => {
   return (
-    <div className="p-4 flex flex-col gap-4">
-      <h1 className="font-semibold">Add to Capsule</h1>
-      <input
-        className="bg-zinc-950 text-xl text-white px-4 py-4 rounded-xl focus:outline-none"
-        type="text"
-        placeholder="Your Bookmark Name"
-      />
-      <Button className="bg-[#FF0042]/90 rounded-xl p-2 hover:bg-[#FF0042]" type="primary" block>
+    <div style={{ 
+      padding: '2rem',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '1.3rem',
+      backgroundColor: '#0a0a0a',
+      borderRadius:"2px",
+      height:"100%"
+    }}>
+      <h1 style={{
+        fontWeight: 600,
+        color: '#ffffff',
+        fontSize: '1.75rem',
+        lineHeight: '1.5rem'
+      }}>
         Add to Capsule
-      </Button>
+      </h1>
+      
+      <input style={{
+        backgroundColor: '#1a1a1a',
+        color: '#ffffff',
+        padding: '0.75rem 1rem',
+        borderRadius: '8px',
+        outline: 'none',
+        border: '1px solid #333333',
+        fontSize: '1.3rem',
+        transition: 'all 0.2s',
+      }}
+        placeholder="Your Capsule Name"
+      />
+      
+      <button style={{
+        backgroundColor: '#FF0042',
+        color: '#ffffff',
+        padding: '0.75rem 1rem',
+        borderRadius: '8px',
+        cursor: 'pointer',
+        width: '100%',
+        border: 'none',
+        fontWeight: 500,
+        fontSize: '1.1rem',
+        transition: 'all 0.2s',
+      }}>
+        Add to Capsule
+      </button>
     </div>
   )
 }
@@ -463,7 +498,7 @@ const NotesFolders: React.FC = ({}) => {
               document.querySelector("open-capsule")
             }
             placement="right"
-            color="#282828"
+            color="#0a0a0a"
             title={popoverData}
             trigger="click">
             <span className="cursor-pointer open-capsule p-2 rounded-xl bg-zinc-700 hover:bg-zinc-600">

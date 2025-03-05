@@ -132,10 +132,7 @@ const BookmarkCard = ({
   const [editedName, setEditedName] = useState(name)
 
   const openVideo = () => {
-    window.open(
-      `https://www.youtube.com/watch?v=${videoId}&t=${time}`,
-      "_blank"
-    )
+    window.location.href = `https://www.youtube.com/watch?v=${videoId}&t=${time}`
   }
 
   const handleEdit = () => {

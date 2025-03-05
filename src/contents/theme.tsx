@@ -45,6 +45,9 @@ export const ThemeProvider = ({ children = null as ReactNode }) => (
           zIndexPopup: 100000000000000020000,
           contentBg: "#282828",
           colorText: "#ffffff"
+        },
+        Calendar : {
+          // itemActiveBg: "#e6f4ff"
         }
       }
     }}>

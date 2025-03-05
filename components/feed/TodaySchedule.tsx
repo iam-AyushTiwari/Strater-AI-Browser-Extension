@@ -1,135 +1,366 @@
 import { ScheduleOutlined } from "@ant-design/icons"
-import { Modal } from "antd"
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react"
-import { useState } from "react"
+import {
+  Badge,
+  Calendar,
+  DatePicker,
+  Form,
+  Input,
+  InputNumber,
+  Modal,
+  Select,
+  TimePicker,
+  message
+} from "antd"
+import type { BadgeProps, CalendarProps, DatePickerProps } from "antd"
+import type { Dayjs } from "dayjs"
+import dayjs from "dayjs"
+import duration from "dayjs/plugin/duration"
+import { ChevronLeft, ChevronRight } from "lucide-react"
+import { useEffect, useState } from "react"
+import { sendToBackground } from "@plasmohq/messaging"
 
 import { Card } from "./Card"
+import { v4 as uuidv4 } from "uuid"
+// import { Storage } from "@plasmohq/storage"
+
+// const storage = new Storage()
+
+
+
+dayjs.extend(duration)
 
 interface ScheduleItem {
   id: string
   title: string
   time: string
-  duration: number // in minutes
+  duration: number
   status: string
+  date: string
 }
 
-const mockSchedule: ScheduleItem[] = [
-  {
-    id: "1",
-    title: "React Hooks Tutorial",
-    time: "09:00",
-    duration: 45,
-    status: "Upcoming"
-  },
-  {
-    id: "2",
-    title: "Next.js 13 Overview",
-    time: "11:30",
-    duration: 60,
-    status: "Upcoming"
-  },
-  {
-    id: "3",
-    title: "Tailwind CSS Tips",
-    time: "14:00",
-    duration: 30,
-    status: "Upcoming"
-  },
-  {
-    id: "4",
-    title: "TypeScript Best Practices",
-    time: "16:30",
-    duration: 45,
-    status: "Upcoming"
-  }
+// const mockSchedule: ScheduleItem[] = [
+//   {
+//     id: "1",
+//     title: "React Hooks Tutorials",
+//     time: "09:00",
+//     duration: 45,
+//     status: "Upcoming",
+//     date: "2025-02-17"
+//   },
+//   {
+//     id: "2",
+//     title: "Next.js 13 Overview",
+//     time: "11:30",
+//     duration: 60,
+//     status: "In Progress",
+//     date: "2025-02-17"
+//   },
+//   {
+//     id: "3",
+//     title: "Tailwind CSS Tips",
+//     time: "14:00",
+//     duration: 30,
+//     status: "Completed",
+//     date: "2025-02-17"
+//   }
+// ]
+
+const dummyVideos = [
+  { id: "1", title: "Tree Video 1" },
+  { id: "2", title: "Tree Video 2" },
+  { id: "3", title: "Tree Video 3" }
 ]
 
 export function TodaySchedule() {
+  // const [messageApi, contextHolder] = message.useMessage()
   const [currentDate, setCurrentDate] = useState(new Date())
+  const [scheduleItems, setScheduleItems] =
+    useState<ScheduleItem[]>([])
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false)
+  const [calendarModalOpen, setCalendarModalOpen] = useState(false)
+  const [filteredScheduleItems, setFilteredScheduleItems] = useState<
+    ScheduleItem[]
+  >([])
+  const [form] = Form.useForm()
+  const [clikedOnDate, setClickedOnDate] = useState(false)
 
-  const [open, setOpen] = useState(false)
-  const [confirmLoading, setConfirmLoading] = useState(false)
-  const [modalText, setModalText] = useState("Content of the modal")
+  // fetch schedule data
+  useEffect(()=>{
+    const fetchScheduleData = async () => {
+      try {
+        const response = await sendToBackground({
+          name:"schedule",
+          body:{
+            action: "GET_SCHEDULES"
+          },
+          extensionId:"aodjmfiabicdmbnaaeljcldpamjimmff"
+        })
+        if(response.success){
+          console.log("Get schedule data from background")
+          setScheduleItems(response.data)
+        }
+      } catch (error:any) {
+        console.log("error:",error?.message)
 
-  const goToPreviousDay = () => {
-    setCurrentDate((prev) => {
-      const newDate = new Date(prev)
-      newDate.setDate(prev.getDate() - 1)
-      return newDate
+      }
+    }
+    // fetch function call
+    fetchScheduleData();
+    
+  },[])
+
+   // Date navigation
+  const goToPreviousDay = () =>
+    setCurrentDate((prev) => new Date(prev.setDate(prev.getDate() - 1)))
+  const goToNextDay = () =>
+    setCurrentDate((prev) => new Date(prev.setDate(prev.getDate() + 1)))
+
+  //handle date change in modal
+  // const handleDateChange = () => {
+  //   onChange([dayjs(currentDate)], [dayjs(currentDate).format("YYYY-MM-DD")])
+  // }
+
+  // Schedule management
+  const handleAddTask = () => {
+    form.validateFields().then(async (values) => {
+      const newTask: ScheduleItem = {
+        id: uuidv4(),
+        ...values,
+        time: values.time.format("HH:mm"),
+        date: dayjs(currentDate).format("YYYY-MM-DD")
+      }
+      try {
+        const response = await sendToBackground({
+          name: "schedule",
+          body: {
+            action : "ADD_SCHEDULE",
+            data: newTask
+          }
+        })
+
+        if(response.success){
+          // messageApi.success("Schedule added successfully")
+          console.log("schedule added --- successfully ", response.data)
+          setScheduleItems(response.data)
+        }
+        else {
+          // messageApi.error("Failed to add schedule")
+          console.log("Failed to add schedule", response.error)
+          throw new Error("Failed to add schedule")
+        }
+      }
+      catch(error:any){
+        // messageApi.error("Failed to add schedule")
+        console.log("Failed to add schedule", error)
+      }
+
+      form.resetFields()
+      setIsScheduleModalOpen(false)
     })
   }
 
-  const goToNextDay = () => {
-    setCurrentDate((prev) => {
-      const newDate = new Date(prev)
-      newDate.setDate(prev.getDate() + 1)
-      return newDate
-    })
-  }
+  useEffect(() => {
+    const filtered = scheduleItems.filter(
+      (item) => item.date === dayjs(currentDate).format("YYYY-MM-DD")
+    )
+    setFilteredScheduleItems(filtered)
+  }, [currentDate, scheduleItems])
 
-  const showModal = () => {
-    setOpen(true)
-  }
 
-  const handleOk = () => {
-    setModalText("The modal will be closed after two seconds")
-    setConfirmLoading(true)
-    setTimeout(() => {
-      setOpen(false)
-      setConfirmLoading(false)
-    }, 2000)
-  }
-
-  const handleCancel = () => {
-    console.log("Clicked cancel button")
-    setOpen(false)
+  // Calendar cell renderer
+  const dateCellRender = (date: Dayjs) => {
+    const currentDate = date.format("YYYY-MM-DD")
+    const dailyTasks = scheduleItems.filter((item) => item.date === currentDate)
+    const statusColorMap: Record<string, BadgeProps["status"]> = {
+      Completed: "success",
+      "In Progress": "warning",
+      Upcoming: "error"
+    }
+    return (
+      <div className="space-y-1 p-1">
+        {dailyTasks.map((task) => (
+          <Badge
+            key={task.id}
+            status={statusColorMap[task.status]}
+            text={
+              <span className="text-primary text-sm">
+                {task.time} - {task.title}
+              </span>
+            }
+            className="block"
+          />
+        ))}
+        {/* {dailyTasks.length > 3 && (
+          <div className="text-xs text-white/80">
+            +{dailyTasks.length - 3} more
+          </div>
+        )} */}
+      </div>
+    )
   }
 
   return (
     <Card title="Today Schedule">
-      <div className="space-y-4">
+      <div className="space-y-6 p-4 backdrop-blur-lg bg-gradient-to-br from-[#1a1a1a] to-[#2d2d2d]">
+        {/* Date Navigation */}
         <div className="flex items-center justify-between">
           <button
             onClick={goToPreviousDay}
-            className="p-1 rounded-full hover:bg-[#ffffff1a] transition-colors"
-            aria-label="Previous day">
-            <ChevronLeft size={20} className="text-[#aaa]" />
+            className="p-2 rounded-full hover:bg-white/10 transition-colors">
+            <ChevronLeft size={24} className="text-white/80" />
           </button>
-          <h3 className="text-2xl font-semibold text-white">
+          <button
+            onClick={() => setClickedOnDate(true)}
+            className="text-2xl font-semibold text-white/90 bg-transparent hover:cursor-pointer">
             {currentDate.toLocaleDateString("en-US", {
               weekday: "long",
               month: "long",
               day: "numeric"
             })}
-          </h3>
+          </button>
           <button
             onClick={goToNextDay}
-            className="p-1 rounded-full hover:bg-[#ffffff1a] transition-colors"
-            aria-label="Next day">
-            <ChevronRight size={20} className="text-[#aaa]" />
+            className="p-2 rounded-full hover:bg-white/10 transition-colors">
+            <ChevronRight size={24} className="text-white/80" />
           </button>
         </div>
-        <div className="space-y-2">
-          {mockSchedule.map((item) => (
-            <ScheduleItem key={item.id} item={item} />
-          ))}
+
+        {/* Schedule Items */}
+        <div className="space-y-3 max-h-96 overflow-y-auto scrollbar-thin scrollbar-track-white/5 scrollbar-thumb-white/20">
+          {filteredScheduleItems.length === 0 ? (
+            <div className="flex flex-col items-center py-8 space-y-4">
+              <div className="w-20 h-20 bg-white/5  rounded-2xl flex items-center justify-center">
+                <span className="text-4xl">📅</span>
+              </div>
+              <p className="text-xl font-light text-white/60">
+                No schedule found
+              </p>
+            </div>
+          ) : (
+            filteredScheduleItems.map((item) => (
+              <ScheduleItem key={item.id} item={item} />
+            ))
+          )}
         </div>
-        <button
-          onClick={showModal}
-          className="w-full py-4 px-4 bg-[#dc3545] hover:bg-[#dc3545] text-white rounded-md flex items-center justify-center space-x-2 transition-colors"
-          aria-label="Add new schedule item">
-          <ScheduleOutlined className="text-3xl" />
-          <span className="text-2xl">View Schedule</span>
-        </button>
+
+        {/* Action Buttons */}
+        <div className="flex gap-4">
+          <button
+            onClick={() => setIsScheduleModalOpen(true)}
+            className="w-full py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-xl transition-all shadow-lg text-2xl">
+            Create Schedule
+          </button>
+          <button
+            onClick={() => setCalendarModalOpen(true)}
+            className="w-full py-3 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white rounded-xl transition-all shadow-lg text-2xl">
+            View Calendar
+          </button>
+        </div>
+
+        {/* Schedule Creation Modal */}
         <Modal
-          title="Today Schedule"
-          open={open}
-          onOk={handleOk}
-          zIndex={999999999999}
-          confirmLoading={confirmLoading}
-          className=" text-white"
-          onCancel={handleCancel}>
-          <p>{modalText}</p>
+          title={`Schedule Task for ${currentDate.toLocaleDateString("en-US")}`}
+          zIndex={99999999999999999999999999999999}
+          open={isScheduleModalOpen}
+          onOk={handleAddTask}
+          onCancel={() => setIsScheduleModalOpen(false)}
+          className="text-white modern-modal">
+          <Form form={form} layout="vertical">
+            <Form.Item
+              name="title"
+              label="Task Title"
+              rules={[
+                { required: true, message: "Please enter a task title" }
+              ]}>
+              <Input className="outline-none" placeholder="Enter task title" />
+            </Form.Item>
+            <Form.Item
+              name="time"
+              label="Time"
+              rules={[{ required: true, message: "Please select a time" }]}>
+              <TimePicker className="outline-none" format="HH:mm" />
+            </Form.Item>
+            <Form.Item
+              name="duration"
+              label="Duration (minutes)"
+              rules={[
+                { required: true, message: "Please enter the duration" }
+              ]}>
+              <InputNumber
+                className="outline-none"
+                min={15}
+                max={240}
+                placeholder="Enter duration in minutes"
+              />
+            </Form.Item>
+            <Form.Item
+              name="status"
+              label="Status"
+              rules={[{ required: true, message: "Please select a status" }]}>
+              <Select className="outline-none" placeholder="Select status">
+                <Select.Option value="Upcoming">Upcoming</Select.Option>
+                <Select.Option value="In Progress">In Progress</Select.Option>
+                <Select.Option value="Completed">Completed</Select.Option>
+              </Select>
+            </Form.Item>
+
+            {/* New Form.Item for selecting a Tree Video */}
+            <Form.Item
+              name="video"
+              label="Tree Video"
+              rules={[
+                { required: true, message: "Please select a tree video" }
+              ]}>
+              <Select
+                className="outline-none"
+                placeholder="Select a tree video">
+                {dummyVideos.map((video) => (
+                  <Select.Option key={video.id} value={video.id}>
+                    <div className="flex items-center justify-between w-full">
+                      <span>{video.title}</span>
+                      <span className="text-gray-500">tg</span>
+                    </div>
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Form>
+        </Modal>
+
+        {/* Calendar View Modal */}
+        <Modal
+          title="Schedule Calendar"
+          open={calendarModalOpen}
+          onCancel={() => setCalendarModalOpen(false)}
+          footer={null}
+          width="60%"
+          className="[&_.ant-modal-content]:bg-[#0F0F0F]">
+          <Calendar
+            fullscreen={true}
+            cellRender={(current: Dayjs, info) => {
+              if (info.type === "date") {
+                return dateCellRender(current)
+              }
+              return info.originNode
+            }}
+          />
+        </Modal>
+        <Modal
+          title="Select Date"
+          open={clikedOnDate}
+          zIndex={99999999999999999999999999999999}
+          className="text-white modern-modal"
+          onCancel={() => setClickedOnDate(false)}
+          footer={null}>
+          <DatePicker
+            onChange={(date) => {
+              if (date) {
+                setCurrentDate(date.toDate()) // Update current date state
+                setClickedOnDate(false) // Close modal after selection
+              }
+            }}
+            needConfirm
+          />
         </Modal>
       </div>
     </Card>
@@ -137,19 +368,28 @@ export function TodaySchedule() {
 }
 
 function ScheduleItem({ item }: { item: ScheduleItem }) {
+  const statusColors = {
+    Upcoming: "bg-purple-500/20 text-purple-400",
+    "In Progress": "bg-blue-500/20 text-blue-400",
+    Completed: "bg-emerald-500/20 text-emerald-400"
+  }
+
   return (
-    <div className="flex items-center space-x-3 p-2 bg-[#282828] rounded-md">
-      <div className="flex-shrink-0 w-16 text-center">
-        <span className="text-2xl font-medium text-[#aaa]">{item.time}</span>
+    <div className="group flex items-center p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors cursor-grab active:cursor-grabbing">
+      <div className="w-20 flex-shrink-0">
+        <span className="text-xl font-medium text-white/60">{item.time}</span>
       </div>
-      <div className="flex-grow">
-        <h4 className="text-2xl font-medium text-white truncate">
+      <div className="flex-grow space-y-1">
+        <h4 className="text-xl font-semibold text-white truncate">
           {item.title}
         </h4>
-        <p className="text-xl text-[#aaa]">{item.duration} min</p>
+        <div className="flex items-center gap-3">
+          <span className="text-white text-xl">{item.duration} min</span>
+        </div>
       </div>
-      <div className="bg-[#232323] text-white p-2 px-4 rounded-full">
-        <span>{item.status}</span>
+      <div
+        className={`px-4 py-2 rounded-full text-xl ${statusColors[item.status as keyof typeof statusColors]}`}>
+        {item.status}
       </div>
     </div>
   )
