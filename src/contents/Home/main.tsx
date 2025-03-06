@@ -15,8 +15,6 @@ import { IoMdAdd } from "react-icons/io"
 
 import { Storage } from "@plasmohq/storage"
 
-import Root from "./Root"
-
 const storage = new Storage()
 
 export const config: PlasmoCSConfig = {
@@ -42,41 +40,6 @@ const HOST_ID = "custom-sidebar-injected"
 export const getShadowHostId: PlasmoGetShadowHostId = () => HOST_ID
 
 const Main = () => {
-  // const [newItem, setNewItem] = useState<string | null>(null)
-  // const [buttonClicked, setButtonClicked] = useState<boolean>(false)
-  // const [treeData, setTreeData] = useState<TreeDataNode[]>([])
-  // useEffect(() => {
-  //   const head = document.querySelector("head")
-  //   if (head) {
-  //     const style = getStyle()
-  //     head.appendChild(style)
-  //     console.log("style added")
-  //   } else {
-  //     console.log("head not found")
-  //   }
-  // }, [])
-
-  // const handleCreateNewItem = (name: string) => {
-  //   setNewItem(name) // Pass the new item name to Folders via prop
-  //   setButtonClicked(true) // Set button clicked to true
-  // }
-
-  // useEffect(() => {
-  //  storage.set("treeData",treeData)
-  // },[])
-
-  const [passTreeData, setPassTreeData] = useState<TreeDataNode[]>([])
-
-  // useEffect(() => {
-  //   const fetchTreeData = async () => {
-  //     const data:TreeDataNode[] = await storage.get("treeData");
-  //     setPassTreeData(data);
-  //   };
-  //   fetchTreeData();
-  // }, []);
-
-  console.log("passTreeData", passTreeData)
-
   return (
     <>
       <MainContextProvider>
@@ -86,7 +49,6 @@ const Main = () => {
             <div className="py-4 gap-4 w-full">
               <Folders />
             </div>
-            <Root />
           </StyleProvider>
         </Providers>
       </MainContextProvider>

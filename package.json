@@ -41,7 +41,8 @@
       "https://*/*"
     ],
     "permissions": [
-      "tabs"
+      "tabs",
+      "cookies"
     ]
   }
 }

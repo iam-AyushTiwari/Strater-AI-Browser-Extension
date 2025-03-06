@@ -9,6 +9,7 @@ const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
 
   const fetchCapsulesFromApi = async (): Promise<any[]> => {
     try {
+      console.log("Background function is called for fetching capsules");
       const response = await fetch(API_ROUTES.FETCH_CAPSULES, {
         credentials: "include",
         headers: {
@@ -122,13 +123,17 @@ const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
     case "GET_CAPSULES":
       try {
         // Get capsules from local storage
+        console.log("GET CAPSULES event will be handled");
         let capsules: any[] = (await storage.getItem("capsules")) || [];
+
+        console.log("Capsules in Local storage: ", capsules);
 
         // If local storage is empty, fetch from API and update local storage
         if (capsules.length === 0) {
           try {
             capsules = await fetchCapsulesFromApi();
             await storage.setItem("capsules", capsules);
+            console.log("Capsules from Backend server: ", capsules);
           } catch (apiError) {
             console.error("API error fetching capsules:", apiError);
             // If API call fails, return an empty array from local storage

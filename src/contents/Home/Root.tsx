@@ -1,8 +1,13 @@
 import { useMainContext } from "contextAPI/MainContext"
+import type { PlasmoCSConfig } from "plasmo"
 import React, { useEffect } from "react"
 
 import { sendToBackground } from "@plasmohq/messaging"
 import { Storage } from "@plasmohq/storage"
+
+export const config: PlasmoCSConfig = {
+  matches: ["https://www.youtube.com/*"]
+}
 
 const storage = new Storage()
 
