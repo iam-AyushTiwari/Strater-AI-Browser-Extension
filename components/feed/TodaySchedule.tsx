@@ -1,15 +1,17 @@
-import { ScheduleOutlined } from "@ant-design/icons"
+import { MoreOutlined, ScheduleOutlined } from "@ant-design/icons"
 import {
   Badge,
   Calendar,
   DatePicker,
+  Dropdown,
   Form,
   Input,
   InputNumber,
+  Menu,
+  message,
   Modal,
   Select,
-  TimePicker,
-  message
+  TimePicker
 } from "antd"
 import type { BadgeProps, CalendarProps, DatePickerProps } from "antd"
 import type { Dayjs } from "dayjs"
@@ -17,15 +19,17 @@ import dayjs from "dayjs"
 import duration from "dayjs/plugin/duration"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { useEffect, useState } from "react"
+import { FaRegEye } from "react-icons/fa6"
+import { MdDeleteOutline, MdDriveFileRenameOutline } from "react-icons/md"
+import { v4 as uuidv4 } from "uuid"
+
 import { sendToBackground } from "@plasmohq/messaging"
 
 import { Card } from "./Card"
-import { v4 as uuidv4 } from "uuid"
+
 // import { Storage } from "@plasmohq/storage"
 
 // const storage = new Storage()
-
-
 
 dayjs.extend(duration)
 
@@ -36,6 +40,7 @@ interface ScheduleItem {
   duration: number
   status: string
   date: string
+  video: string
 }
 
 // const mockSchedule: ScheduleItem[] = [
@@ -74,8 +79,7 @@ const dummyVideos = [
 export function TodaySchedule() {
   // const [messageApi, contextHolder] = message.useMessage()
   const [currentDate, setCurrentDate] = useState(new Date())
-  const [scheduleItems, setScheduleItems] =
-    useState<ScheduleItem[]>([])
+  const [scheduleItems, setScheduleItems] = useState<ScheduleItem[]>([])
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false)
   const [calendarModalOpen, setCalendarModalOpen] = useState(false)
   const [filteredScheduleItems, setFilteredScheduleItems] = useState<
@@ -85,31 +89,34 @@ export function TodaySchedule() {
   const [clikedOnDate, setClickedOnDate] = useState(false)
 
   // fetch schedule data
-  useEffect(()=>{
+  useEffect(() => {
     const fetchScheduleData = async () => {
       try {
         const response = await sendToBackground({
-          name:"schedule",
-          body:{
+          name: "schedule",
+          body: {
             action: "GET_SCHEDULES"
           },
-          extensionId:"aodjmfiabicdmbnaaeljcldpamjimmff"
+          extensionId: "aodjmfiabicdmbnaaeljcldpamjimmff"
         })
-        if(response.success){
+        if (response.success) {
           console.log("Get schedule data from background")
           setScheduleItems(response.data)
         }
-      } catch (error:any) {
-        console.log("error:",error?.message)
-
+      } catch (error: any) {
+        console.log("error:", error)
       }
     }
     // fetch function call
-    fetchScheduleData();
-    
-  },[])
+    fetchScheduleData()
+  }, [])
 
-   // Date navigation
+  // update schedule state from scheduleItem component using callback
+  const handleScheduleUpdate = (updatedItems: ScheduleItem[]) => {
+    setScheduleItems(updatedItems)
+  }
+
+  // Date navigation
   const goToPreviousDay = () =>
     setCurrentDate((prev) => new Date(prev.setDate(prev.getDate() - 1)))
   const goToNextDay = () =>
@@ -133,23 +140,21 @@ export function TodaySchedule() {
         const response = await sendToBackground({
           name: "schedule",
           body: {
-            action : "ADD_SCHEDULE",
+            action: "ADD_SCHEDULE",
             data: newTask
           }
         })
 
-        if(response.success){
+        if (response.success) {
           // messageApi.success("Schedule added successfully")
           console.log("schedule added --- successfully ", response.data)
           setScheduleItems(response.data)
-        }
-        else {
+        } else {
           // messageApi.error("Failed to add schedule")
           console.log("Failed to add schedule", response.error)
           throw new Error("Failed to add schedule")
         }
-      }
-      catch(error:any){
+      } catch (error: any) {
         // messageApi.error("Failed to add schedule")
         console.log("Failed to add schedule", error)
       }
@@ -165,7 +170,6 @@ export function TodaySchedule() {
     )
     setFilteredScheduleItems(filtered)
   }, [currentDate, scheduleItems])
-
 
   // Calendar cell renderer
   const dateCellRender = (date: Dayjs) => {
@@ -238,7 +242,11 @@ export function TodaySchedule() {
             </div>
           ) : (
             filteredScheduleItems.map((item) => (
-              <ScheduleItem key={item.id} item={item} />
+              <ScheduleItem
+                key={item.id}
+                item={item}
+                onScheduleUpdate={handleScheduleUpdate}
+              />
             ))
           )}
         </div>
@@ -315,10 +323,9 @@ export function TodaySchedule() {
                 className="outline-none"
                 placeholder="Select a tree video">
                 {dummyVideos.map((video) => (
-                  <Select.Option key={video.id} value={video.id}>
+                  <Select.Option key={video.id} value={video.title}>
                     <div className="flex items-center justify-between w-full">
                       <span>{video.title}</span>
-                      <span className="text-gray-500">tg</span>
                     </div>
                   </Select.Option>
                 ))}
@@ -367,30 +374,220 @@ export function TodaySchedule() {
   )
 }
 
-function ScheduleItem({ item }: { item: ScheduleItem }) {
+function ScheduleItem({
+  item,
+  onScheduleUpdate
+}: {
+  item: ScheduleItem
+  onScheduleUpdate: (updatedItems: ScheduleItem[]) => void
+}) {
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false)
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false)
+  const [updatedItem, setUpdatedItem] = useState<ScheduleItem>(null)
+  const [form] = Form.useForm()
+
+  const handleUpdateTask = () => {
+    form.validateFields().then(async (values) => {
+      const updatedTask: ScheduleItem = {
+        ...values,
+        duration: parseInt(values.duration),
+        id: item.id,
+        time: values.time.format("HH:mm"),
+        date: dayjs(item.date).format("YYYY-MM-DD")
+      }
+      setUpdatedItem(updatedTask)
+      form.resetFields()
+      setIsEditModalVisible(false)
+    })
+  }
+
+  useEffect(() => {
+    if (!updatedItem) return // Only run if updatedItem is set
+
+    const updateSchedule = async () => {
+      try {
+        const response = await sendToBackground({
+          name: "schedule",
+          body: {
+            action: "UPDATE_SCHEDULE",
+            data: updatedItem
+          },
+          extensionId: "aodjmfiabicdmbnaaeljcldpamjimmff"
+        })
+
+        if (response.success) {
+          console.log("Schedule updated successfully")
+          onScheduleUpdate(response.data)
+        }
+        else {
+          console.log("Failed to update schedule", response.error)
+          console.log("Updated item & id", updatedItem,item.id)
+        }
+      } catch (error: any) {
+        console.log("Failed to update schedule", error)
+      }
+    }
+
+    updateSchedule()
+  }, [updatedItem])
+
+ 
+  //handel delete
+  const handleDelete = async () => {
+    try {
+      const response = await sendToBackground({
+        name: "schedule",
+        body: {
+          action: "DELETE_SCHEDULE",
+          data: item
+        },
+        extensionId: "aodjmfiabicdmbnaaeljcldpamjimmff"
+      })
+      
+      if(response.success){
+        console.log("Schedule deleted successfully")
+        onScheduleUpdate(response.data)
+      }
+    } catch (error:any) {
+      console.log("Failed to delete schedule", error?.message)
+    }
+  }
+
   const statusColors = {
     Upcoming: "bg-purple-500/20 text-purple-400",
     "In Progress": "bg-blue-500/20 text-blue-400",
     Completed: "bg-emerald-500/20 text-emerald-400"
   }
+  const menu = (
+    <Menu>
+      <Menu.Item key="1" icon={<FaRegEye />}>
+        View
+      </Menu.Item>
+      <Menu.Item
+        key="2"
+        icon={<MdDriveFileRenameOutline />}
+        onClick={() => {
+          setIsEditModalVisible(true)
+        }}>
+        Edit
+      </Menu.Item>
+      <Menu.Item
+        key="3"
+        icon={<MdDeleteOutline />}
+        onClick={() => setIsDeleteModalVisible(true)}>
+        Remove
+      </Menu.Item>
+    </Menu>
+  )
 
   return (
-    <div className="group flex items-center p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors cursor-grab active:cursor-grabbing">
-      <div className="w-20 flex-shrink-0">
-        <span className="text-xl font-medium text-white/60">{item.time}</span>
-      </div>
-      <div className="flex-grow space-y-1">
-        <h4 className="text-xl font-semibold text-white truncate">
-          {item.title}
-        </h4>
-        <div className="flex items-center gap-3">
-          <span className="text-white text-xl">{item.duration} min</span>
+    <>
+      <Dropdown overlay={menu} trigger={["contextMenu"]}>
+        <div className="group flex items-center p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors cursor-grab active:cursor-grabbing">
+          <div className="w-20 flex-shrink-0">
+            <span className="text-xl font-medium text-white/60">
+              {item.time}
+            </span>
+          </div>
+          <div className="flex-grow space-y-1">
+            <h4 className="text-xl font-semibold text-white truncate">
+              {item.title}
+            </h4>
+            <div className="flex items-center gap-3">
+              <span className="text-white text-xl">{item.duration} min</span>
+            </div>
+          </div>
+          <div
+            className={`px-4 py-2 rounded-full text-xl ${statusColors[item.status as keyof typeof statusColors]}`}>
+            {item.status}
+          </div>
         </div>
-      </div>
-      <div
-        className={`px-4 py-2 rounded-full text-xl ${statusColors[item.status as keyof typeof statusColors]}`}>
-        {item.status}
-      </div>
-    </div>
+      </Dropdown>
+      <Modal
+        title={`Edit Schedule for ${new Date(item.date).toLocaleDateString("en-US")}`}
+        zIndex={99999999999999999999999999999999}
+        open={isEditModalVisible}
+        onOk={handleUpdateTask}
+        onCancel={() => setIsEditModalVisible(false)}
+        className="text-white modern-modal">
+        <Form form={form} layout="vertical">
+          <Form.Item
+            name="date"
+            initialValue={dayjs(item.date)}
+            label="Date"
+            rules={[{ required: true, message: "Please select a date" }]}>
+            <DatePicker
+              onChange={(date) => {
+                if (date) {
+                  item.date = date.format("YYYY-MM-DD") // Update current date state
+                }
+              }}
+            />
+          </Form.Item>
+          <Form.Item
+            name="title"
+            initialValue={item.title}
+            label="Task Title"
+            rules={[{ required: true, message: "Please enter a task title" }]}>
+            <Input className="outline-none" placeholder="Enter task title" />
+          </Form.Item>
+          <Form.Item
+            name="time"
+            initialValue={dayjs(item.time, "HH:mm")}
+            label="Time"
+            rules={[{ required: true, message: "Please select a time" }]}>
+            <TimePicker defaultValue={dayjs(item.time, "HH:mm")} className="outline-none" format="HH:mm" />
+          </Form.Item>
+          <Form.Item
+            name="duration"
+            label="Duration (minutes)"
+            initialValue={(item.duration).toString()}
+            rules={[{ required: true, message: "Please enter the duration" }]}>
+            <InputNumber
+              className="outline-none"
+              min={15}
+              max={240}
+              placeholder="Enter duration in minutes"
+            />
+          </Form.Item>
+          <Form.Item
+            name="status"
+            initialValue={item.status}
+            label="Status"
+            rules={[{ required: true, message: "Please select a status" }]}>
+            <Select className="outline-none" placeholder="Select status">
+              <Select.Option value="Upcoming">Upcoming</Select.Option>
+              <Select.Option value="In Progress">In Progress</Select.Option>
+              <Select.Option value="Completed">Completed</Select.Option>
+            </Select>
+          </Form.Item>
+
+          {/* New Form.Item for selecting a Tree Video */}
+          <Form.Item
+            name="video"
+            initialValue={item.video}
+            label="Tree Video"
+            rules={[{ required: true, message: "Please select a tree video" }]}>
+            <Select className="outline-none" placeholder="Select a tree video">
+              {dummyVideos.map((video) => (
+                <Select.Option key={video.id} value={video.title}>
+                  <div className="flex items-center justify-between w-full">
+                    <span>{video.title}</span>
+                  </div>
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Form>
+      </Modal>
+      <Modal
+        title="Delete Bookmark"
+        zIndex={99999999999999999999999999999999}
+        visible={isDeleteModalVisible}
+        onOk={handleDelete}
+        onCancel={() => setIsDeleteModalVisible(false)}>
+        <p>Are you sure you want to delete this Schedule?</p>
+      </Modal>
+    </>
   )
 }

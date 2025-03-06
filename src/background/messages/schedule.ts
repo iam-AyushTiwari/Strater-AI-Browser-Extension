@@ -41,9 +41,11 @@ const handler: PlasmoMessaging.MessageHandler = async (req, res)=>{
     case "UPDATE_SCHEDULE":
         try {
             const schedules: ScheduleItems[] = (await storage.getItem("schedules")) || [];
+            console.log("data id : updated schedule", data.id)
             const index = schedules.findIndex((schedule) => schedule.id === data.id);
             //if schedule not found then : 
             if (index === -1){
+                console.log("Schedule not found")
                 res.send({ success: false, error: "Schedule not found" });
                 return;
             }
@@ -62,6 +64,7 @@ const handler: PlasmoMessaging.MessageHandler = async (req, res)=>{
             const schedules: ScheduleItems[] = await storage.getItem("schedules") || [];
             const index = schedules.findIndex((schedule) => schedule.id === data.id);
             if (index === -1) {
+                console.log("Schedule not found")
                 res.send({ success: false, error: "Schedule not found" });
                 return;
             }
