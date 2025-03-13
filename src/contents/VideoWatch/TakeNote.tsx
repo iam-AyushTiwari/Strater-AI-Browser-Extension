@@ -51,7 +51,7 @@ const TakeNote = () => {
   return (
     <Providers>
       <StyleProvider container={document.getElementById(HOST_ID).shadowRoot}>
-        <div className="w-full bg-neutral-900 border-2 border-zinc-800 rounded-xl text-white h-[800px] mb-2">
+        <div className="w-full bg-neutral-900 border-2 border-zinc-800 rounded-xl text-white h-[600px] mb-2">
           <NotesArea />
         </div>
       </StyleProvider>
