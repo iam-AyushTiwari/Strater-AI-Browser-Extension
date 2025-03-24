@@ -48,7 +48,27 @@ export const ThemeProvider = ({ children = null as ReactNode }) => (
         },
         Calendar : {
           // itemActiveBg: "#e6f4ff"
+        },
+        Input : {
+          // activeBg	: "#FF4071"
+          // activeBorderColor : "#000000"
+          activeShadow:"#282828"
+        },
+        InputNumber :{
+          // activeBg	: "#FF4071"
+          activeShadow:"#282828"
+        },
+        DatePicker :{
+          // activeBg	: "#FF4071"
+          activeShadow:"#282828"
+        },
+        Select : {
+          activeOutlineColor:"#282828",
+          optionActiveBg:"rgba(0,0,0,0.06)",
+          multipleItemBg:"#282828",
+          
         }
+
       }
     }}>
     {children}

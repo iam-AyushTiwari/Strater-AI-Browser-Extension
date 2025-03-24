@@ -10,6 +10,7 @@ const storage = new Storage()
 
 interface BookmarkData {
   id: string
+  videoTitle: string
   videoId: string
   name: string
   time: number
@@ -18,6 +19,7 @@ interface BookmarkData {
 
 const Bookmark = () => {
   const [bookmarks, setBookmarks] = useState<BookmarkData[]>([])
+  const [expandedCard, setExpandedCard] = useState<string | null>(null); // State to track the expanded card
 
   useEffect(() => {
     const fetchBookmarks = async () => {
@@ -93,15 +95,27 @@ const Bookmark = () => {
     }
   }
 
+const bookmarksByVideoId = {};
+bookmarks.forEach(bookmark => {
+  if (!bookmarksByVideoId[bookmark.videoId]) {
+    bookmarksByVideoId[bookmark.videoId] = [];
+  }
+  bookmarksByVideoId[bookmark.videoId].push(bookmark);
+});
+
   return (
     <>
       <h1 className="text-3xl font-bold text-white mb-4">Bookmarks</h1>
-      <div className="w-full flex flex-col justify-center items-center gap-4 mt-4">
+      <div className="w-full flex flex-col justify-center max-h-[300px] overflow-y-auto items-center mt-4">
         {bookmarks.length > 0 ? (
-          bookmarks.map((bookmark) => (
+          Object.keys(bookmarksByVideoId).map(videoId => (
             <BookmarkCard
-              key={bookmark.id}
-              {...bookmark}
+              key={videoId}
+              videoId={videoId}
+              videoTitle={bookmarksByVideoId[videoId][0].videoTitle || "Untitled Video"}
+              bookmarks={bookmarksByVideoId[videoId]}
+              isExpanded={expandedCard === videoId}
+              setExpandedCard={setExpandedCard}
               updateBookmark={updateBookmark}
               deleteBookmark={deleteBookmark}
             />
@@ -119,53 +133,62 @@ const Bookmark = () => {
 }
 
 const BookmarkCard = ({
-  id,
+  videoTitle,
   videoId,
-  name,
-  time,
-  createdAt,
+  bookmarks,
   updateBookmark,
-  deleteBookmark
+  deleteBookmark,
+  isExpanded,
+  setExpandedCard,
+
 }) => {
   const [isEditModalVisible, setIsEditModalVisible] = useState(false)
+  const [currentBookmark, setCurrentBookmark] = useState(null)
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false)
-  const [editedName, setEditedName] = useState(name)
+  const [editedName, setEditedName] = useState<string>("")
+  // const [isExpended,setIsExpended] = useState<boolean>(false)
 
-  const openVideo = () => {
-    window.location.href = `https://www.youtube.com/watch?v=${videoId}&t=${time}`
+  const openVideo = (bookmarkTime) => {
+    window.location.href = `https://www.youtube.com/watch?v=${videoId}&t=${bookmarkTime}`
   }
-
   const handleEdit = () => {
-    updateBookmark({ id, videoId, name: editedName, time, createdAt })
+    updateBookmark({ ...currentBookmark, name: editedName })
     setIsEditModalVisible(false)
   }
 
   const handleDelete = () => {
-    deleteBookmark(id)
+    deleteBookmark(currentBookmark.id)
     setIsDeleteModalVisible(false)
   }
 
-  const formatTime = (seconds: number) => {
+  const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60)
     const remainingSeconds = seconds % 60
     return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`
   }
 
-  const menu = (
+  const getBookmarkMenu = (bookmark) => (
     <Menu>
-      <Menu.Item key="1" icon={<FaRegEye />} onClick={openVideo}>
+      <Menu.Item key="1" icon={<FaRegEye />} onClick={() => openVideo(bookmark.time)}>
         View
       </Menu.Item>
       <Menu.Item
         key="2"
-        icon={<MdDriveFileRenameOutline />}
-        onClick={() => setIsEditModalVisible(true)}>
+        icon={<MdDriveFileRenameOutline/>}
+        onClick={() => {
+          setEditedName(bookmark.name);
+          setCurrentBookmark(bookmark);
+          setIsEditModalVisible(true);
+        }}>
         Edit
-      </Menu.Item>
+      </Menu.Item> 
       <Menu.Item
         key="3"
         icon={<MdDeleteOutline />}
-        onClick={() => setIsDeleteModalVisible(true)}>
+        onClick={() => {
+          setIsDeleteModalVisible(true);
+          setCurrentBookmark(bookmark);
+        }}>
         Remove
       </Menu.Item>
     </Menu>
@@ -173,16 +196,48 @@ const BookmarkCard = ({
 
   return (
     <>
-      <Dropdown overlay={menu} trigger={["contextMenu"]}>
-        <div
-          className="flex items-center w-full rounded-lg overflow-hidden shadow-md bg-zinc-900 p-4 cursor-pointer"
-          onClick={openVideo}>
-          <p className="font-semibold text-base text-blue-500 bg-blue-900/20 rounded-full px-3 py-1">
-            {formatTime(time)}
-          </p>
-          <span className="text-xl text-gray-200 ml-4">{name}</span>
+      <div className="group w-full max-h-96 overflow-y-auto mb-3">
+        {/* Video Title Header */}
+        <div className="flex items-center justify-between w-full px-3 py-4 bg-gradient-to-r from-zinc-800 to-zinc-700 rounded-t-lg shadow-lg cursor-pointer hover:shadow-xl transition-all duration-300 gap-2" onClick={() => setExpandedCard(isExpanded ? null : videoId)}>
+          <h3 className="font-bold text-white">{videoTitle.length > 20 ? `${videoTitle.substring(0, 20)}...` : videoTitle}</h3>
+          <svg
+            className={`w-6 h-6 text-white transform transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
         </div>
-      </Dropdown>
+
+        {/* Bookmarks Dropdown Content */}
+        { isExpanded &&
+        <div className="max-h-96 overflow-y-auto bg-zinc-800/90 rounded-b-lg border border-zinc-700 shadow-lg">
+          {bookmarks.map((bookmark) => (
+            <Dropdown 
+              key={bookmark.id} 
+              overlay={getBookmarkMenu(bookmark)} 
+              trigger={["contextMenu"]}
+            >
+              <div
+                className="flex items-center justify-between w-full p-4 border-t border-zinc-800 hover:bg-zinc-800/50 transition-all duration-300 cursor-pointer"
+              >
+                <span className="text-white font-medium truncate">
+                  {bookmark.name}
+                </span>
+                <span className="font-medium text-white bg-[#ff0042] rounded-full px-3 py-1 text-sm shadow-sm">
+                  {formatTime(bookmark.time)}
+                </span>
+              </div>
+            </Dropdown>
+          ))}
+        </div>
+}
+      </div>
 
       <Modal
         title="Edit Bookmark"
@@ -196,7 +251,6 @@ const BookmarkCard = ({
           className="bg-zinc-950 text-xl text-white px-4 py-4 rounded-xl focus:outline-none"
         />
       </Modal>
-
       <Modal
         title="Delete Bookmark"
         visible={isDeleteModalVisible}
@@ -207,5 +261,6 @@ const BookmarkCard = ({
     </>
   )
 }
+
 
 export default Bookmark

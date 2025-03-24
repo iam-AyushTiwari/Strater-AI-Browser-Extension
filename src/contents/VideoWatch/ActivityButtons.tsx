@@ -39,6 +39,8 @@ const Main = () => {
       // @ts-ignore
       buttons.style.zIndex = "inherit"
     }
+    const shadowContainer = document.getElementById(HOST_ID).shadowRoot?.querySelector("#plasmo-shadow-container") as HTMLElement
+    
   }, [])
   return (
     <>
