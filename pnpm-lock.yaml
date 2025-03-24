@@ -23,6 +23,9 @@ importers:
       antd:
         specifier: ^5.22.7
         version: 5.22.7(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      dayjs:
+        specifier: ^1.11.13
+        version: 1.11.13
       lucide-react:
         specifier: ^0.469.0
         version: 0.469.0(react@18.2.0)
@@ -30,8 +33,8 @@ importers:
         specifier: ^1.0.2
         version: 1.0.2(@tiptap/extension-code-block@2.11.2(@tiptap/core@2.11.2(@tiptap/pm@2.11.2))(@tiptap/pm@2.11.2))(@types/react-dom@18.2.18)(@types/react@18.2.48)(highlight.js@11.11.1)(lowlight@3.3.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       plasmo:
-        specifier: 0.90.2
-        version: 0.90.2(@swc/core@1.10.3(@swc/helpers@0.5.15))(@swc/helpers@0.5.15)(@types/node@20.11.5)(lodash@4.17.21)(postcss@8.4.49)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        specifier: 0.90.3
+        version: 0.90.3(@swc/core@1.10.3(@swc/helpers@0.5.15))(@swc/helpers@0.5.15)(@types/node@20.11.5)(lodash@4.17.21)(postcss@8.4.49)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -3607,8 +3610,8 @@ packages:
     resolution: {integrity: sha512-saLsH7WeYYPiD25LDuLRRY/i+6HaPYr6G1OUlN39otzkSTxKnubR9RTxS3/Kk50s1g2JTgFwWQDQyplC5/SHZg==}
     engines: {node: '>= 6'}
 
-  plasmo@0.90.2:
-    resolution: {integrity: sha512-PACGqArrPCy+cZTToDm+GLJp5Czbwifb+MQAJUTVPVhwxaGxF/DU/OQt5hdaGhAsDDjWqqcLqrD/vV0zaC7FGA==}
+  plasmo@0.90.3:
+    resolution: {integrity: sha512-m8OlsFZQRbce/CBfbhGr8UD5XrTJFvp8kGlSu/KYJpsJd19I8fLc4JW+Xxyo1ve3UJFgC88COCXKeecP1Z0EPQ==}
     hasBin: true
 
   postcss-import@15.1.0:
@@ -8532,7 +8535,7 @@ snapshots:
 
   pirates@4.0.6: {}
 
-  plasmo@0.90.2(@swc/core@1.10.3(@swc/helpers@0.5.15))(@swc/helpers@0.5.15)(@types/node@20.11.5)(lodash@4.17.21)(postcss@8.4.49)(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
+  plasmo@0.90.3(@swc/core@1.10.3(@swc/helpers@0.5.15))(@swc/helpers@0.5.15)(@types/node@20.11.5)(lodash@4.17.21)(postcss@8.4.49)(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
     dependencies:
       '@expo/spawn-async': 1.7.2
       '@parcel/core': 2.9.3
