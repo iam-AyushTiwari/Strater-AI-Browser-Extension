@@ -5,6 +5,7 @@ const storage = new Storage();
 
 interface Bookmark {
   id: string;
+  videoTitle: string;
   videoId: string;
   name: string;
   time: number; // in seconds

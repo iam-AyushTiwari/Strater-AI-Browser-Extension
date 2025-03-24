@@ -41,6 +41,7 @@ interface ScheduleItem {
   status: string
   date: string
   video: string
+  videoId: string
 }
 
 // const mockSchedule: ScheduleItem[] = [
@@ -87,9 +88,30 @@ export function TodaySchedule() {
   >([])
   const [form] = Form.useForm()
   const [clikedOnDate, setClickedOnDate] = useState(false)
+  const [treeVideos, setTreeVideos] = useState([])
 
   // fetch schedule data
   useEffect(() => {
+    const fetchtreeVideos = async () => {
+      try {
+        const response = await sendToBackground({
+          name: "schedule",
+          body: {
+            action: "FETCH_ALLCASPULEVIDEOS"
+          },
+          extensionId: "aodjmfiabicdmbnaaeljcldpamjimmff"
+        })
+        if (response.success) {
+          console.log("Get tree videos from background", response.data)
+          setTreeVideos(response.data)
+        }
+      } catch (error: any) {
+        console.log(
+          "error in fetching tree video from background process",
+          error
+        )
+      }
+    }
     const fetchScheduleData = async () => {
       try {
         const response = await sendToBackground({
@@ -109,6 +131,7 @@ export function TodaySchedule() {
     }
     // fetch function call
     fetchScheduleData()
+    fetchtreeVideos()
   }, [])
 
   // update schedule state from scheduleItem component using callback
@@ -245,6 +268,7 @@ export function TodaySchedule() {
               <ScheduleItem
                 key={item.id}
                 item={item}
+                treeVideos={treeVideos}
                 onScheduleUpdate={handleScheduleUpdate}
               />
             ))
@@ -322,7 +346,7 @@ export function TodaySchedule() {
               <Select
                 className="outline-none"
                 placeholder="Select a tree video">
-                {dummyVideos.map((video) => (
+                {treeVideos.map((video) => (
                   <Select.Option key={video.id} value={video.title}>
                     <div className="flex items-center justify-between w-full">
                       <span>{video.title}</span>
@@ -376,15 +400,25 @@ export function TodaySchedule() {
 
 function ScheduleItem({
   item,
+  treeVideos,
   onScheduleUpdate
 }: {
   item: ScheduleItem
+  treeVideos: any
   onScheduleUpdate: (updatedItems: ScheduleItem[]) => void
 }) {
   const [isEditModalVisible, setIsEditModalVisible] = useState(false)
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false)
   const [updatedItem, setUpdatedItem] = useState<ScheduleItem>(null)
   const [form] = Form.useForm()
+
+  const openVideo = () => {
+    if (item.videoId) {
+      const url =`https://www.youtube.com/watch?v=${item.videoId}`
+      history.pushState({},"",url);
+      window.dispatchEvent(new Event("popstate"))
+    }
+  }
 
   const handleUpdateTask = () => {
     form.validateFields().then(async (values) => {
@@ -418,10 +452,9 @@ function ScheduleItem({
         if (response.success) {
           console.log("Schedule updated successfully")
           onScheduleUpdate(response.data)
-        }
-        else {
+        } else {
           console.log("Failed to update schedule", response.error)
-          console.log("Updated item & id", updatedItem,item.id)
+          console.log("Updated item & id", updatedItem, item.id)
         }
       } catch (error: any) {
         console.log("Failed to update schedule", error)
@@ -431,7 +464,6 @@ function ScheduleItem({
     updateSchedule()
   }, [updatedItem])
 
- 
   //handel delete
   const handleDelete = async () => {
     try {
@@ -443,12 +475,12 @@ function ScheduleItem({
         },
         extensionId: "aodjmfiabicdmbnaaeljcldpamjimmff"
       })
-      
-      if(response.success){
+
+      if (response.success) {
         console.log("Schedule deleted successfully")
         onScheduleUpdate(response.data)
       }
-    } catch (error:any) {
+    } catch (error: any) {
       console.log("Failed to delete schedule", error?.message)
     }
   }
@@ -460,7 +492,7 @@ function ScheduleItem({
   }
   const menu = (
     <Menu>
-      <Menu.Item key="1" icon={<FaRegEye />}>
+      <Menu.Item key="1" icon={<FaRegEye />} onClick={openVideo}>
         View
       </Menu.Item>
       <Menu.Item
@@ -536,12 +568,16 @@ function ScheduleItem({
             initialValue={dayjs(item.time, "HH:mm")}
             label="Time"
             rules={[{ required: true, message: "Please select a time" }]}>
-            <TimePicker defaultValue={dayjs(item.time, "HH:mm")} className="outline-none" format="HH:mm" />
+            <TimePicker
+              defaultValue={dayjs(item.time, "HH:mm")}
+              className="outline-none"
+              format="HH:mm"
+            />
           </Form.Item>
           <Form.Item
             name="duration"
             label="Duration (minutes)"
-            initialValue={(item.duration).toString()}
+            initialValue={item.duration.toString()}
             rules={[{ required: true, message: "Please enter the duration" }]}>
             <InputNumber
               className="outline-none"
@@ -569,7 +605,7 @@ function ScheduleItem({
             label="Tree Video"
             rules={[{ required: true, message: "Please select a tree video" }]}>
             <Select className="outline-none" placeholder="Select a tree video">
-              {dummyVideos.map((video) => (
+              {treeVideos.map((video) => (
                 <Select.Option key={video.id} value={video.title}>
                   <div className="flex items-center justify-between w-full">
                     <span>{video.title}</span>

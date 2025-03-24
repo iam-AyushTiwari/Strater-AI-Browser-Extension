@@ -7,6 +7,7 @@ import { sendToBackground } from "@plasmohq/messaging"
 
 interface BookmarkData {
   id: string
+  videoTitle: string
   videoId: string
   name: string
   time: number
@@ -16,14 +17,17 @@ interface BookmarkData {
 const BookmarkPopover = ({ onAddBookmark }) => {
   const [bookmarkName, setBookmarkName] = useState("")
   const videoElement = document.querySelector("video")
+  const videoTitleParentDiv = (document.querySelector(".style-scope ytd-watch-metadata").childNodes[3] as HTMLElement)
+  const videoTitle = (videoTitleParentDiv.children[0].children[1] as HTMLElement).innerText
+
   if (videoElement) {
     videoElement.pause()
   }
 
   const handleAddBookmark = () => {
     if (bookmarkName.trim()) {
-      console.log("Bookmark trying to add: ", bookmarkName)
-      onAddBookmark(bookmarkName)
+      console.log("Bookmark trying to add: and video Title parent div ", bookmarkName,videoTitle)
+      onAddBookmark(bookmarkName,videoTitle)
       setBookmarkName("")
     }
   }
@@ -65,15 +69,17 @@ const AddToBookmark = () => {
     return urlParams.get("v")
   }
 
+  
   const getCurrentVideoTime = () => {
     const videoElement = document.querySelector("video")
     return videoElement ? Math.floor(videoElement.currentTime) : 0
   }
 
-  const addBookmark = async (bookmarkName: string) => {
+  const addBookmark = async (bookmarkName: string, videoTitle: string) => {
     const bookmarkData: BookmarkData = {
       id: uuidv4(),
       videoId: getCurrentVideoId(),
+      videoTitle: videoTitle,
       name: bookmarkName,
       time: getCurrentVideoTime(),
       createdAt: new Date().toISOString()

@@ -11,7 +11,7 @@ export function Card({ title, children, collapsible = true }: CardProps) {
   const [isCollapsed, setIsCollapsed] = useState(false)
 
   return (
-    <div className="bg-[#212121] rounded-xl overflow-hidden shadow-lg">
+    <div className="bg-[#212121] w-full rounded-xl overflow-hidden shadow-lg">
       <div
         className={`
           flex justify-between items-center p-4 

@@ -11,6 +11,7 @@ export const API_ROUTES = {
     CREATE_CAPSULE: `${endPoint}/Capsules/create_capsule`,
     UPDATE_CAPSULE: `${endPoint}/Capsules/update_capsule`,
     DELETE_CAPSULE: `${endPoint}/Capsules/delete_capsule`,
+    FETCH_ALLCASPULEVIDEOS : `${endPoint}/VideoContent/fetch_video`
   };
   
   export const DEFAULT_VALUES = {
