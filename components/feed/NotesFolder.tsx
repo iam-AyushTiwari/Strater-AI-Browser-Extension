@@ -20,49 +20,53 @@ type DirectoryTreeProps = GetProps<typeof Tree.DirectoryTree>
 
 const popoverData = () => {
   return (
-    <div style={{ 
-      padding: '2rem',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '1.3rem',
-      backgroundColor: '#0a0a0a',
-      borderRadius:"2px",
-      height:"100%"
-    }}>
-      <h1 style={{
-        fontWeight: 600,
-        color: '#ffffff',
-        fontSize: '1.75rem',
-        lineHeight: '1.5rem'
+    <div
+      style={{
+        padding: "2rem",
+        display: "flex",
+        flexDirection: "column",
+        gap: "1.3rem",
+        backgroundColor: "#0a0a0a",
+        borderRadius: "2px",
+        height: "100%"
       }}>
+      <h1
+        style={{
+          fontWeight: 600,
+          color: "#ffffff",
+          fontSize: "1.75rem",
+          lineHeight: "1.5rem"
+        }}>
         Add to Capsule
       </h1>
-      
-      <input style={{
-        backgroundColor: '#1a1a1a',
-        color: '#ffffff',
-        padding: '0.75rem 1rem',
-        borderRadius: '8px',
-        outline: 'none',
-        border: '1px solid #333333',
-        fontSize: '1.3rem',
-        transition: 'all 0.2s',
-      }}
+
+      <input
+        style={{
+          backgroundColor: "#1a1a1a",
+          color: "#ffffff",
+          padding: "0.75rem 1rem",
+          borderRadius: "8px",
+          outline: "none",
+          border: "1px solid #333333",
+          fontSize: "1.3rem",
+          transition: "all 0.2s"
+        }}
         placeholder="Your Capsule Name"
       />
-      
-      <button style={{
-        backgroundColor: '#FF0042',
-        color: '#ffffff',
-        padding: '0.75rem 1rem',
-        borderRadius: '8px',
-        cursor: 'pointer',
-        width: '100%',
-        border: 'none',
-        fontWeight: 500,
-        fontSize: '1.1rem',
-        transition: 'all 0.2s',
-      }}>
+
+      <button
+        style={{
+          backgroundColor: "#FF0042",
+          color: "#ffffff",
+          padding: "0.75rem 1rem",
+          borderRadius: "8px",
+          cursor: "pointer",
+          width: "100%",
+          border: "none",
+          fontWeight: 500,
+          fontSize: "1.1rem",
+          transition: "all 0.2s"
+        }}>
         Add to Capsule
       </button>
     </div>
@@ -121,7 +125,9 @@ const NotesData: TreeDataNode[] = [
             <div
               className="bg-[#28d8ff] w-full text-white px-2 mb-1 rounded-lg flex items-center justify-between py-2"
               onContextMenu={onContextMenu}>
-              <h2 className="break-words font-semibold line-clamp-1">Basics Notes</h2>
+              <h2 className="break-words font-semibold line-clamp-1">
+                Basics Notes
+              </h2>
               <span className="text-sm opacity-80 font-medium ml-4 flex items-center">
                 3 items
               </span>
@@ -263,7 +269,9 @@ const NotesData: TreeDataNode[] = [
             <div
               className="bg-[#db7093] w-full text-white px-2 mb-1 rounded-lg flex items-center justify-between py-2"
               onContextMenu={onContextMenu}>
-              <h2 className="break-words font-semibold line-clamp-1">API Notes</h2>
+              <h2 className="break-words font-semibold line-clamp-1">
+                API Notes
+              </h2>
               <span className="text-sm opacity-80 font-medium ml-4 flex items-center">
                 2 items
               </span>
@@ -554,4 +562,3 @@ const NotesFolders: React.FC = ({}) => {
 }
 
 export default NotesFolders
-

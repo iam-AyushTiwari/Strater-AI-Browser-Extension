@@ -50,7 +50,6 @@ const FeedStrater = () => {
         style={{ height: "calc(100vh - 70px)" }}>
         <div className="grid grid-cols-2 w-full marker:gap-8">
           <div className="w-full p-4">
-
             <TodaySchedule />
           </div>
           <div className="w-full p-40 text-white flex flex-col gap-4 justify-center items-center">

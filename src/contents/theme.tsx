@@ -46,7 +46,7 @@ export const ThemeProvider = ({ children = null as ReactNode }) => (
           contentBg: "#282828",
           colorText: "#ffffff"
         },
-        Calendar : {
+        Calendar: {
           // itemActiveBg: "#e6f4ff"
         }
       }
