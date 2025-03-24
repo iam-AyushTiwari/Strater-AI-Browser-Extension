@@ -1,5 +1,9 @@
-const endPoint = "https://strater-app.vercel.app/api"
+// const endPoint = "https://strater-app.vercel.app/api"
+// const host = "https://strater-app.vercel.app"
+const endPoint = "http://localhost:3000/api"
+const host = "http://localhost:3000"
 export const API_ENDPOINT = endPoint
+export const HOST_LINK = host
 
 export const API_ROUTES = {
     FETCH_USER: `${endPoint}/User/fetch_me`,

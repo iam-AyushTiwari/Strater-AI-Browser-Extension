@@ -19,6 +19,8 @@ import { HiArrowTurnRightDown } from "react-icons/hi2"
 
 import { Storage } from "@plasmohq/storage"
 
+import { API_ENDPOINT, HOST_LINK } from "~constants"
+
 import { NotesFolder } from "./feed/NotesFolder"
 import Providers from "./Providers"
 import Account from "./sidebar/Account"
@@ -145,7 +147,7 @@ const PanelButtons = () => {
                 className="w-full bg-zinc-900 hover:bg-zinc-800/50 border-2 border-white mt-2 rounded-xl py-4 text-center cursor-pointer flex justify-center items-center gap-4"
                 onClick={() =>
                   window.open(
-                    "https://strater-app.vercel.app/sign-in?redirect_url=https%3A%2F%2Fwww.youtube.com",
+                    `${HOST_LINK}/sign-in?redirect_url=https%3A%2F%2Fwww.youtube.com`,
                     "_blank"
                   )
                 }>

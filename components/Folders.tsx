@@ -437,7 +437,10 @@ const Folders: React.FC = ({}) => {
           <Dropdown overlay={menu(capsule)} trigger={["contextMenu"]}>
             <div
               className={`text-white w-full px-2 mb-1 rounded-lg flex items-center justify-between py-2`}
-              style={{ cursor: "pointer", backgroundColor: capsule?.color }}
+              style={{
+                cursor: "pointer",
+                backgroundColor: colorMap[capsule.color]
+              }}
               onContextMenu={(e) => e.preventDefault()}
               onClick={() => {}}>
               <h2 className="break-words font-semibold line-clamp-1">
