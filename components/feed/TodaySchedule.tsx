@@ -13,6 +13,7 @@ import {
   Select,
   TimePicker
 } from "antd"
+import { RiLoader3Line } from "react-icons/ri";
 import type { BadgeProps, CalendarProps, DatePickerProps } from "antd"
 import type { Dayjs } from "dayjs"
 import dayjs from "dayjs"
@@ -27,9 +28,6 @@ import { sendToBackground } from "@plasmohq/messaging"
 
 import { Card } from "./Card"
 
-// import { Storage } from "@plasmohq/storage"
-
-// const storage = new Storage()
 
 dayjs.extend(duration)
 
@@ -89,6 +87,7 @@ export function TodaySchedule() {
   const [form] = Form.useForm()
   const [clikedOnDate, setClickedOnDate] = useState(false)
   const [treeVideos, setTreeVideos] = useState([])
+  const [loading, setLoading] = useState(true) 
 
   // fetch schedule data
   useEffect(() => {
@@ -124,6 +123,7 @@ export function TodaySchedule() {
         if (response.success) {
           console.log("Get schedule data from background")
           setScheduleItems(response.data)
+          setLoading(false)
         }
       } catch (error: any) {
         console.log("error:", error)
@@ -254,7 +254,31 @@ export function TodaySchedule() {
 
         {/* Schedule Items */}
         <div className="space-y-3 max-h-96 overflow-y-auto scrollbar-thin scrollbar-track-white/5 scrollbar-thumb-white/20">
-          {filteredScheduleItems.length === 0 ? (
+
+        {loading ? ( // Conditionally render loader
+            <div className="flex w-full h-20 items-center justify-center p-4">
+              <RiLoader3Line className="text-4xl animate-spin" />
+            </div>
+          ) : scheduleItems.length === 0 || filteredScheduleItems.length === 0 ? (
+            <div className="flex flex-col items-center py-8 space-y-4">
+              <div className="w-20 h-20 bg-white/5 rounded-2xl flex items-center justify-center">
+                <span className="text-4xl">📅</span>
+                </div>
+              <p className="text-xl font-light text-white/60">
+                No schedule found
+              </p>
+            </div>
+          ) : (
+            filteredScheduleItems.map((item) => (
+              <ScheduleItem
+                key={item.id}
+                item={item}
+                treeVideos={treeVideos}
+                onScheduleUpdate={handleScheduleUpdate}
+              />
+            ))
+          )}
+        {/* {scheduleItems.length === 0 || filteredScheduleItems.length === 0 ? (
             <div className="flex flex-col items-center py-8 space-y-4">
               <div className="w-20 h-20 bg-white/5  rounded-2xl flex items-center justify-center">
                 <span className="text-4xl">📅</span>
@@ -272,7 +296,7 @@ export function TodaySchedule() {
                 onScheduleUpdate={handleScheduleUpdate}
               />
             ))
-          )}
+          )} */}
         </div>
 
         {/* Action Buttons */}
@@ -292,6 +316,7 @@ export function TodaySchedule() {
         {/* Schedule Creation Modal */}
         <Modal
           title={`Schedule Task for ${currentDate.toLocaleDateString("en-US")}`}
+          mask={true}
           zIndex={99999999999999999999999999999999}
           open={isScheduleModalOpen}
           onOk={handleAddTask}
@@ -414,11 +439,23 @@ function ScheduleItem({
 
   const openVideo = () => {
     if (item.videoId) {
-      const url =`https://www.youtube.com/watch?v=${item.videoId}`
-      history.pushState({},"",url);
-      window.dispatchEvent(new Event("popstate"))
+      const url = `/watch?v=${item.videoId}`;
+  
+      // Update URL without reloading the whole page
+      history.pushState(null, "", url);
+  
+      // Access YouTube's internal page manager
+      const ytPageManager = (document.querySelector("ytd-app") as any)?.getPageManager();
+      if (ytPageManager) {
+        ytPageManager.navigate(url);
+      } else {
+        // Fallback: Dispatch a navigation event
+        window.dispatchEvent(new Event("yt-navigate"));
+      }
     }
-  }
+  };
+  
+  
 
   const handleUpdateTask = () => {
     form.validateFields().then(async (values) => {

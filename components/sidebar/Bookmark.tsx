@@ -109,7 +109,7 @@ const Bookmark = () => {
   return (
     <>
       <h1 className="text-3xl font-bold text-white mb-4">Bookmarks</h1>
-      <div className="w-full flex flex-col justify-center max-h-[300px] overflow-y-auto items-center mt-4">
+      <div className="w-full flex flex-col justify-center items-center mt-4">
         {bookmarks.length > 0 ? (
           Object.keys(bookmarksByVideoId).map((videoId) => (
             <BookmarkCard
@@ -203,10 +203,10 @@ const BookmarkCard = ({
 
   return (
     <>
-      <div className="group w-full max-h-96 overflow-y-auto mb-3">
+      <div className="group w-full  mb-3">
         {/* Video Title Header */}
         <div
-          className="flex items-center justify-between w-full px-3 py-4 bg-gradient-to-r from-zinc-800 to-zinc-700 rounded-t-lg shadow-lg cursor-pointer hover:shadow-xl transition-all duration-300 gap-2"
+          className="flex items-center justify-between w-full p-4 bg-gradient-to-r from-zinc-800 to-zinc-700 rounded-t-lg shadow-lg cursor-pointer hover:shadow-xl transition-all duration-300 gap-2"
           onClick={() => setExpandedCard(isExpanded ? null : videoId)}>
           <h3 className="font-bold text-white">
             {videoTitle.length > 20
