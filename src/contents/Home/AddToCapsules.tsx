@@ -50,8 +50,8 @@ export const config: PlasmoCSConfig = {
 
 export const getInlineAnchorList: PlasmoGetInlineAnchorList = async () => {
   const anchors = document.querySelectorAll("#dismissible #details")
-  return Array.from(anchors).map((element,index) => ({
-    id:index,
+  return Array.from(anchors).map((element, index) => ({
+    id: index,
     element,
     insertPosition: "afterend"
   }))
@@ -77,29 +77,36 @@ const Main = () => {
   const [pickedDate, setPickedDate] = useState<Dayjs>(dayjs())
   const [treeVideos, setTreeVideos] = useState([])
   const [form] = Form.useForm()
-  const [videoTitle,setVideoTitle] = useState<string>('')
-  const [videoId,setVideoId] = useState<string>('')
-
+  const [videoTitle, setVideoTitle] = useState<string>("")
+  const [videoId, setVideoId] = useState<string>("")
 
   const handlePlusClick = (event: React.MouseEvent<HTMLElement>) => {
-    const targetElement = event.target as HTMLElement;
-    const shadowRoot = targetElement.getRootNode() as ShadowRoot;
-    const parentElement = shadowRoot.host as HTMLElement;
+    const targetElement = event.target as HTMLElement
+    const shadowRoot = targetElement.getRootNode() as ShadowRoot
+    const parentElement = shadowRoot.host as HTMLElement
     const parentNode = parentElement.parentNode as HTMLElement
     const childElements = parentNode.children as HTMLCollection
-    const selectedElement = (childElements[2].childNodes[1].childNodes[0].childNodes[0] as HTMLElement).nextElementSibling as HTMLElement
+    const selectedElement = (
+      childElements[2].childNodes[1].childNodes[0].childNodes[0] as HTMLElement
+    ).nextElementSibling as HTMLElement
     const target = selectedElement.ariaLabel
-    const VideoTitle = (childElements[2].childNodes[1] as HTMLElement).children[0].childNodes[1] as HTMLElement
+    const VideoTitle = (childElements[2].childNodes[1] as HTMLElement)
+      .children[0].childNodes[1] as HTMLElement
     const finalVideoTitle = VideoTitle.attributes[4].nodeValue
 
-    console.log("Parent Element & parent node & childE & selected target & final vi with ID add-to-button-csui:", parentElement, parentNode,childElements,target,finalVideoTitle);
+    console.log(
+      "Parent Element & parent node & childE & selected target & final vi with ID add-to-button-csui:",
+      parentElement,
+      parentNode,
+      childElements,
+      target,
+      finalVideoTitle
+    )
     setVideoTitle(target.length > 30 ? `${target.substring(0, 30)}...` : target)
-    const videoId = finalVideoTitle.split('v=')[1];
-    setVideoId(videoId);
+    const videoId = finalVideoTitle.split("v=")[1]
+    setVideoId(videoId)
   }
 
-
- 
   useEffect(() => {
     const plusIcons = document.querySelectorAll("#add-to-button-csui")
 
@@ -111,7 +118,6 @@ const Main = () => {
 
         if (shadowContainer) {
           shadowContainer.style.zIndex = "inherit"
-          
         }
       })
     }
@@ -226,7 +232,7 @@ const Main = () => {
             alignItems: "center",
             gap: 2
           }}>
-          <span onClick={()=>setIsScheduleModalOpen(true)}>
+          <span onClick={() => setIsScheduleModalOpen(true)}>
             Schedule Later
           </span>
         </div>
@@ -256,17 +262,16 @@ const Main = () => {
   return (
     <>
       <Providers>
-        
-          <Dropdown overlay={menu} trigger={["click"]}>
-            <FloatButton
-              shape="circle"
-              className="text-white absolute bottom-2 right-2 bg-red-900 rounded-full p-2 cursor-pointer flex items-center justify-center"
-              tooltip={"Strater Action"}
-              onClick={(e)=>handlePlusClick(e)}
-              icon={<PlusOutlined className="text-white text-2xl" />}
-            />
-          </Dropdown>
-          <StyleProvider container={document.getElementById(HOST_ID).shadowRoot}>
+        <Dropdown overlay={menu} trigger={["click"]}>
+          <FloatButton
+            shape="circle"
+            className="text-white absolute bottom-2 right-2 bg-red-900 rounded-full p-2 cursor-pointer flex items-center justify-center"
+            tooltip={"Strater Action"}
+            onClick={(e) => handlePlusClick(e)}
+            icon={<PlusOutlined className="text-white text-2xl" />}
+          />
+        </Dropdown>
+        <StyleProvider container={document.getElementById(HOST_ID).shadowRoot}>
           <Modal
             title={`Schedule Task for ${videoTitle}`}
             zIndex={9999999999999999999}
@@ -352,12 +357,8 @@ const Main = () => {
                 </Select>
               </Form.Item>
 
-              <Form.Item
-                name="video"
-                label="Video Id"
-                >
-                  <Input placeholder="Video Id" disabled defaultValue={videoId}/>
-                
+              <Form.Item name="video" label="Video Id">
+                <Input placeholder="Video Id" disabled defaultValue={videoId} />
               </Form.Item>
             </Form>
           </Modal>

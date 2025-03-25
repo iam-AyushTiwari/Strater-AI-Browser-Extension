@@ -44,12 +44,12 @@ const WatchVideoButtons = () => {
   const [scheduleItems, setScheduleItems] = useState<ScheduleItem>(null)
   const [pickedDate, setPickedDate] = useState<Dayjs>(dayjs())
   const [treeVideos, setTreeVideos] = useState([])
-  const [videoId,setVideoId] = useState<string>('')
+  const [videoId, setVideoId] = useState<string>("")
 
   const getCurrentVideoId = () => {
     const urlParams = new URLSearchParams(window.location.search)
     const videoId = urlParams.get("v")
-    setVideoId(videoId);
+    setVideoId(videoId)
   }
   useEffect(() => {
     const fetchTreeVideos = async () => {
@@ -126,8 +126,8 @@ const WatchVideoButtons = () => {
         <div className="flex gap-4">
           <Button
             onClick={() => {
-              setIsScheduleModalOpen(true);
-              getCurrentVideoId();
+              setIsScheduleModalOpen(true)
+              getCurrentVideoId()
             }}
             type="primary"
             className="flex gaap-4">
@@ -235,7 +235,7 @@ const WatchVideoButtons = () => {
               rules={[
                 { required: true, message: "Please select a tree video" }
               ]}>
-             <Input defaultValue={videoId} disabled placeholder="Video Id"/>
+              <Input defaultValue={videoId} disabled placeholder="Video Id" />
             </Form.Item>
           </Form>
         </Modal>
