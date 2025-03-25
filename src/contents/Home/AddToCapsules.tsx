@@ -125,32 +125,35 @@ const Main = () => {
     //   shadowContainer.style.top = "40%"
     // }
   }, [])
-  const consoleFunc = () => {
-    console.log("plus icon clicked!")
-  }
   useEffect(() => {
-    const fetchtreeVideos = async () => {
-      try {
-        const response = await sendToBackground({
-          name: "schedule",
-          body: {
-            action: "FETCH_ALLCASPULEVIDEOS"
-          },
-          extensionId: "aodjmfiabicdmbnaaeljcldpamjimmff"
-        })
-        if (response.success) {
-          console.log("Get tree videos from background", response.data)
-          setTreeVideos(response.data)
-        }
-      } catch (error: any) {
-        console.log(
-          "error in fetching tree video from background process",
-          error
-        )
-      }
-    }
-    fetchtreeVideos()
-  }, [])
+  const consoleFunc = async () => {
+    console.log("plus icon clicked!",isScheduleModalOpen)
+  }
+  consoleFunc();
+},[isScheduleModalOpen])
+  // useEffect(() => {
+  //   const fetchtreeVideos = async () => {
+  //     try {
+  //       const response = await sendToBackground({
+  //         name: "schedule",
+  //         body: {
+  //           action: "FETCH_ALLCASPULEVIDEOS"
+  //         },
+  //         extensionId: "aodjmfiabicdmbnaaeljcldpamjimmff"
+  //       })
+  //       if (response.success) {
+  //         console.log("Get tree videos from background", response.data)
+  //         setTreeVideos(response.data)
+  //       }
+  //     } catch (error: any) {
+  //       console.log(
+  //         "error in fetching tree video from background process",
+  //         error
+  //       )
+  //     }
+  //   }
+  //   fetchtreeVideos()
+  // }, [])
   useEffect(() => {
     const addTask = async () => {
       if (!scheduleItems) return
@@ -165,7 +168,10 @@ const Main = () => {
           extensionId: "aodjmfiabicdmbnaaeljcldpamjimmff"
         })
         if (response.success) {
-          console.log("schedule added successfully")
+          console.log("schedule added successfully with scheduleItems",scheduleItems)
+        }
+        else{
+          console.log("schedule not added successfully with scheduleItems",scheduleItems)
         }
       } catch (error: any) {
         console.log("error:", error)
@@ -226,7 +232,7 @@ const Main = () => {
             alignItems: "center",
             gap: 2
           }}>
-          <span onClick={()=>setIsScheduleModalOpen(true)}>
+          <span onClick={()=>{setIsScheduleModalOpen(true)}}>
             Schedule Later
           </span>
         </div>

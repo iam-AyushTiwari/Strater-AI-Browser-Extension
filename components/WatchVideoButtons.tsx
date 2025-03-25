@@ -45,6 +45,8 @@ const WatchVideoButtons = () => {
   const [pickedDate, setPickedDate] = useState<Dayjs>(dayjs())
   const [treeVideos, setTreeVideos] = useState([])
   const [videoId,setVideoId] = useState<string>('')
+  const videoTitleParentDiv = (document.querySelector(".style-scope ytd-watch-metadata").childNodes[3] as HTMLElement)
+  const videoTitle = (videoTitleParentDiv.children[0].children[1] as HTMLElement).innerText
 
   const getCurrentVideoId = () => {
     const urlParams = new URLSearchParams(window.location.search)
@@ -180,6 +182,7 @@ const WatchVideoButtons = () => {
               ]}>
               <Input
                 onKeyDown={handleInputKeyDown}
+                defaultValue={videoTitle}
                 className="outline-none"
                 placeholder="Enter task title"
               />
@@ -231,10 +234,7 @@ const WatchVideoButtons = () => {
 
             <Form.Item
               name="video"
-              label="Video Id"
-              rules={[
-                { required: true, message: "Please select a tree video" }
-              ]}>
+              label="Video Id">
              <Input defaultValue={videoId} disabled placeholder="Video Id"/>
             </Form.Item>
           </Form>
