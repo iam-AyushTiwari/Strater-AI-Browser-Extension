@@ -14,6 +14,8 @@ import { v4 as uuidv4 } from "uuid"
 
 import { sendToBackground } from "@plasmohq/messaging"
 
+import { EXTENSION_ID } from "~constants"
+
 interface ScheduleItem {
   id: string
   title: string
@@ -39,7 +41,7 @@ export const ScheduleModal: React.FC<{ state: boolean }> = ({ state }) => {
           body: {
             action: "FETCH_ALLCASPULEVIDEOS"
           },
-          extensionId: "aodjmfiabicdmbnaaeljcldpamjimmff"
+          extensionId: EXTENSION_ID
         })
         if (response.success) {
           console.log("Get tree videos from background", response.data)
@@ -59,7 +61,7 @@ export const ScheduleModal: React.FC<{ state: boolean }> = ({ state }) => {
           body: {
             action: "GET_SCHEDULES"
           },
-          extensionId: "aodjmfiabicdmbnaaeljcldpamjimmff"
+          extensionId: EXTENSION_ID
         })
         if (response.success) {
           console.log("Get schedule data from background")
@@ -84,7 +86,7 @@ export const ScheduleModal: React.FC<{ state: boolean }> = ({ state }) => {
             action: "ADD_SCHEDULE",
             data: scheduleItems
           },
-          extensionId: "aodjmfiabicdmbnaaeljcldpamjimmff"
+          extensionId: EXTENSION_ID
         })
         if (response.success) {
           console.log("schedule added successfully")

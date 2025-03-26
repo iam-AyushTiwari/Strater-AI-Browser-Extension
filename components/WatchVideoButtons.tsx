@@ -21,6 +21,8 @@ import { v4 as uuidv4 } from "uuid"
 
 import { sendToBackground } from "@plasmohq/messaging"
 
+import { EXTENSION_ID } from "~constants"
+
 dayjs.extend(duration)
 
 interface ScheduleItem {
@@ -65,7 +67,7 @@ const WatchVideoButtons = () => {
           body: {
             action: "GET_TREE_VIDEOS"
           },
-          extensionId: "aodjmfiabicdmbnaaeljcldpamjimmff"
+          extensionId: EXTENSION_ID
         })
         if (response.success) {
           setTreeVideos(response.data)
@@ -115,7 +117,7 @@ const WatchVideoButtons = () => {
             action: "ADD_SCHEDULE",
             data: scheduleItems
           },
-          extensionId: "aodjmfiabicdmbnaaeljcldpamjimmff"
+          extensionId: EXTENSION_ID
         })
         if (response.success) {
           console.log("schedule added successfully")

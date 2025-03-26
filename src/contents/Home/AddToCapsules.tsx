@@ -32,6 +32,8 @@ import { v4 as uuidv4 } from "uuid"
 
 import { sendToBackground } from "@plasmohq/messaging"
 
+import { EXTENSION_ID } from "~constants"
+
 interface ScheduleItem {
   id: string
   title: string
@@ -171,7 +173,7 @@ const Main = () => {
             action: "ADD_SCHEDULE",
             data: scheduleItems
           },
-          extensionId: "aodjmfiabicdmbnaaeljcldpamjimmff"
+          extensionId: EXTENSION_ID
         })
         if (response.success) {
           console.log(

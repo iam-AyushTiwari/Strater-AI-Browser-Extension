@@ -13,7 +13,6 @@ import {
   Select,
   TimePicker
 } from "antd"
-import { RiLoader3Line } from "react-icons/ri";
 import type { BadgeProps, CalendarProps, DatePickerProps } from "antd"
 import type { Dayjs } from "dayjs"
 import dayjs from "dayjs"
@@ -22,12 +21,14 @@ import { ChevronLeft, ChevronRight } from "lucide-react"
 import { useEffect, useState } from "react"
 import { FaRegEye } from "react-icons/fa6"
 import { MdDeleteOutline, MdDriveFileRenameOutline } from "react-icons/md"
+import { RiLoader3Line } from "react-icons/ri"
 import { v4 as uuidv4 } from "uuid"
 
 import { sendToBackground } from "@plasmohq/messaging"
 
-import { Card } from "./Card"
+import { EXTENSION_ID } from "~constants"
 
+import { Card } from "./Card"
 
 dayjs.extend(duration)
 
@@ -87,7 +88,7 @@ export function TodaySchedule() {
   const [form] = Form.useForm()
   const [clikedOnDate, setClickedOnDate] = useState(false)
   const [treeVideos, setTreeVideos] = useState([])
-  const [loading, setLoading] = useState(true) 
+  const [loading, setLoading] = useState(true)
 
   // fetch schedule data
   useEffect(() => {
@@ -98,7 +99,7 @@ export function TodaySchedule() {
           body: {
             action: "FETCH_ALLCASPULEVIDEOS"
           },
-          extensionId: "aodjmfiabicdmbnaaeljcldpamjimmff"
+          extensionId: EXTENSION_ID
         })
         if (response.success) {
           console.log("Get tree videos from background", response.data)
@@ -118,7 +119,7 @@ export function TodaySchedule() {
           body: {
             action: "GET_SCHEDULES"
           },
-          extensionId: "aodjmfiabicdmbnaaeljcldpamjimmff"
+          extensionId: EXTENSION_ID
         })
         if (response.success) {
           console.log("Get schedule data from background")
@@ -254,16 +255,16 @@ export function TodaySchedule() {
 
         {/* Schedule Items */}
         <div className="space-y-3 max-h-96 overflow-y-auto scrollbar-thin scrollbar-track-white/5 scrollbar-thumb-white/20">
-
-        {loading ? ( // Conditionally render loader
+          {loading ? ( // Conditionally render loader
             <div className="flex w-full h-20 items-center justify-center p-4">
               <RiLoader3Line className="text-4xl animate-spin" />
             </div>
-          ) : scheduleItems.length === 0 || filteredScheduleItems.length === 0 ? (
+          ) : scheduleItems.length === 0 ||
+            filteredScheduleItems.length === 0 ? (
             <div className="flex flex-col items-center py-8 space-y-4">
               <div className="w-20 h-20 bg-white/5 rounded-2xl flex items-center justify-center">
                 <span className="text-4xl">📅</span>
-                </div>
+              </div>
               <p className="text-xl font-light text-white/60">
                 No schedule found
               </p>
@@ -278,7 +279,7 @@ export function TodaySchedule() {
               />
             ))
           )}
-        {/* {scheduleItems.length === 0 || filteredScheduleItems.length === 0 ? (
+          {/* {scheduleItems.length === 0 || filteredScheduleItems.length === 0 ? (
             <div className="flex flex-col items-center py-8 space-y-4">
               <div className="w-20 h-20 bg-white/5  rounded-2xl flex items-center justify-center">
                 <span className="text-4xl">📅</span>
@@ -439,23 +440,23 @@ function ScheduleItem({
 
   const openVideo = () => {
     if (item.videoId) {
-      const url = `/watch?v=${item.videoId}`;
-  
+      const url = `/watch?v=${item.videoId}`
+
       // Update URL without reloading the whole page
-      history.pushState(null, "", url);
-  
+      history.pushState(null, "", url)
+
       // Access YouTube's internal page manager
-      const ytPageManager = (document.querySelector("ytd-app") as any)?.getPageManager();
+      const ytPageManager = (
+        document.querySelector("ytd-app") as any
+      )?.getPageManager()
       if (ytPageManager) {
-        ytPageManager.navigate(url);
+        ytPageManager.navigate(url)
       } else {
         // Fallback: Dispatch a navigation event
-        window.dispatchEvent(new Event("yt-navigate"));
+        window.dispatchEvent(new Event("yt-navigate"))
       }
     }
-  };
-  
-  
+  }
 
   const handleUpdateTask = () => {
     form.validateFields().then(async (values) => {
@@ -483,7 +484,7 @@ function ScheduleItem({
             action: "UPDATE_SCHEDULE",
             data: updatedItem
           },
-          extensionId: "aodjmfiabicdmbnaaeljcldpamjimmff"
+          extensionId: "EXTENSION_ID"
         })
 
         if (response.success) {
@@ -510,7 +511,7 @@ function ScheduleItem({
           action: "DELETE_SCHEDULE",
           data: item
         },
-        extensionId: "aodjmfiabicdmbnaaeljcldpamjimmff"
+        extensionId: EXTENSION_ID
       })
 
       if (response.success) {
