@@ -1,7 +1,8 @@
 import { get } from "http"
 import { StyleProvider } from "@ant-design/cssinjs"
-import { PlusOutlined } from "@ant-design/icons"
+import { CalendarOutlined, ClockCircleOutlined, CloseOutlined, PlusOutlined, YoutubeOutlined } from "@ant-design/icons"
 import {
+  Button,
   DatePicker,
   Dropdown,
   FloatButton,
@@ -204,12 +205,19 @@ const Main = () => {
       setIsScheduleModalOpen(false)
     })
   }
+  //set clicked context menu item
+  const onClick: MenuProps['onClick'] = (e) => {
+    console.log('clicked context menu key', e.key);
+    if(e.key==="2"){
+      setIsScheduleModalOpen(true)
+    }
+  };
 
   const menuItems: MenuProps["items"] = [
     {
       label: (
         <div
-          className="flex items-center justify-center"
+          className="flex w-full items-center justify-center"
           style={{
             display: "flex",
             justifyContent: "center",
@@ -232,7 +240,7 @@ const Main = () => {
             alignItems: "center",
             gap: 2
           }}>
-          <span onClick={()=>{setIsScheduleModalOpen(true)}}>
+          <span>
             Schedule Later
           </span>
         </div>
@@ -257,7 +265,7 @@ const Main = () => {
       icon: <BsEye className="text-xl mr-2" />
     }
   ]
-  const menu = <Menu items={menuItems} className="text-white bg-slate-900" />
+  const menu = <Menu onClick={onClick} items={menuItems} className="text-white bg-slate-900" />
 
   return (
     <>
@@ -274,98 +282,126 @@ const Main = () => {
           </Dropdown>
           <StyleProvider container={document.getElementById(HOST_ID).shadowRoot}>
           <Modal
-            title={`Schedule Task for ${videoTitle}`}
-            zIndex={9999999999999999999}
-            getContainer={() =>
-              document
-                .getElementById("add-to-button-csui")
-                ?.shadowRoot.querySelector("#plasmo-shadow-container")
-            }
-            open={isScheduleModalOpen}
-            onOk={setSchedule}
-            onCancel={() => setIsScheduleModalOpen(false)}
-            className="text-white modern-modal">
-            <Form form={form} layout="vertical">
-              <Form.Item
-                name="date"
-                initialValue={dayjs()}
-                label="Date"
-                rules={[{ required: true, message: "Please select a date" }]}>
-                <DatePicker
-                  getPopupContainer={() =>
-                    document
-                      .getElementById("add-to-button-csui")
-                      ?.shadowRoot?.querySelector("#plasmo-shadow-container")
-                  }
-                  onChange={(date) => date && setPickedDate(date)}
-                />
-              </Form.Item>
-              <Form.Item
-                name="title"
-                label="Task Title"
-                rules={[
-                  { required: true, message: "Please enter a task title" }
-                ]}>
-                <Input
-                  onKeyDown={handleInputKeyDown}
-                  className="outline-none"
-                  placeholder="Enter task title"
-                  defaultValue={videoTitle}
-                />
-              </Form.Item>
-              <Form.Item
-                name="time"
-                label="Time"
-                rules={[{ required: true, message: "Please select a time" }]}>
-                <TimePicker
-                  getPopupContainer={() =>
-                    document
-                      .getElementById("add-to-button-csui")
-                      ?.shadowRoot?.querySelector("#plasmo-shadow-container")
-                  }
-                  className="outline-none"
-                  format="HH:mm"
-                />
-              </Form.Item>
-              <Form.Item
-                name="duration"
-                label="Duration (minutes)"
-                rules={[
-                  { required: true, message: "Please enter the duration" }
-                ]}>
-                <InputNumber
-                  className="outline-none"
-                  min={15}
-                  max={240}
-                  placeholder="Enter duration in minutes"
-                />
-              </Form.Item>
-              <Form.Item
-                name="status"
-                label="Status"
-                rules={[{ required: true, message: "Please select a status" }]}>
-                <Select
-                  getPopupContainer={() =>
-                    document
-                      .getElementById("add-to-button-csui")
-                      ?.shadowRoot?.querySelector("#plasmo-shadow-container")
-                  }
-                  className="outline-none"
-                  placeholder="Select status">
-                  <Select.Option value="Upcoming">Upcoming</Select.Option>
-                  <Select.Option value="In Progress">In Progress</Select.Option>
-                  <Select.Option value="Completed">Completed</Select.Option>
-                </Select>
-              </Form.Item>
-
-              <Form.Item
-                name="video"
-                label="Video Id"
-                >
-                  <Input placeholder="Video Id" disabled defaultValue={videoId}/>
-                
-              </Form.Item>
-            </Form>
+                    title={
+                      <div className="flex flex-col items-start px-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[#ff0042] mr-2">
+                          <YoutubeOutlined style={{ fontSize: "20px" }} />
+                        </span>
+                        <span>Schedule for Later</span>
+                      </div>
+                        <div className="w-full border-t border-zinc-700 my-2"></div>
+                        </div>
+                    }
+                    closeIcon={<CloseOutlined />}
+                    zIndex={999999}
+                    getContainer={() =>
+                      document
+                        .getElementById("add-to-button-csui")
+                        ?.shadowRoot?.querySelector("#plasmo-shadow-container")
+                    }
+                    open={isScheduleModalOpen}
+                    onOk={setSchedule}
+                    onCancel={() => setIsScheduleModalOpen(false)}
+                    className="text-white modern-modal"
+                    width={400}
+                    footer={[
+                      <Button key="cancel" onClick={() => setIsScheduleModalOpen(false)}>
+                        Cancel
+                      </Button>,
+                      <Button key="schedule" type="primary" onClick={setSchedule}>
+                        Schedule
+                      </Button>
+                    ]}>
+                    <Form form={form} layout="vertical" className="pt-4">
+                      <Form.Item name="title" label="Task title" className="mb-6"  rules={[
+                          { required: true, message: "Please enter a task title" }
+                        ]}>
+                        <Input
+                          onKeyDown={handleInputKeyDown}
+                          prefix={<YoutubeOutlined className="mr-2" style={{ color: "#ff0042" }} />}
+                          defaultValue={videoTitle}
+                          className="rounded-lg"
+                          placeholder="Task title"
+                        />
+                      </Form.Item>
+          
+                      <div className="grid grid-cols-2 gap-4">
+                        <Form.Item
+                          name="date"
+                          label="Date"
+                          initialValue={dayjs()}
+                          className="mb-0" rules={[{ required: true, message: "Please select a date" }]}>
+                          <DatePicker
+                            className="w-full rounded-lg"
+                            format="DD-MM-YYYY"
+                            getPopupContainer={() =>
+                              document
+                                .getElementById("add-to-button-csui")
+                                ?.shadowRoot?.querySelector("#plasmo-shadow-container")
+                            }
+                            onChange={(date) => date && setPickedDate(date)}
+                            suffixIcon={<CalendarOutlined />}
+                          />
+                        </Form.Item>
+          
+                        <Form.Item name="time" label="Time" className="mb-0" rules={[{ required: true, message: "Please select a time" }]}>
+                          <TimePicker
+                            className="w-full rounded-lg"
+                            getPopupContainer={() =>
+                              document
+                                .getElementById("add-to-button-csui")
+                                ?.shadowRoot?.querySelector("#plasmo-shadow-container")
+                            }
+                            format="HH:mm"
+                            suffixIcon={<ClockCircleOutlined />}
+                          />
+                        </Form.Item>
+                      <Form.Item
+                        label="Duration"
+                        name="duration"
+                        rules={[
+                          { required: true, message: "Please enter the duration" }
+                        ]}>
+                        <InputNumber
+                         className="rounded-lg w-full"
+                          min={15}
+                          max={240}
+                          placeholder="Enter duration in minutes"
+                        />
+                      </Form.Item>
+          
+                      <Form.Item
+                        name="status"
+                        label="Status"
+                        rules={[{ required: true, message: "Please select a status" }]}>
+                        <Select
+                        className="rounded-lg w-full"
+                          getPopupContainer={() =>
+                            document
+                              .getElementById("add-to-button-csui")
+                              ?.shadowRoot?.querySelector("#plasmo-shadow-container")
+                          }
+                          placeholder="Select status">
+                          <Select.Option value="Upcoming">Upcoming</Select.Option>
+                          <Select.Option value="In Progress">In Progress</Select.Option>
+                          <Select.Option value="Completed">Completed</Select.Option>
+                        </Select>
+                      </Form.Item>
+          
+                      </div>
+                      <Form.Item
+                        hidden
+                        name="video"
+                        label="Video Id">
+                       <Input className="rounded-lg w-full" defaultValue={videoId} disabled placeholder="Video Id"/>
+                      </Form.Item>
+          
+                    </Form>
+                    <div className="flex items-center text-xl text-gray-400 mb-1">
+                      <ClockCircleOutlined className="mr-2 text-2xl text-[#ff0042]/90" />
+                      <span>You'll receive a notification when it's time to watch</span>
+                    </div>
           </Modal>
         </StyleProvider>
       </Providers>
