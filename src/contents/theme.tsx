@@ -64,8 +64,13 @@ export const ThemeProvider = ({ children = null as ReactNode }) => (
         },
         Select: {
           activeOutlineColor: "#282828",
+          optionSelectedBg: "rgba(0,0,0,0.06)",
           optionActiveBg: "rgba(0,0,0,0.06)",
-          multipleItemBg: "#282828"
+          multipleItemBg: "#282828",
+          borderRadius: 4
+        },
+        Form: {
+          labelRequiredMarkColor: "#ff0042"
         }
       }
     }}>

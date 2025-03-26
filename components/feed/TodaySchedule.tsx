@@ -1,6 +1,14 @@
-import { MoreOutlined, ScheduleOutlined } from "@ant-design/icons"
+import {
+  CalendarOutlined,
+  ClockCircleOutlined,
+  CloseOutlined,
+  MoreOutlined,
+  ScheduleOutlined,
+  YoutubeOutlined
+} from "@ant-design/icons"
 import {
   Badge,
+  Button,
   Calendar,
   DatePicker,
   Dropdown,
@@ -316,72 +324,135 @@ export function TodaySchedule() {
 
         {/* Schedule Creation Modal */}
         <Modal
-          title={`Schedule Task for ${currentDate.toLocaleDateString("en-US")}`}
+          title={
+            <div className="flex flex-col items-start px-2">
+              <div className="flex items-center gap-2">
+                <span className="text-[#ff0042] mr-2">
+                  <YoutubeOutlined style={{ fontSize: "20px" }} />
+                </span>
+                <span>
+                  {`Schedule Task for ${currentDate.toLocaleDateString("en-US")}`}
+                </span>
+              </div>
+              <div className="w-full border-t border-zinc-700 my-2"></div>
+            </div>
+          }
+          closeIcon={<CloseOutlined />}
           mask={true}
           zIndex={99999999999999999999999999999999}
           open={isScheduleModalOpen}
           onOk={handleAddTask}
           onCancel={() => setIsScheduleModalOpen(false)}
-          className="text-white modern-modal">
-          <Form form={form} layout="vertical">
+          className="text-white modern-modal"
+          width={400}
+          footer={[
+            <Button key="cancel" onClick={() => setIsScheduleModalOpen(false)}>
+              Cancel
+            </Button>,
+            <Button key="schedule" type="primary" onClick={handleAddTask}>
+              Schedule
+            </Button>
+          ]}
+          getContainer={() =>
+            document
+              .getElementById("feed-strater-csui")
+              ?.shadowRoot?.querySelector("#plasmo-shadow-container")
+          }>
+          <Form form={form} layout="vertical" className="pt-4">
             <Form.Item
               name="title"
-              label="Task Title"
+              label="Task title"
+              className="mb-6"
               rules={[
                 { required: true, message: "Please enter a task title" }
               ]}>
-              <Input className="outline-none" placeholder="Enter task title" />
-            </Form.Item>
-            <Form.Item
-              name="time"
-              label="Time"
-              rules={[{ required: true, message: "Please select a time" }]}>
-              <TimePicker className="outline-none" format="HH:mm" />
-            </Form.Item>
-            <Form.Item
-              name="duration"
-              label="Duration (minutes)"
-              rules={[
-                { required: true, message: "Please enter the duration" }
-              ]}>
-              <InputNumber
-                className="outline-none"
-                min={15}
-                max={240}
-                placeholder="Enter duration in minutes"
+              <Input
+                prefix={
+                  <YoutubeOutlined
+                    className="mr-2"
+                    style={{ color: "#ff0042" }}
+                  />
+                }
+                className="rounded-lg"
+                placeholder="Enter task title"
               />
             </Form.Item>
-            <Form.Item
-              name="status"
-              label="Status"
-              rules={[{ required: true, message: "Please select a status" }]}>
-              <Select className="outline-none" placeholder="Select status">
-                <Select.Option value="Upcoming">Upcoming</Select.Option>
-                <Select.Option value="In Progress">In Progress</Select.Option>
-                <Select.Option value="Completed">Completed</Select.Option>
-              </Select>
-            </Form.Item>
-
-            {/* New Form.Item for selecting a Tree Video */}
-            <Form.Item
-              name="video"
-              label="Tree Video"
-              rules={[
-                { required: true, message: "Please select a tree video" }
-              ]}>
-              <Select
-                className="outline-none"
-                placeholder="Select a tree video">
-                {treeVideos.map((video) => (
-                  <Select.Option key={video.id} value={video.title}>
-                    <div className="flex items-center justify-between w-full">
-                      <span>{video.title}</span>
-                    </div>
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
+            <div className="grid grid-cols-2 gap-4">
+              <Form.Item
+                name="time"
+                label="Time"
+                rules={[{ required: true, message: "Please select a time" }]}>
+                <TimePicker
+                  getPopupContainer={() =>
+                    document
+                      .getElementById("feed-strater-csui")
+                      ?.shadowRoot?.querySelector("#plasmo-shadow-container")
+                  }
+                  className="w-full rounded-lg"
+                  format="HH:mm"
+                  suffixIcon={<ClockCircleOutlined />}
+                />
+              </Form.Item>
+              <Form.Item
+                name="duration"
+                label="Duration (minutes)"
+                rules={[
+                  { required: true, message: "Please enter the duration" }
+                ]}>
+                <InputNumber
+                  className="rounded-lg w-full"
+                  min={15}
+                  max={240}
+                  placeholder="Enter duration in minutes"
+                />
+              </Form.Item>
+              <Form.Item
+                name="status"
+                label="Status"
+                rules={[{ required: true, message: "Please select a status" }]}>
+                <Select
+                  className="rounded-lg w-full"
+                  placeholder="Select status"
+                  getPopupContainer={() =>
+                    document
+                      .getElementById("feed-strater-csui")
+                      ?.shadowRoot?.querySelector("#plasmo-shadow-container")
+                  }>
+                  <Select.Option value="Upcoming">Upcoming</Select.Option>
+                  <Select.Option value="In Progress">In Progress</Select.Option>
+                  <Select.Option value="Completed">Completed</Select.Option>
+                </Select>
+              </Form.Item>
+              {/* New Form.Item for selecting a Tree Video */}
+              <Form.Item
+                name="video"
+                label="Tree Video"
+                rules={[
+                  { required: true, message: "Please select a tree video" }
+                ]}>
+                <Select
+                  getPopupContainer={() =>
+                    document
+                      .getElementById("feed-strater-csui")
+                      ?.shadowRoot?.querySelector("#plasmo-shadow-container")
+                  }
+                  className="w-full rounded-lg"
+                  placeholder="Select a tree video">
+                  {treeVideos.map((video) => (
+                    <Select.Option key={video.id} value={video.title}>
+                      <div className="flex items-center justify-between w-full">
+                        <span>{video.title}</span>
+                      </div>
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </div>
           </Form>
+          <div className="flex items-center text-xl text-gray-400 mb-1">
+            <ClockCircleOutlined className="mr-2 text-2xl text-[#ff0042]/90" />
+            <span>You'll receive a notification when it's time to watch</span>
+          </div>
         </Modal>
 
         {/* Calendar View Modal */}
@@ -391,7 +462,11 @@ export function TodaySchedule() {
           onCancel={() => setCalendarModalOpen(false)}
           footer={null}
           width="60%"
-          className="[&_.ant-modal-content]:bg-[#0F0F0F]">
+          getContainer={() =>
+            document
+              .getElementById("feed-strater-csui")
+              ?.shadowRoot?.querySelector("#plasmo-shadow-container")
+          }>
           <Calendar
             fullscreen={true}
             cellRender={(current: Dayjs, info) => {
@@ -408,14 +483,26 @@ export function TodaySchedule() {
           zIndex={99999999999999999999999999999999}
           className="text-white modern-modal"
           onCancel={() => setClickedOnDate(false)}
-          footer={null}>
+          footer={null}
+          getContainer={() =>
+            document
+              .getElementById("feed-strater-csui")
+              ?.shadowRoot?.querySelector("#plasmo-shadow-container")
+          }>
           <DatePicker
+            className="w-full rounded-lg"
+            getPopupContainer={() =>
+              document
+                .getElementById("feed-strater-csui")
+                ?.shadowRoot?.querySelector("#plasmo-shadow-container")
+            }
             onChange={(date) => {
               if (date) {
                 setCurrentDate(date.toDate()) // Update current date state
                 setClickedOnDate(false) // Close modal after selection
               }
             }}
+            suffixIcon={<CalendarOutlined />}
             needConfirm
           />
         </Modal>
@@ -440,21 +527,9 @@ function ScheduleItem({
 
   const openVideo = () => {
     if (item.videoId) {
-      const url = `/watch?v=${item.videoId}`
-
-      // Update URL without reloading the whole page
-      history.pushState(null, "", url)
-
-      // Access YouTube's internal page manager
-      const ytPageManager = (
-        document.querySelector("ytd-app") as any
-      )?.getPageManager()
-      if (ytPageManager) {
-        ytPageManager.navigate(url)
-      } else {
-        // Fallback: Dispatch a navigation event
-        window.dispatchEvent(new Event("yt-navigate"))
-      }
+      const url = `https://www.youtube.com/watch?v=${item.videoId}`
+      history.pushState({}, "", url)
+      window.dispatchEvent(new Event("popstate"))
     }
   }
 
@@ -574,85 +649,158 @@ function ScheduleItem({
         </div>
       </Dropdown>
       <Modal
-        title={`Edit Schedule for ${new Date(item.date).toLocaleDateString("en-US")}`}
+        title={
+          <div className="flex flex-col items-start px-2">
+            <div className="flex items-center gap-2">
+              <span className="text-[#ff0042] mr-2">
+                <YoutubeOutlined style={{ fontSize: "20px" }} />
+              </span>
+              <span>
+                {`Schedule Task for ${new Date(item.date).toLocaleDateString("en-US")}`}
+              </span>
+            </div>
+            <div className="w-full border-t border-zinc-700 my-2"></div>
+          </div>
+        }
+        closeIcon={<CloseOutlined />}
         zIndex={99999999999999999999999999999999}
         open={isEditModalVisible}
         onOk={handleUpdateTask}
         onCancel={() => setIsEditModalVisible(false)}
-        className="text-white modern-modal">
-        <Form form={form} layout="vertical">
-          <Form.Item
-            name="date"
-            initialValue={dayjs(item.date)}
-            label="Date"
-            rules={[{ required: true, message: "Please select a date" }]}>
-            <DatePicker
-              onChange={(date) => {
-                if (date) {
-                  item.date = date.format("YYYY-MM-DD") // Update current date state
-                }
-              }}
-            />
-          </Form.Item>
+        className="text-white modern-modal"
+        width={400}
+        footer={[
+          <Button key="cancel" onClick={() => setIsEditModalVisible(false)}>
+            Cancel
+          </Button>,
+          <Button key="schedule" type="primary" onClick={handleUpdateTask}>
+            Schedule
+          </Button>
+        ]}
+        getContainer={() =>
+          document
+            .getElementById("feed-strater-csui")
+            ?.shadowRoot?.querySelector("#plasmo-shadow-container")
+        }>
+        <Form form={form} layout="vertical" className="pt-4">
           <Form.Item
             name="title"
             initialValue={item.title}
             label="Task Title"
             rules={[{ required: true, message: "Please enter a task title" }]}>
-            <Input className="outline-none" placeholder="Enter task title" />
-          </Form.Item>
-          <Form.Item
-            name="time"
-            initialValue={dayjs(item.time, "HH:mm")}
-            label="Time"
-            rules={[{ required: true, message: "Please select a time" }]}>
-            <TimePicker
-              defaultValue={dayjs(item.time, "HH:mm")}
-              className="outline-none"
-              format="HH:mm"
+            <Input
+              className="rounded-lg"
+              prefix={
+                <YoutubeOutlined
+                  className="mr-2"
+                  style={{ color: "#ff0042" }}
+                />
+              }
+              placeholder="Enter task title"
             />
           </Form.Item>
-          <Form.Item
-            name="duration"
-            label="Duration (minutes)"
-            initialValue={item.duration.toString()}
-            rules={[{ required: true, message: "Please enter the duration" }]}>
-            <InputNumber
-              className="outline-none"
-              min={15}
-              max={240}
-              placeholder="Enter duration in minutes"
-            />
-          </Form.Item>
-          <Form.Item
-            name="status"
-            initialValue={item.status}
-            label="Status"
-            rules={[{ required: true, message: "Please select a status" }]}>
-            <Select className="outline-none" placeholder="Select status">
-              <Select.Option value="Upcoming">Upcoming</Select.Option>
-              <Select.Option value="In Progress">In Progress</Select.Option>
-              <Select.Option value="Completed">Completed</Select.Option>
-            </Select>
-          </Form.Item>
+          <div className="grid grid-cols-2 gap-4">
+            <Form.Item
+              name="date"
+              initialValue={dayjs(item.date)}
+              label="Date"
+              rules={[{ required: true, message: "Please select a date" }]}>
+              <DatePicker
+                getPopupContainer={() =>
+                  document
+                    .getElementById("feed-strater-csui")
+                    ?.shadowRoot?.querySelector("#plasmo-shadow-container")
+                }
+                onChange={(date) => {
+                  if (date) {
+                    item.date = date.format("YYYY-MM-DD") // Update current date state
+                  }
+                }}
+                suffixIcon={<CalendarOutlined />}
+                className="w-full rounded-lg"
+              />
+            </Form.Item>
+            <Form.Item
+              name="time"
+              initialValue={dayjs(item.time, "HH:mm")}
+              label="Time"
+              rules={[{ required: true, message: "Please select a time" }]}>
+              <TimePicker
+                defaultValue={dayjs(item.time, "HH:mm")}
+                getPopupContainer={() =>
+                  document
+                    .getElementById("feed-strater-csui")
+                    ?.shadowRoot?.querySelector("#plasmo-shadow-container")
+                }
+                className="w-full rounded-lg"
+                format="HH:mm"
+                suffixIcon={<ClockCircleOutlined />}
+              />
+            </Form.Item>
+            <Form.Item
+              name="duration"
+              label="Duration (minutes)"
+              initialValue={item.duration.toString()}
+              rules={[
+                { required: true, message: "Please enter the duration" }
+              ]}>
+              <InputNumber
+                className="w-full rounded-lg"
+                min={15}
+                max={240}
+                placeholder="Enter duration in minutes"
+              />
+            </Form.Item>
+            <Form.Item
+              name="status"
+              initialValue={item.status}
+              label="Status"
+              rules={[{ required: true, message: "Please select a status" }]}>
+              <Select
+                className="rounded-lg w-full"
+                placeholder="Select status"
+                getPopupContainer={() =>
+                  document
+                    .getElementById("feed-strater-csui")
+                    ?.shadowRoot?.querySelector("#plasmo-shadow-container")
+                }>
+                <Select.Option value="Upcoming">Upcoming</Select.Option>
+                <Select.Option value="In Progress">In Progress</Select.Option>
+                <Select.Option value="Completed">Completed</Select.Option>
+              </Select>
+            </Form.Item>
 
-          {/* New Form.Item for selecting a Tree Video */}
-          <Form.Item
-            name="video"
-            initialValue={item.video}
-            label="Tree Video"
-            rules={[{ required: true, message: "Please select a tree video" }]}>
-            <Select className="outline-none" placeholder="Select a tree video">
-              {treeVideos.map((video) => (
-                <Select.Option key={video.id} value={video.title}>
-                  <div className="flex items-center justify-between w-full">
-                    <span>{video.title}</span>
-                  </div>
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
+            {/* New Form.Item for selecting a Tree Video */}
+            <Form.Item
+              name="video"
+              initialValue={item.video}
+              label="Tree Video"
+              rules={[
+                { required: true, message: "Please select a tree video" }
+              ]}>
+              <Select
+                getPopupContainer={() =>
+                  document
+                    .getElementById("feed-strater-csui")
+                    ?.shadowRoot?.querySelector("#plasmo-shadow-container")
+                }
+                className="w-full rounded-lg"
+                placeholder="Select a tree video">
+                {treeVideos.map((video) => (
+                  <Select.Option key={video.id} value={video.title}>
+                    <div className="flex items-center justify-between w-full">
+                      <span>{video.title}</span>
+                    </div>
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </div>
         </Form>
+        <div className="flex items-center text-xl text-gray-400 mb-1">
+          <ClockCircleOutlined className="mr-2 text-2xl text-[#ff0042]/90" />
+          <span>You'll receive a notification when it's time to watch</span>
+        </div>
       </Modal>
       <Modal
         title="Delete Bookmark"

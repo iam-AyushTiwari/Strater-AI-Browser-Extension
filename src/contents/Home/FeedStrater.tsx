@@ -1,3 +1,4 @@
+import { StyleProvider } from "@ant-design/cssinjs"
 import NotesFolders from "components/feed/NotesFolder"
 import { TodaySchedule } from "components/feed/TodaySchedule"
 import Providers from "components/Providers"
@@ -27,11 +28,13 @@ export const getInlineAnchor: PlasmoGetInlineAnchor = async () => ({
   )[0],
   insertPosition: "afterend"
 })
+const HOST_ID = "feed-strater-csui"
 
-export const getShadowHostId: PlasmoGetShadowHostId = () => "feed-strater-csui"
+export const getShadowHostId: PlasmoGetShadowHostId = () => HOST_ID
 
 const FeedStrater = () => {
   useEffect(() => {
+    // Wait for the shadow host to be available
     const shadowRoot = document
       .querySelector("#feed-strater-csui")
       .shadowRoot.querySelector("#plasmo-shadow-container")
@@ -43,36 +46,39 @@ const FeedStrater = () => {
       console.log("shadowRoot not found")
     }
   }, [])
+
   return (
     <Providers>
-      <div
-        className="w-full p-8 bg-none text-white flex justify-center items-center mb-0"
-        style={{ height: "calc(100vh - 70px)" }}>
-        <div className="grid grid-cols-2 w-full marker:gap-8">
-          <div className="w-full p-4">
-            <TodaySchedule />
-          </div>
-          <div className="w-full p-40 text-white flex flex-col gap-4 justify-center items-center">
-            <h1 className=" text-4xl font-extrabold">Coming Soon..</h1>
-            <span className="text-zinc-700 text-2xl">
-              We're working nonstop to bring you an amazing experiences
-            </span>
-          </div>
-          <div className="w-full p-4">
-            {/* <NotesFolders /> */}
-            <h1 className=" text-4xl font-extrabold">Coming Soon..</h1>
-            <span className="text-zinc-700 text-2xl">
-              We're working nonstop to bring you an amazing experience
-            </span>
-          </div>
-          <div className="w-full p-40 text-white flex flex-col gap-4 justify-center items-center">
-            <h1 className=" text-4xl font-extrabold">Coming Soon..</h1>
-            <span className="text-zinc-700 text-2xl">
-              We're working nonstop to bring you an amazing experience
-            </span>
+      <StyleProvider container={document.getElementById(HOST_ID).shadowRoot}>
+        <div
+          className="w-full p-8 bg-none text-white flex justify-center items-center mb-0"
+          style={{ height: "calc(100vh - 70px)" }}>
+          <div className="grid grid-cols-2 w-full marker:gap-8">
+            <div className="w-full p-4">
+              <TodaySchedule />
+            </div>
+            <div className="w-full p-40 text-white flex flex-col gap-4 justify-center items-center">
+              <h1 className=" text-4xl font-extrabold">Coming Soon..</h1>
+              <span className="text-zinc-700 text-2xl">
+                We're working nonstop to bring you an amazing experiences
+              </span>
+            </div>
+            <div className="w-full p-4">
+              {/* <NotesFolders /> */}
+              <h1 className=" text-4xl font-extrabold">Coming Soon..</h1>
+              <span className="text-zinc-700 text-2xl">
+                We're working nonstop to bring you an amazing experience
+              </span>
+            </div>
+            <div className="w-full p-40 text-white flex flex-col gap-4 justify-center items-center">
+              <h1 className=" text-4xl font-extrabold">Coming Soon..</h1>
+              <span className="text-zinc-700 text-2xl">
+                We're working nonstop to bring you an amazing experience
+              </span>
+            </div>
           </div>
         </div>
-      </div>
+      </StyleProvider>
     </Providers>
   )
 }
