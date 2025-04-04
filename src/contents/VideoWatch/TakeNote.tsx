@@ -15,17 +15,23 @@ export const config: PlasmoCSConfig = {
   matches: ["https://www.youtube.com/*"]
 }
 
-export const getInlineAnchor: PlasmoGetInlineAnchor = async () => ({
-  element: document.querySelector("#secondary .ytd-watch-flexy"),
-  insertPosition: "beforebegin"
-})
-
 export const getStyle = () => {
+  const baseFontSize = 12
+  const remRegex = /([\d.]+)rem/g
   let updatedCssText = tailwindcss.replaceAll(":root", ":host(plasmo-csui)")
+  let newCssText = updatedCssText.replace(remRegex, (match, remValue) => {
+    const pixels = parseFloat(remValue) * baseFontSize
+    return `${pixels}px`
+  })
   const style = document.createElement("style")
-  style.textContent = antdResetCssText + updatedCssText
+  style.textContent = antdResetCssText + newCssText
   return style
 }
+
+export const getInlineAnchor: PlasmoGetInlineAnchor = async () => ({
+  element: document.querySelector("#secondary.style-scope.ytd-watch-flexy"),
+  insertPosition: "afterbegin"
+})
 
 const HOST_ID = "take-note-csui"
 
@@ -49,13 +55,11 @@ const TakeNote = () => {
   }, [])
 
   return (
-    <Providers>
-      <StyleProvider container={document.getElementById(HOST_ID).shadowRoot}>
-        <div className="w-full bg-neutral-900 border-2 border-zinc-800 rounded-xl text-white h-[600px] mb-2">
-          <NotesArea />
-        </div>
-      </StyleProvider>
-    </Providers>
+    <StyleProvider container={document.getElementById(HOST_ID).shadowRoot}>
+      <Providers>
+        <NotesArea />
+      </Providers>
+    </StyleProvider>
   )
 }
 

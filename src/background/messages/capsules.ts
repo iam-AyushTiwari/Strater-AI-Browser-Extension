@@ -7,6 +7,8 @@ const storage = new Storage();
 const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
   const { action, data } = req.body;
 
+  const token = await storage.get("token");
+
   const fetchCapsulesFromApi = async (): Promise<any[]> => {
     try {
       console.log("Background function is called for fetching capsules");
@@ -14,6 +16,7 @@ const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -36,6 +39,7 @@ const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(capsule),
       });
@@ -60,6 +64,7 @@ const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(capsule),
       });

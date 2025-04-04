@@ -20,6 +20,7 @@ const Root = () => {
   }, [user])
 
   useEffect(() => {
+    console.log("Let me fetch the user from the background")
     const fetchUser = async () => {
       const response = await sendToBackground({
         name: "fetch-user",

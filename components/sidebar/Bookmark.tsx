@@ -1,4 +1,5 @@
-import { Dropdown, Input, Menu, message, Modal } from "antd"
+import { Dropdown, Input, Menu, message, Modal, Skeleton } from "antd"
+import { LoaderCircle, Star } from "lucide-react"
 import React, { useEffect, useState } from "react"
 import { FaRegEye } from "react-icons/fa"
 import { MdDeleteOutline, MdDriveFileRenameOutline } from "react-icons/md"
@@ -110,7 +111,11 @@ const Bookmark = () => {
     <>
       <h1 className="text-3xl font-bold text-white mb-4">Bookmarks</h1>
       <div className="w-full flex flex-col justify-center items-center mt-4">
-        {bookmarks.length > 0 ? (
+        {loading ? (
+          <div className="flex items-center justify-center w-full">
+            <LoaderCircle className="w-6 h-6 text-white animate-spin" />
+          </div>
+        ) : bookmarks.length > 0 ? (
           Object.keys(bookmarksByVideoId).map((videoId) => (
             <BookmarkCard
               key={videoId}
@@ -126,9 +131,10 @@ const Bookmark = () => {
             />
           ))
         ) : (
-          <div className="flex items-center w-full rounded-lg overflow-hidden shadow-md bg-zinc-900 p-8 cursor-pointer">
-            <span className="text-xl text-gray-200 ml-4">
-              No bookmarks added yet.
+          <div className="flex flex-col items-center w-full rounded-lg overflow-hidden shadow-md bg-zinc-900 p-8 cursor-pointer">
+            <Star className="w-12 h-12 text-white/20" />
+            <span className="text-xl text-gray-200 mt-2">
+              You haven't added any bookmarks yet.
             </span>
           </div>
         )}
