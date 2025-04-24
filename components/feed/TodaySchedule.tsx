@@ -21,7 +21,7 @@ import {
   Select,
   TimePicker
 } from "antd"
-import type { BadgeProps, CalendarProps, DatePickerProps } from "antd"
+import type { BadgeProps, CalendarProps, DatePickerProps, MenuProps } from "antd"
 import type { Dayjs } from "dayjs"
 import dayjs from "dayjs"
 import duration from "dayjs/plugin/duration"
@@ -31,6 +31,7 @@ import { FaRegEye } from "react-icons/fa6"
 import { MdDeleteOutline, MdDriveFileRenameOutline } from "react-icons/md"
 import { RiLoader3Line } from "react-icons/ri"
 import { v4 as uuidv4 } from "uuid"
+import { CiMenuKebab } from "react-icons/ci"
 
 import { sendToBackground } from "@plasmohq/messaging"
 
@@ -219,8 +220,8 @@ export function TodaySchedule() {
             key={task.id}
             status={statusColorMap[task.status]}
             text={
-              <span className="text-primary text-sm">
-                {task.time} - {task.title}
+              <span className="text-zinc-900 text-lg font-normal">
+                {task.time} - {task.title}  
               </span>
             }
             className="block"
@@ -237,7 +238,7 @@ export function TodaySchedule() {
 
   return (
     <Card title="Today Schedule">
-      <div className="space-y-6 p-4 backdrop-blur-lg bg-gradient-to-br from-[#1a1a1a] to-[#2d2d2d]">
+      <div className="space-y-6 p-4 backdrop-blur-lg bg-gradient-to-br rounded-xl from-[#1a1a1a] to-[#2d2d2d]">
         {/* Date Navigation */}
         <div className="flex items-center justify-between">
           <button
@@ -312,7 +313,7 @@ export function TodaySchedule() {
         <div className="flex gap-4">
           <button
             onClick={() => setIsScheduleModalOpen(true)}
-            className="w-full py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-xl transition-all shadow-lg text-2xl">
+            className="w-full py-3 bg-gradient-to-r from-[#ff0042]/95 to-[#ff0042]/90 hover:from-rose-500 hover:to-rose-600 text-white rounded-xl transition-all shadow-lg text-2xl">
             Create Schedule
           </button>
           <button
@@ -339,7 +340,7 @@ export function TodaySchedule() {
           }
           closeIcon={<CloseOutlined />}
           mask={true}
-          zIndex={99999999999999999999999999999999}
+          zIndex={999999}
           open={isScheduleModalOpen}
           onOk={handleAddTask}
           onCancel={() => setIsScheduleModalOpen(false)}
@@ -458,6 +459,7 @@ export function TodaySchedule() {
         {/* Calendar View Modal */}
         <Modal
           title="Schedule Calendar"
+          zIndex={999999}
           open={calendarModalOpen}
           onCancel={() => setCalendarModalOpen(false)}
           footer={null}
@@ -480,7 +482,7 @@ export function TodaySchedule() {
         <Modal
           title="Select Date"
           open={clikedOnDate}
-          zIndex={99999999999999999999999999999999}
+          zIndex={999999}
           className="text-white modern-modal"
           onCancel={() => setClickedOnDate(false)}
           footer={null}
@@ -603,6 +605,11 @@ function ScheduleItem({
     "In Progress": "bg-blue-500/20 text-blue-400",
     Completed: "bg-emerald-500/20 text-emerald-400"
   }
+
+  const handleMenuButton= (e: React.MouseEvent<HTMLButtonElement>) => {
+    console.log('menu icon clicked')
+  }
+  
   const menu = (
     <Menu>
       <Menu.Item key="1" icon={<FaRegEye />} onClick={openVideo}>
@@ -624,11 +631,10 @@ function ScheduleItem({
       </Menu.Item>
     </Menu>
   )
-
+  
   return (
     <>
-      <Dropdown overlay={menu} trigger={["contextMenu"]}>
-        <div className="group flex items-center p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors cursor-grab active:cursor-grabbing">
+        <div className="group flex items-center p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
           <div className="w-20 flex-shrink-0">
             <span className="text-xl font-medium text-white/60">
               {item.time}
@@ -646,8 +652,12 @@ function ScheduleItem({
             className={`px-4 py-2 rounded-full text-xl ${statusColors[item.status as keyof typeof statusColors]}`}>
             {item.status}
           </div>
+          <div className="text-3xl text-white/90 px-2">
+          <Dropdown overlay={menu} trigger={["hover"]}>
+          <CiMenuKebab className="cursor-pointer" />
+        </Dropdown>
+          </div>
         </div>
-      </Dropdown>
       <Modal
         title={
           <div className="flex flex-col items-start px-2">
@@ -663,7 +673,7 @@ function ScheduleItem({
           </div>
         }
         closeIcon={<CloseOutlined />}
-        zIndex={99999999999999999999999999999999}
+        zIndex={999999}
         open={isEditModalVisible}
         onOk={handleUpdateTask}
         onCancel={() => setIsEditModalVisible(false)}
@@ -771,7 +781,7 @@ function ScheduleItem({
             </Form.Item>
 
             {/* New Form.Item for selecting a Tree Video */}
-            <Form.Item
+           {!item.videoId && (<Form.Item
               name="video"
               initialValue={item.video}
               label="Tree Video"
@@ -795,6 +805,7 @@ function ScheduleItem({
                 ))}
               </Select>
             </Form.Item>
+           )}
           </div>
         </Form>
         <div className="flex items-center text-xl text-gray-400 mb-1">
@@ -804,10 +815,15 @@ function ScheduleItem({
       </Modal>
       <Modal
         title="Delete Bookmark"
-        zIndex={99999999999999999999999999999999}
+        zIndex={999999}
         visible={isDeleteModalVisible}
         onOk={handleDelete}
-        onCancel={() => setIsDeleteModalVisible(false)}>
+        onCancel={() => setIsDeleteModalVisible(false)}
+        getContainer={() =>
+          document
+            .getElementById("feed-strater-csui")
+            ?.shadowRoot?.querySelector("#plasmo-shadow-container")
+        }>
         <p>Are you sure you want to delete this Schedule?</p>
       </Modal>
     </>

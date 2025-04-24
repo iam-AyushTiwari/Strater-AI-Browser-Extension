@@ -44,10 +44,15 @@ export const ThemeProvider = ({ children = null as ReactNode }) => (
         Message: {
           zIndexPopup: 100000000000000020000,
           contentBg: "#282828",
-          colorText: "#ffffff"
+          colorText: "#ffffff",
+          fontSizeLG: 18,
+          colorSuccess: "rgb(255,0,66)",
+          contentPadding: "12px 16px",
+          fontSize: 14
         },
         Calendar: {
           // itemActiveBg: "#e6f4ff"
+          itemActiveBg: "#f9eaee"
         },
         Input: {
           // activeBg	: "#FF4071"

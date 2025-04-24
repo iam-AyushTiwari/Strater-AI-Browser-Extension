@@ -178,7 +178,7 @@ const WatchVideoButtons = () => {
             </div>
           }
           closeIcon={<CloseOutlined />}
-          zIndex={9999999999999999999999999999999999999}
+          zIndex={999999999999}
           open={isScheduleModalOpen}
           onOk={setSchedule}
           onCancel={() => setIsScheduleModalOpen(false)}
@@ -191,7 +191,12 @@ const WatchVideoButtons = () => {
             <Button key="schedule" type="primary" onClick={setSchedule}>
               Schedule
             </Button>
-          ]}>
+          ]}
+          getContainer={() =>
+            document
+              .getElementById("take-note-csui")
+              ?.shadowRoot?.querySelector("#plasmo-shadow-container")
+          }>
           <Form form={form} layout="vertical" className="pt-4">
             <Form.Item
               name="title"

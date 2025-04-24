@@ -2,7 +2,7 @@ import React from "react"
 
 const AccountCard = () => {
   return (
-    <div className="bg-zinc-900 rounded-2xl p-8 w-[85%] mx-auto shadow-2xl shadow-black/40">
+    <div className="bg-zinc-900 rounded-2xl p-8 w-[95%] mx-auto shadow-2xl shadow-black/40">
       <div className="flex items-center gap-4 mb-8">
         <div className="relative">
           <div className="w-20 h-20 bg-gradient-to-br from-[#FF0042] to-purple-600 rounded-2xl flex items-center justify-center">

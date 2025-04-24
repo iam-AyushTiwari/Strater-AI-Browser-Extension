@@ -1,6 +1,7 @@
 import { Dropdown, Input, Menu, message, Modal, Skeleton } from "antd"
 import { LoaderCircle, Star } from "lucide-react"
 import React, { useEffect, useState } from "react"
+import { CiMenuKebab } from "react-icons/ci"
 import { FaRegEye } from "react-icons/fa"
 import { MdDeleteOutline, MdDriveFileRenameOutline } from "react-icons/md"
 
@@ -201,6 +202,8 @@ const BookmarkCard = ({
         onClick={() => {
           setIsDeleteModalVisible(true)
           setCurrentBookmark(bookmark)
+          setIsDeleteModalVisible(true)
+          setCurrentBookmark(bookmark)
         }}>
         Remove
       </Menu.Item>
@@ -209,7 +212,7 @@ const BookmarkCard = ({
 
   return (
     <>
-      <div className="group w-full  mb-3">
+      <div className="group w-full">
         {/* Video Title Header */}
         <div
           className="flex items-center justify-between w-full p-4 bg-gradient-to-r from-zinc-800 to-zinc-700 rounded-t-lg shadow-lg cursor-pointer hover:shadow-xl transition-all duration-300 gap-2"
