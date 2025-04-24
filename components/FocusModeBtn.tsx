@@ -15,13 +15,18 @@ const FocusModeBtn = () => {
   useEffect(() => {
     console.log("Toggled Focus Mode")
   }, [isFocusMode])
+
+  const reload = () => {
+    window.location.reload()
+  }
+
   return (
     <div className="flex justify-center items-center">
       <Switch
         checkedChildren="Focused"
         unCheckedChildren="Focus Mode"
         checked={isFocusMode}
-        onChange={toggleFocusMode}
+        onChange={() => { toggleFocusMode(); reload(); }}
       />
     </div>
   )

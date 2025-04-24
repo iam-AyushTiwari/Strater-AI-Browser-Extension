@@ -1,5 +1,6 @@
 import { Dropdown, Input, Menu, message, Modal } from "antd"
 import React, { useEffect, useState } from "react"
+import { CiMenuKebab } from "react-icons/ci"
 import { FaRegEye } from "react-icons/fa"
 import { MdDeleteOutline, MdDriveFileRenameOutline } from "react-icons/md"
 
@@ -19,7 +20,7 @@ interface BookmarkData {
 
 const Bookmark = () => {
   const [bookmarks, setBookmarks] = useState<BookmarkData[]>([])
-  const [expandedCard, setExpandedCard] = useState<string | null>(null); // State to track the expanded card
+  const [expandedCard, setExpandedCard] = useState<string | null>(null) // State to track the expanded card
 
   useEffect(() => {
     const fetchBookmarks = async () => {
@@ -95,24 +96,27 @@ const Bookmark = () => {
     }
   }
 
-const bookmarksByVideoId = {};
-bookmarks.forEach(bookmark => {
-  if (!bookmarksByVideoId[bookmark.videoId]) {
-    bookmarksByVideoId[bookmark.videoId] = [];
-  }
-  bookmarksByVideoId[bookmark.videoId].push(bookmark);
-});
+  const bookmarksByVideoId = {}
+  bookmarks.forEach((bookmark) => {
+    if (!bookmarksByVideoId[bookmark.videoId]) {
+      bookmarksByVideoId[bookmark.videoId] = []
+    }
+    bookmarksByVideoId[bookmark.videoId].push(bookmark)
+  })
 
   return (
     <>
       <h1 className="text-3xl font-bold text-white mb-4">Bookmarks</h1>
-      <div className="w-full flex flex-col justify-center items-center mt-4">
+      <div className="flex items-center justify-center w-full h-full">
+      <div className="w-full flex flex-col justify-center items-center gap-2 ">
         {bookmarks.length > 0 ? (
-          Object.keys(bookmarksByVideoId).map(videoId => (
+          Object.keys(bookmarksByVideoId).map((videoId) => (
             <BookmarkCard
               key={videoId}
               videoId={videoId}
-              videoTitle={bookmarksByVideoId[videoId][0].videoTitle || "Untitled Video"}
+              videoTitle={
+                bookmarksByVideoId[videoId][0].videoTitle || "Untitled Video"
+              }
               bookmarks={bookmarksByVideoId[videoId]}
               isExpanded={expandedCard === videoId}
               setExpandedCard={setExpandedCard}
@@ -128,6 +132,7 @@ bookmarks.forEach(bookmark => {
           </div>
         )}
       </div>
+      </div>
     </>
   )
 }
@@ -139,8 +144,7 @@ const BookmarkCard = ({
   updateBookmark,
   deleteBookmark,
   isExpanded,
-  setExpandedCard,
-
+  setExpandedCard
 }) => {
   const [isEditModalVisible, setIsEditModalVisible] = useState(false)
   const [currentBookmark, setCurrentBookmark] = useState(null)
@@ -169,25 +173,28 @@ const BookmarkCard = ({
 
   const getBookmarkMenu = (bookmark) => (
     <Menu>
-      <Menu.Item key="1" icon={<FaRegEye />} onClick={() => openVideo(bookmark.time)}>
+      <Menu.Item
+        key="1"
+        icon={<FaRegEye />}
+        onClick={() => openVideo(bookmark.time)}>
         View
       </Menu.Item>
       <Menu.Item
         key="2"
-        icon={<MdDriveFileRenameOutline/>}
+        icon={<MdDriveFileRenameOutline />}
         onClick={() => {
-          setEditedName(bookmark.name);
-          setCurrentBookmark(bookmark);
-          setIsEditModalVisible(true);
+          setEditedName(bookmark.name)
+          setCurrentBookmark(bookmark)
+          setIsEditModalVisible(true)
         }}>
         Edit
-      </Menu.Item> 
+      </Menu.Item>
       <Menu.Item
         key="3"
         icon={<MdDeleteOutline />}
         onClick={() => {
-          setIsDeleteModalVisible(true);
-          setCurrentBookmark(bookmark);
+          setIsDeleteModalVisible(true)
+          setCurrentBookmark(bookmark)
         }}>
         Remove
       </Menu.Item>
@@ -196,12 +203,18 @@ const BookmarkCard = ({
 
   return (
     <>
-      <div className="group w-full  mb-3">
+      <div className="group w-full">
         {/* Video Title Header */}
-        <div className="flex items-center justify-between w-full p-4 bg-gradient-to-r from-zinc-800 to-zinc-700 rounded-t-lg shadow-lg cursor-pointer hover:shadow-xl transition-all duration-300 gap-2" onClick={() => setExpandedCard(isExpanded ? null : videoId)}>
-          <h3 className="font-bold text-white">{videoTitle.length > 20 ? `${videoTitle.substring(0, 20)}...` : videoTitle}</h3>
+        <div
+          className="flex items-center justify-between w-full p-4 bg-gradient-to-r from-zinc-800 to-zinc-700 rounded-t-lg shadow-lg cursor-pointer hover:shadow-xl transition-all duration-300 gap-2"
+          onClick={() => setExpandedCard(isExpanded ? null : videoId)}>
+          <h3 className="font-bold text-white">
+            {videoTitle.length > 20
+              ? `${videoTitle.substring(0, 20)}...`
+              : videoTitle}
+          </h3>
           <svg
-            className={`w-6 h-6 text-white transform transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+            className={`w-6 h-6 text-white transform transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`}
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor">
@@ -215,28 +228,30 @@ const BookmarkCard = ({
         </div>
 
         {/* Bookmarks Dropdown Content */}
-        { isExpanded &&
-        <div className="max-h-96 overflow-y-auto bg-zinc-800/90 rounded-b-lg border border-zinc-700 shadow-lg">
-          {bookmarks.map((bookmark) => (
-            <Dropdown 
-              key={bookmark.id} 
-              overlay={getBookmarkMenu(bookmark)} 
-              trigger={["contextMenu"]}
-            >
-              <div
-                className="flex items-center justify-between w-full p-4 border-t border-zinc-800 hover:bg-zinc-800/50 transition-all duration-300 cursor-pointer"
-              >
+        {isExpanded && (
+          <div className="max-h-96 overflow-y-auto bg-zinc-800/90 rounded-b-lg border border-zinc-700 shadow-lg">
+            {bookmarks.map((bookmark) => (
+              <div className="flex items-center justify-between w-full p-4 border-t border-zinc-800 hover:bg-zinc-800/50 transition-all duration-300 cursor-pointer">
                 <span className="text-white font-medium truncate">
                   {bookmark.name}
                 </span>
-                <span className="font-medium text-white bg-[#ff0042] rounded-full px-3 py-1 text-sm shadow-sm">
-                  {formatTime(bookmark.time)}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="font-medium text-white bg-[#ff0042] rounded-full px-3 py-1 text-sm shadow-sm">
+                    {formatTime(bookmark.time)}
+                  </span>
+                  <Dropdown
+                    key={bookmark.id}
+                    overlay={getBookmarkMenu(bookmark)}
+                    trigger={["hover"]}>
+                    <span>
+                      <CiMenuKebab className="text-2xl cursor-pointer" />
+                    </span>
+                  </Dropdown>
+                </div>
               </div>
-            </Dropdown>
-          ))}
-        </div>
-}
+            ))}
+          </div>
+        )}
       </div>
 
       <Modal
@@ -261,6 +276,5 @@ const BookmarkCard = ({
     </>
   )
 }
-
 
 export default Bookmark

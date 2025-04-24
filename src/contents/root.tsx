@@ -4,6 +4,7 @@ export const config: PlasmoCSConfig = {
   matches: ["https://www.youtube.com/*"]
 }
 
+
 function setupNodeToggle(dropdownTrigger: Element, nodeSwitcher: HTMLElement) {
   dropdownTrigger.addEventListener("click", () => {
     if (nodeSwitcher.classList.contains("ant-tree-switcher_close")) {
@@ -77,3 +78,5 @@ documentObserver.observe(document.body, {
 
 // Initial check for the main document
 checkAndSetupElements(document)
+
+

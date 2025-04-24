@@ -8,19 +8,37 @@ const storage = new Storage()
 
 export const RootStateProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false)
-  const [isFocusMode, setIsFocusMode] = useState(true)
+  const [isFocusMode, setIsFocusMode] = useState(false)
+  const [isShortsDisabled, setIsShortsDisabled] = useState(false)
+  const [isVideoRecommendationsDisabled, setIsVideoRecommendationsDisabled] = useState(false)
+  const [isCommentDisabled,setIsCommentDisabled] = useState(false)
   const [theme, setTheme] = useState("light")
 
   useEffect(() => {
-    const fetchFocusMode = async () => {
-      const storedFocusMode = await storage.get("isFocusMode")
-      if (storedFocusMode) {
-        await setIsFocusMode(storedFocusMode)
-      } else {
-        setIsFocusMode(false)
+    const fetchSettings = async () => {
+      try {
+        const [
+          focusMode,
+          shortsDisabled,
+          videoRecDisabled,
+          commentDisabled
+        ] = await Promise.all([
+          storage.get("isFocusMode"),
+          storage.get("isShortsDisabled"),
+          storage.get("isVideoRecommendationsDisabled"),
+          storage.get("isCommentDisabled")
+        ])
+
+        setIsFocusMode(focusMode ?? false)
+        setIsShortsDisabled(shortsDisabled ?? false)
+        setIsVideoRecommendationsDisabled(videoRecDisabled ?? false)
+        setIsCommentDisabled(commentDisabled ?? false)
+      } catch (error) {
+        console.error("Error loading settings:", error)
       }
+      
     }
-    fetchFocusMode()
+    fetchSettings()
   }, [])
 
   toggleLoading = () => {
@@ -31,8 +49,30 @@ export const RootStateProvider = ({ children }) => {
     const newFocusMode = !isFocusMode
     setIsFocusMode(newFocusMode)
     await storage.set("isFocusMode", newFocusMode)
-    window.location.reload() // Reload to reflect changes
+    // window.location.reload() // Reload to reflect changes
   }
+
+  const toggleShortsDisabled = async () => {
+    const newShortsDisabled = !isShortsDisabled
+    setIsShortsDisabled(newShortsDisabled)
+    await storage.set("isShortsDisabled", newShortsDisabled)
+    // window.location.reload() // Reload to reflect changes
+  }
+
+  const toggleVideoRecommendationsDisabled = async () => {
+    const newVideoRecommendationsDisabled = !isVideoRecommendationsDisabled
+    setIsVideoRecommendationsDisabled(newVideoRecommendationsDisabled)
+    await storage.set("isVideoRecommendationsDisabled", newVideoRecommendationsDisabled)
+    // window.location.reload() // Reload to reflect changes
+  }
+  const toggleCommentDisabled = async () => {
+    const newCommentDisabled = !isCommentDisabled
+    setIsCommentDisabled(newCommentDisabled)
+    await storage.set("isCommentDisabled", newCommentDisabled)
+    // window.location.reload() // Reload to reflect changes
+  }
+
+  
 
   toggleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light")
@@ -43,9 +83,15 @@ export const RootStateProvider = ({ children }) => {
       value={{
         isLoading,
         isFocusMode,
+        isShortsDisabled,
+        isVideoRecommendationsDisabled,
+        isCommentDisabled,
         theme,
         toggleLoading,
         toggleFocusMode,
+        toggleShortsDisabled,
+        toggleVideoRecommendationsDisabled,
+        toggleCommentDisabled,
         toggleTheme
       }}>
       {children}

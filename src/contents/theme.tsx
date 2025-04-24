@@ -44,37 +44,39 @@ export const ThemeProvider = ({ children = null as ReactNode }) => (
         Message: {
           zIndexPopup: 100000000000000020000,
           contentBg: "#282828",
-          colorText: "#ffffff"
+          colorText: "#ffffff",
+          fontSizeLG: 18,
+          colorSuccess: "rgb(255,0,66)",
+          contentPadding: "12px 16px",
+          fontSize: 14
         },
-        Calendar : {
+        Calendar: {
           // itemActiveBg: "#e6f4ff"
+          itemActiveBg: "#f9eaee"
         },
-        Input : {
+        Input: {
           // activeBg	: "#FF4071"
           // activeBorderColor : "#000000"
-          activeShadow:"#282828"
+          activeShadow: "#282828"
         },
-        InputNumber :{
+        InputNumber: {
           // activeBg	: "#FF4071"
-          activeShadow:"#282828"
+          activeShadow: "#282828"
         },
-        DatePicker :{
+        DatePicker: {
           // activeBg	: "#FF4071"
-          activeShadow:"#282828",
+          activeShadow: "#282828"
         },
-        Select : {
-          activeOutlineColor:"#282828",
-          optionSelectedBg:"rgba(0,0,0,0.06)",
-          optionActiveBg:"rgba(0,0,0,0.06)",
-          multipleItemBg:"#282828",
+        Select: {
+          activeOutlineColor: "#282828",
+          optionSelectedBg: "rgba(0,0,0,0.06)",
+          optionActiveBg: "rgba(0,0,0,0.06)",
+          multipleItemBg: "#282828",
           borderRadius: 4
-          
         },
         Form: {
-       labelRequiredMarkColor: "#ff0042"
-    }
-        
-
+          labelRequiredMarkColor: "#ff0042"
+        }
       }
     }}>
     {children}
