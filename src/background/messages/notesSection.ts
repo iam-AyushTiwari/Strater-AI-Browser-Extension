@@ -1,6 +1,6 @@
 import type { PlasmoMessaging } from "@plasmohq/messaging";
 import { Storage } from "@plasmohq/storage";
-import { API_ENDPOINT, API_ROUTES } from "~constants";
+import { API_ENDPOINT, API_ROUTES, SUMMARY_TYPE } from "~constants";
 
 const storage = new Storage();
 
@@ -21,9 +21,13 @@ const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
                     return;
                 }
 
-                const summaryResponse = await fetch(API_ROUTES.FETCH_SUMMARY, {
+                const summaryResponse = await fetch(API_ROUTES.STRATER_AI, {
                     method: "POST",
-                    body: JSON.stringify({ videoID }),
+                    body: JSON.stringify({
+                        "prompt" : SUMMARY_TYPE.DETAILED_SUMMARY,
+                        "action" : "null",
+                        "videoID": videoID
+                    }),
                     headers: {
                         "Content-Type": "application/json",
                     },
@@ -36,10 +40,10 @@ const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
                 const summary = await summaryResponse.json();
                 console.log("Summary fetched from API for videoID:", videoID);
 
-                await storage.setItem(videoID, summary);
+                await storage.setItem(videoID, summary.data);
                 console.log("Summary stored in storage for videoID:", videoID);
 
-                res.send({ success: true, data: summary });
+                res.send({ success: true, data: summary.data });
             } catch (error) {
                 console.error("Error in getting notes for videoID:", videoID, error);
                 res.send({ success: false, error: (error as Error).message });

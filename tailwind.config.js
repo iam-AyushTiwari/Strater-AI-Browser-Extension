@@ -7,7 +7,8 @@ module.exports = {
     "./components/**/*.{ts,tsx}",
     "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}",
-    "./**/*.tsx"
+    "./**/*.tsx",
+    "!./node_modules/**/*"
   ],
   theme: {
     extend: {

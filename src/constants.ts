@@ -15,7 +15,8 @@ export const API_ROUTES = {
     UPDATE_CAPSULE: `${endPoint}/Capsules/update_capsule`,
     DELETE_CAPSULE: `${endPoint}/Capsules/delete_capsule`,
     FETCH_ALLCASPULEVIDEOS : `${endPoint}/VideoContent/fetch_video`,
-    FETCH_SUMMARY: `${endPoint}/video_summary`
+    FETCH_SUMMARY: `${endPoint}/video_summary`, 
+    STRATER_AI: `${endPoint}/Strater_AI`,
   };
   
   export const DEFAULT_VALUES = {
@@ -24,4 +25,10 @@ export const API_ROUTES = {
     NOTES: [],
     SCHEDULES: [],
   };
+
+
+export const SUMMARY_TYPE = {
+  CONSISE_SUMMARY: "consise_summary_promt",
+  DETAILED_SUMMARY: "detailed_summary_promt",
+ }
   
