@@ -48,10 +48,10 @@ const ContentScript = () => {
       )
       let shortButton
       if (isShortsDisabled) {
-       shortButton =
-          (document.querySelector("#sections").firstChild as HTMLElement).lastElementChild
-            .childNodes[1]
-           ;(shortButton as HTMLElement).style.display = 'none';
+        shortButton = (
+          document.querySelector("#sections").firstChild as HTMLElement
+        ).lastElementChild.childNodes[1]
+        ;(shortButton as HTMLElement).style.display = "none"
       }
       console.log(
         "storage *****: ",
@@ -71,10 +71,18 @@ const ContentScript = () => {
 
     //watch storage change
     storage.watch({
-      isFocusMode: () => {reload()},
-      isShortsDisabled: () => {reload()},
-      isVideoRecommendationsDisabled: () => {reload()},
-      isCommentDisabled: () => {reload()},
+      isFocusMode: () => {
+        reload()
+      },
+      isShortsDisabled: () => {
+        reload()
+      },
+      isVideoRecommendationsDisabled: () => {
+        reload()
+      },
+      isCommentDisabled: () => {
+        reload()
+      }
     })
 
     fetchFocusMode()

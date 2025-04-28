@@ -41,6 +41,9 @@ const BookmarkPopover = ({ onAddBookmark }) => {
   }
 
   const handleInputKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleAddBookmark()
+    }
     e.stopPropagation()
   }
 
@@ -58,6 +61,7 @@ const BookmarkPopover = ({ onAddBookmark }) => {
         value={bookmarkName}
         onChange={(e) => setBookmarkName(e.target.value)}
         onKeyDown={handleInputKeyDown}
+        onKeyUp={(event) => event.stopPropagation()}
       />
       <Button type="primary" block onClick={handleAddBookmark}>
         Add to Bookmark
