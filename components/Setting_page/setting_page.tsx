@@ -21,15 +21,18 @@ export const SettingPage = () => {
     isShortsDisabled,
     isVideoRecommendationsDisabled,
     isCommentDisabled,
+    notify,
     toggleShortsDisabled,
     toggleVideoRecommendationsDisabled,
-    toggleCommentDisabled
+    toggleCommentDisabled,
+    toggleNotification
   } = useRootContext()
 
   const [isFocused, setIsFocused] = React.useState(isFocusMode)
     const [isShorts, setIsShorts] = React.useState(isShortsDisabled)
     const [isVideoRecommendations, setIsVideoRecommendations] = React.useState(isVideoRecommendationsDisabled)
     const [isComment, setIsComment] = React.useState(isCommentDisabled)
+    const [isNotification, setIsNotification] = React.useState(notify)
     const [messageApi, contextHolder] = message.useMessage()
 
     React.useEffect(() => {
@@ -37,7 +40,8 @@ export const SettingPage = () => {
       setIsShorts(isShortsDisabled)
       setIsVideoRecommendations(isVideoRecommendationsDisabled)
       setIsComment(isCommentDisabled)
-    }, [isFocusMode, isShortsDisabled, isVideoRecommendationsDisabled, isCommentDisabled])
+      setIsNotification(notify)
+    }, [isFocusMode, isShortsDisabled, isVideoRecommendationsDisabled, isCommentDisabled, notify])
     const handleSave = () => {
         // Save the settings to storage or perform any other action
         console.log("Settings saved:", {
@@ -58,7 +62,31 @@ export const SettingPage = () => {
         if (isComment !== isCommentDisabled) {
             toggleCommentDisabled()
         }
-    }
+        if (isNotification !== notify) {
+          if ("Notification" in window) {
+            if (Notification.permission === "default" && isNotification) {
+              Notification.requestPermission()
+                .then((permission) => {
+                  if (permission === "granted") {
+                    console.log("User accepted notifications.");
+                    toggleNotification();
+                  } else if (permission === "denied") {
+                    console.log("User denied notifications.");
+                  }
+                })
+                .catch((error) => {
+                  console.error("Error requesting notification permission:", error);
+                });
+            } else if (Notification.permission === "granted") {
+              console.log("Notifications are already enabled.");
+            } else {
+              console.log("Notifications are disabled.");
+            }
+          } else {
+            console.error("Notifications are not supported in this browser.");
+          }
+        }
+          }
     const setConsole = () => {
         console.log("Settings saved:", {
             isFocusMode,
@@ -139,8 +167,8 @@ export const SettingPage = () => {
               icon={<Bell className="w-5 h-5 text-green-500" />}
               title="Enable Browser Notifications"
               description="Enable browser notifications for schedule pings"
-              checked={false}
-              onToggle={() => {}}
+              checked={isNotification}
+              onToggle={() => {setIsNotification(!isNotification);}}
             />
           </div>
 
