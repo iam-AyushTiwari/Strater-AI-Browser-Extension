@@ -17,6 +17,9 @@ export const API_ROUTES = {
     FETCH_ALLCASPULEVIDEOS : `${endPoint}/VideoContent/fetch_video`,
     FETCH_SUMMARY: `${endPoint}/video_summary`, 
     STRATER_AI: `${endPoint}/Strater_AI/agent_call`,
+
+    // for user contents constants
+    NOTES: `${endPoint}/user_content/notes`
   };
   
   export const DEFAULT_VALUES = {
