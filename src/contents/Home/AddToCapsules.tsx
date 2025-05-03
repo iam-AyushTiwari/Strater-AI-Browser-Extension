@@ -42,13 +42,14 @@ import { sendToBackground } from "@plasmohq/messaging"
 import { EXTENSION_ID } from "~constants"
 
 interface ScheduleItem {
-  id: string
+  _id: string
   title: string
   time: string
   duration: number
   status: string
   date: string
   videoId: string
+  isCompleted: boolean
 }
 
 // dayjs.extend(duration)
@@ -88,6 +89,7 @@ const Main = () => {
   const [form] = Form.useForm()
   const [videoTitle, setVideoTitle] = useState<string>("")
   const [videoId, setVideoId] = useState<string>("")
+  const [isModalLoading, setIsModalLoading] = useState<boolean>(false)
 
   const handlePlusClick = (event: React.MouseEvent<HTMLElement>) => {
     const targetElement = event.target as HTMLElement
@@ -174,6 +176,7 @@ const Main = () => {
       if (!scheduleItems) return
 
       try {
+        setIsModalLoading(true)
         const response = await sendToBackground({
           name: "schedule",
           body: {
@@ -185,6 +188,7 @@ const Main = () => {
         if (response.success) {
           console.log(
             "schedule added successfully with scheduleItems",
+            response.data,
             scheduleItems
           )
         } else {
@@ -195,6 +199,8 @@ const Main = () => {
         }
       } catch (error: any) {
         console.log("error:", error)
+      } finally {
+        setIsModalLoading(false)
       }
     }
     addTask()
@@ -213,7 +219,6 @@ const Main = () => {
         return
       }
       const newScheduleItem: ScheduleItem = {
-        id: uuidv4(),
         ...values,
         videoId: videoId,
         time: values.time.format("HH:mm"),
@@ -317,6 +322,7 @@ const Main = () => {
             }
             closeIcon={<CloseOutlined />}
             zIndex={999999}
+            confirmLoading={isModalLoading}
             getContainer={() =>
               document
                 .getElementById("add-to-button-csui")
@@ -324,19 +330,10 @@ const Main = () => {
             }
             open={isScheduleModalOpen}
             onOk={setSchedule}
+            okText="Schedule"
             onCancel={() => setIsScheduleModalOpen(false)}
             className="text-white modern-modal"
-            width={400}
-            footer={[
-              <Button
-                key="cancel"
-                onClick={() => setIsScheduleModalOpen(false)}>
-                Cancel
-              </Button>,
-              <Button key="schedule" type="primary" onClick={setSchedule}>
-                Schedule
-              </Button>
-            ]}>
+            width={400}>
             <Form form={form} layout="vertical" className="pt-4">
               <Form.Item
                 name="title"

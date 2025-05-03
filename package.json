@@ -51,7 +51,18 @@
     ],
     "permissions": [
       "tabs",
-      "cookies"
+      "notifications"
+    ],
+    "web_accessible_resources": [
+      {
+        "matches": [
+          "https://www.youtube.com/*"
+        ],
+        "resources": [
+          "assets/icon.png",
+          "assets/background.jpg"
+        ]
+      }
     ]
   }
 }

@@ -19,7 +19,14 @@ export const API_ROUTES = {
     STRATER_AI: `${endPoint}/Strater_AI/agent_call`,
 
     // for user contents constants
-    NOTES: `${endPoint}/user_content/notes`
+    NOTES: `${endPoint}/user_content/notes`,
+
+    // schedules
+    CREATE_SCHEDULE: `${endPoint}/Schedule/create_schedule`,
+    FETCH_SCHEDULE: `${endPoint}/Schedule/fetch_schedule`,
+    DELETE_SCHEDULE: `${endPoint}/Schedule/delete_schedule`,
+    UPDATE_SCHEDULE: `${endPoint}/Schedule/update_schedule`,
+    FETCH_VIDEOS: `${endPoint}/VideoContent/fetch_video`,
   };
   
   export const DEFAULT_VALUES = {

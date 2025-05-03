@@ -12,6 +12,7 @@ export const RootStateProvider = ({ children }) => {
   const [isShortsDisabled, setIsShortsDisabled] = useState(false)
   const [isVideoRecommendationsDisabled, setIsVideoRecommendationsDisabled] = useState(false)
   const [isCommentDisabled,setIsCommentDisabled] = useState(false)
+  const [notify,setNotify] = useState(false)
   const [theme, setTheme] = useState("light")
 
   useEffect(() => {
@@ -21,18 +22,22 @@ export const RootStateProvider = ({ children }) => {
           focusMode,
           shortsDisabled,
           videoRecDisabled,
-          commentDisabled
+          commentDisabled,
+          notification
         ] = await Promise.all([
           storage.get("isFocusMode"),
           storage.get("isShortsDisabled"),
           storage.get("isVideoRecommendationsDisabled"),
-          storage.get("isCommentDisabled")
+          storage.get("isCommentDisabled"),
+          storage.get("notification")
+
         ])
 
         setIsFocusMode(focusMode ?? false)
         setIsShortsDisabled(shortsDisabled ?? false)
         setIsVideoRecommendationsDisabled(videoRecDisabled ?? false)
         setIsCommentDisabled(commentDisabled ?? false)
+        setNotify(notification ?? false)
       } catch (error) {
         console.error("Error loading settings:", error)
       }
@@ -72,6 +77,12 @@ export const RootStateProvider = ({ children }) => {
     // window.location.reload() // Reload to reflect changes
   }
 
+  const toggleNotification = async () => {
+    const newNotification = !notify
+    setNotify(newNotification)
+    await storage.set("notification", newNotification)
+  }
+
   
 
   toggleTheme = () => {
@@ -86,12 +97,14 @@ export const RootStateProvider = ({ children }) => {
         isShortsDisabled,
         isVideoRecommendationsDisabled,
         isCommentDisabled,
+        notify,
         theme,
         toggleLoading,
         toggleFocusMode,
         toggleShortsDisabled,
         toggleVideoRecommendationsDisabled,
         toggleCommentDisabled,
+        toggleNotification,
         toggleTheme
       }}>
       {children}

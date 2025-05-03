@@ -10,6 +10,7 @@ import {
   Badge,
   Button,
   Calendar,
+  Checkbox,
   DatePicker,
   Dropdown,
   Form,
@@ -21,17 +22,26 @@ import {
   Select,
   TimePicker
 } from "antd"
-import type { BadgeProps, CalendarProps, DatePickerProps, MenuProps } from "antd"
+import type {
+  BadgeProps,
+  CalendarProps,
+  CheckboxProps,
+  DatePickerProps,
+  MenuProps
+} from "antd"
 import type { Dayjs } from "dayjs"
 import dayjs from "dayjs"
+import advancedFormat from "dayjs/plugin/advancedFormat"
 import duration from "dayjs/plugin/duration"
+import isBetween from "dayjs/plugin/isBetween"
+import utc from "dayjs/plugin/utc"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { useEffect, useState } from "react"
+import { CiMenuKebab } from "react-icons/ci"
 import { FaRegEye } from "react-icons/fa6"
 import { MdDeleteOutline, MdDriveFileRenameOutline } from "react-icons/md"
 import { RiLoader3Line } from "react-icons/ri"
 import { v4 as uuidv4 } from "uuid"
-import { CiMenuKebab } from "react-icons/ci"
 
 import { sendToBackground } from "@plasmohq/messaging"
 
@@ -39,10 +49,13 @@ import { EXTENSION_ID } from "~constants"
 
 import { Card } from "./Card"
 
-dayjs.extend(duration)
+dayjs.extend(utc)
+dayjs.extend(advancedFormat)
+dayjs.extend(isBetween)
+dayjs.extend(advancedFormat)
 
 interface ScheduleItem {
-  id: string
+  _id: string
   title: string
   time: string
   duration: number
@@ -50,6 +63,7 @@ interface ScheduleItem {
   date: string
   video: string
   videoId: string
+  isCompleted: boolean
 }
 
 // const mockSchedule: ScheduleItem[] = [
@@ -98,6 +112,7 @@ export function TodaySchedule() {
   const [clikedOnDate, setClickedOnDate] = useState(false)
   const [treeVideos, setTreeVideos] = useState([])
   const [loading, setLoading] = useState(true)
+  const [isModalLoading, setIsModalLoading] = useState(false)
 
   // fetch schedule data
   useEffect(() => {
@@ -136,7 +151,10 @@ export function TodaySchedule() {
           setLoading(false)
         }
       } catch (error: any) {
+        setLoading(false)
         console.log("error:", error)
+      } finally {
+        setLoading(false)
       }
     }
     // fetch function call
@@ -145,8 +163,22 @@ export function TodaySchedule() {
   }, [])
 
   // update schedule state from scheduleItem component using callback
-  const handleScheduleUpdate = (updatedItems: ScheduleItem[]) => {
-    setScheduleItems(updatedItems)
+  const handleScheduleUpdate = ({
+    Item,
+    action
+  }: {
+    Item: ScheduleItem
+    action: string
+  }) => {
+    console.log("Updated schedule items", Item, "Action:", action)
+    if (action == "Update") {
+      setScheduleItems((prev) =>
+        prev.map((item) => (item._id === Item._id ? Item : item))
+      )
+    }
+    if (action == "Delete") {
+      setScheduleItems((prev) => prev.filter((item) => item._id !== Item._id))
+    }
   }
 
   // Date navigation
@@ -160,36 +192,76 @@ export function TodaySchedule() {
   //   onChange([dayjs(currentDate)], [dayjs(currentDate).format("YYYY-MM-DD")])
   // }
 
+  // Function to update the status of schedule items in real time
+  const updateScheduleStatuses = () => {
+    const now = dayjs() // Current time
+    setScheduleItems((prevItems) =>
+      prevItems.map((item) => {
+        const startTime = dayjs(
+          `${item.date.split("T")[0]} ${item.time}`,
+          "YYYY-MM-DD HH:mm"
+        ).utc()
+        const endTime = startTime.add(item.duration, "minutes")
+
+        if (!item.isCompleted) {
+          if (now.isAfter(endTime)) {
+            // If the current time is after the end time and the task is not completed
+            return { ...item, status: "Missed" }
+          }
+        }
+
+        return item // Keep the existing status if none of the conditions are met
+      })
+    )
+  }
+
+  // // Periodically update statuses every minute
+  useEffect(() => {
+    const interval = setInterval(() => {
+      updateScheduleStatuses()
+    }, 10000) // Update every 10 seconds
+
+    // Run the update immediately on component mount
+    updateScheduleStatuses()
+
+    return () => clearInterval(interval) // Cleanup interval on unmount
+  }, [])
   // Schedule management
   const handleAddTask = () => {
     form.validateFields().then(async (values) => {
       const newTask: ScheduleItem = {
-        id: uuidv4(),
         ...values,
-        time: values.time.format("HH:mm"),
+        video: values.video,
+        videoId: values.videoId,
+        time: values.time.format("HH:mm"), // Ensure this matches the API's expected format
         date: dayjs(currentDate).format("YYYY-MM-DD")
       }
       try {
+        console.log("New task to be added", newTask)
+        setIsModalLoading(true)
         const response = await sendToBackground({
           name: "schedule",
           body: {
             action: "ADD_SCHEDULE",
             data: newTask
-          }
+          },
+          extensionId: "aodjmfiabicdmbnaaeljcldpamjimmff"
         })
 
         if (response.success) {
           // messageApi.success("Schedule added successfully")
           console.log("schedule added --- successfully ", response.data)
-          setScheduleItems(response.data)
+          setScheduleItems((prev) => [...prev, response.data])
         } else {
           // messageApi.error("Failed to add schedule")
-          console.log("Failed to add schedule", response.error)
+          console.log("Failed to add schedule --->", response)
           throw new Error("Failed to add schedule")
         }
       } catch (error: any) {
         // messageApi.error("Failed to add schedule")
         console.log("Failed to add schedule", error)
+      } finally {
+        setIsModalLoading(false)
       }
 
       form.resetFields()
@@ -199,15 +271,34 @@ export function TodaySchedule() {
 
   useEffect(() => {
     const filtered = scheduleItems.filter(
-      (item) => item.date === dayjs(currentDate).format("YYYY-MM-DD")
+      (item) =>
+        dayjs(item.date).utc().format("YYYY-MM-DD") ===
+        dayjs(currentDate).format("YYYY-MM-DD")
     )
+    console.log(
+      "Filtered schedule items and date",
+      filtered,
+      scheduleItems.length > 0
+        ? dayjs(scheduleItems[0].date).utc().format("YYYY-MM-DD")
+        : "No date available"
+    )
+
+    //filter based on time in chronological order.
+
+    filtered.sort((a, b) => {
+      const timeA = dayjs(`${a.time}`, "HH:mm").utc()
+      const timeB = dayjs(`${b.time}`, "HH:mm").utc()
+      return timeA.isBefore(timeB) ? -1 : 1 // Sort in ascending order
+    })
     setFilteredScheduleItems(filtered)
   }, [currentDate, scheduleItems])
 
   // Calendar cell renderer
   const dateCellRender = (date: Dayjs) => {
     const currentDate = date.format("YYYY-MM-DD")
-    const dailyTasks = scheduleItems.filter((item) => item.date === currentDate)
+    const dailyTasks = scheduleItems.filter(
+      (item) => dayjs(item.date).utc().format("YYYY-MM-DD") === currentDate
+    )
     const statusColorMap: Record<string, BadgeProps["status"]> = {
       Completed: "success",
       "In Progress": "warning",
@@ -217,11 +308,11 @@ export function TodaySchedule() {
       <div className="space-y-1 p-1">
         {dailyTasks.map((task) => (
           <Badge
-            key={task.id}
+            key={task._id}
             status={statusColorMap[task.status]}
             text={
               <span className="text-zinc-900 text-lg font-normal">
-                {task.time} - {task.title}  
+                {task.time} - {task.title}
               </span>
             }
             className="block"
@@ -281,7 +372,7 @@ export function TodaySchedule() {
           ) : (
             filteredScheduleItems.map((item) => (
               <ScheduleItem
-                key={item.id}
+                key={item._id}
                 item={item}
                 treeVideos={treeVideos}
                 onScheduleUpdate={handleScheduleUpdate}
@@ -343,17 +434,11 @@ export function TodaySchedule() {
           zIndex={999999}
           open={isScheduleModalOpen}
           onOk={handleAddTask}
+          okText="Schedule"
+          confirmLoading={isModalLoading}
           onCancel={() => setIsScheduleModalOpen(false)}
           className="text-white modern-modal"
           width={400}
-          footer={[
-            <Button key="cancel" onClick={() => setIsScheduleModalOpen(false)}>
-              Cancel
-            </Button>,
-            <Button key="schedule" type="primary" onClick={handleAddTask}>
-              Schedule
-            </Button>
-          ]}
           getContainer={() =>
             document
               .getElementById("feed-strater-csui")
@@ -439,8 +524,8 @@ export function TodaySchedule() {
                   }
                   className="w-full rounded-lg"
                   placeholder="Select a tree video">
-                  {treeVideos.map((video) => (
-                    <Select.Option key={video.id} value={video.title}>
+                  {treeVideos.map((video: any) => (
+                    <Select.Option key={video._id} value={video.title}>
                       <div className="flex items-center justify-between w-full">
                         <span>{video.title}</span>
                       </div>
@@ -520,12 +605,19 @@ function ScheduleItem({
 }: {
   item: ScheduleItem
   treeVideos: any
-  onScheduleUpdate: (updatedItems: ScheduleItem[]) => void
+  onScheduleUpdate: ({
+    Item,
+    action
+  }: {
+    Item: ScheduleItem
+    action: string
+  }) => void
 }) {
   const [isEditModalVisible, setIsEditModalVisible] = useState(false)
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false)
   const [updatedItem, setUpdatedItem] = useState<ScheduleItem>(null)
   const [form] = Form.useForm()
+  const [isModalLoading, setIsModalLoading] = useState(false)
 
   const openVideo = () => {
     if (item.videoId) {
@@ -535,53 +627,79 @@ function ScheduleItem({
     }
   }
 
+  // Update form values when the modal is opened or the item changes
+  useEffect(() => {
+    if (isEditModalVisible) {
+      form.setFieldsValue({
+        title: item.title,
+        date: dayjs(item.date),
+        time: dayjs(item.time, "HH:mm"),
+        duration: item.duration.toString(),
+        status: item.status,
+        videoId: item.videoId,
+        video: item.video
+      })
+    }
+    //changet dependacy array because of frequent time status change
+  }, [isEditModalVisible])
+
+  //checkbox function handler
+  const onChange: CheckboxProps["onChange"] = (e) => {
+    console.log(`checked = ${e.target.checked}`)
+  }
+
   const handleUpdateTask = () => {
     form.validateFields().then(async (values) => {
       const updatedTask: ScheduleItem = {
+        _id: item._id,
         ...values,
-        duration: parseInt(values.duration),
-        id: item.id,
+        video: values.video,
+        videoId: values.videoId,
         time: values.time.format("HH:mm"),
-        date: dayjs(item.date).format("YYYY-MM-DD")
+        date: values.date.format("YYYY-MM-DD")
       }
-      setUpdatedItem(updatedTask)
-      form.resetFields()
-      setIsEditModalVisible(false)
-    })
-  }
-
-  useEffect(() => {
-    if (!updatedItem) return // Only run if updatedItem is set
-
-    const updateSchedule = async () => {
       try {
+        setIsModalLoading(true)
         const response = await sendToBackground({
           name: "schedule",
           body: {
             action: "UPDATE_SCHEDULE",
-            data: updatedItem
+            data: updatedTask
           },
           extensionId: "EXTENSION_ID"
         })
 
         if (response.success) {
           console.log("Schedule updated successfully")
-          onScheduleUpdate(response.data)
+          onScheduleUpdate({ Item: response.data, action: "Update" })
         } else {
           console.log("Failed to update schedule", response.error)
-          console.log("Updated item & id", updatedItem, item.id)
+          console.log("Updated item & id", updatedTask, item._id)
         }
       } catch (error: any) {
         console.log("Failed to update schedule", error)
+      } finally {
+        form.resetFields()
+        setIsEditModalVisible(false)
+        setIsModalLoading(false)
       }
-    }
+    })
+  }
 
-    updateSchedule()
-  }, [updatedItem])
+  // useEffect(() => {
+  //   if (!updatedItem) return // Only run if updatedItem is set
+
+  //   const updateSchedule = async () => {
+
+  //   }
+
+  //   updateSchedule();
+  // }, [updatedItem])
 
   //handel delete
   const handleDelete = async () => {
     try {
+      setIsModalLoading(true)
       const response = await sendToBackground({
         name: "schedule",
         body: {
@@ -592,72 +710,131 @@ function ScheduleItem({
       })
 
       if (response.success) {
-        console.log("Schedule deleted successfully")
-        onScheduleUpdate(response.data)
+        console.log("Schedule deleted successfully in Td", response.data)
+        onScheduleUpdate({ Item: response.data, action: "Delete" })
       }
     } catch (error: any) {
       console.log("Failed to delete schedule", error?.message)
+    } finally {
+      setIsModalLoading(false)
+    }
+  }
+
+  const handelCheckbox = async (checked: boolean, id: string) => {
+    try {
+      console.log("checkd: status", checked)
+      const response = await sendToBackground({
+        name: "schedule",
+        body: {
+          action: "UPDATE_SCHEDULE",
+          data: { _id: id, isCompleted: checked }
+        },
+        extensionId: "aodjmfiabicdmbnaaeljcldpamjimmff"
+      })
+      if (response.success) {
+        console.log("Schedule updated successfully in Td", response.data)
+        onScheduleUpdate({ Item: response.data, action: "Update" })
+      } else {
+        console.log("Failed to update schedule", response.error)
+      }
+    } catch (error: any) {
+      console.log("Error:", error.message)
     }
   }
 
   const statusColors = {
     Upcoming: "bg-purple-500/20 text-purple-400",
     "In Progress": "bg-blue-500/20 text-blue-400",
-    Completed: "bg-emerald-500/20 text-emerald-400"
+    Completed: "bg-emerald-500/20 text-emerald-400",
+    Missed: "bg-red-500/20 text-red-400"
   }
 
-  const handleMenuButton= (e: React.MouseEvent<HTMLButtonElement>) => {
-    console.log('menu icon clicked')
+  const handleMenuButton = (e: React.MouseEvent<HTMLButtonElement>) => {
+    console.log("menu icon clicked")
   }
-  
-  const menu = (
-    <Menu>
-      <Menu.Item key="1" icon={<FaRegEye />} onClick={openVideo}>
-        View
-      </Menu.Item>
-      <Menu.Item
-        key="2"
-        icon={<MdDriveFileRenameOutline />}
-        onClick={() => {
-          setIsEditModalVisible(true)
-        }}>
-        Edit
-      </Menu.Item>
-      <Menu.Item
-        key="3"
-        icon={<MdDeleteOutline />}
-        onClick={() => setIsDeleteModalVisible(true)}>
-        Remove
-      </Menu.Item>
-    </Menu>
-  )
-  
+
+  // const menu = (
+  //   <Menu>
+  //     <Menu.Item key="1" icon={<FaRegEye />} onClick={openVideo}>
+  //       View
+  //     </Menu.Item>
+  //     <Menu.Item
+  //       key="2"
+  //       icon={<MdDriveFileRenameOutline />}
+  //       onClick={() => {
+  //         setIsEditModalVisible(true)
+  //       }}>
+  //       Edit
+  //     </Menu.Item>
+  //     <Menu.Item
+  //       key="3"
+  //       icon={<MdDeleteOutline />}
+  //       onClick={() => setIsDeleteModalVisible(true)}>
+  //       Remove
+  //     </Menu.Item>
+  //   </Menu>
+  // )
+
+  const menuItems: MenuProps["items"] = [
+    {
+      key: "view",
+      icon: <FaRegEye />,
+      label: "View",
+      onClick: openVideo
+    },
+    {
+      key: "edit",
+      icon: <MdDriveFileRenameOutline />,
+      label: "Edit",
+      onClick: () => setIsEditModalVisible(true)
+    },
+    {
+      key: "delete",
+      icon: <MdDeleteOutline />,
+      label: "Remove",
+      onClick: () => setIsDeleteModalVisible(true)
+    }
+  ]
+
   return (
     <>
-        <div className="group flex items-center p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
-          <div className="w-20 flex-shrink-0">
-            <span className="text-xl font-medium text-white/60">
-              {item.time}
-            </span>
-          </div>
-          <div className="flex-grow space-y-1">
-            <h4 className="text-xl font-semibold text-white truncate">
-              {item.title}
-            </h4>
-            <div className="flex items-center gap-3">
-              <span className="text-white text-xl">{item.duration} min</span>
-            </div>
-          </div>
-          <div
-            className={`px-4 py-2 rounded-full text-xl ${statusColors[item.status as keyof typeof statusColors]}`}>
-            {item.status}
-          </div>
-          <div className="text-3xl text-white/90 px-2">
-          <Dropdown overlay={menu} trigger={["hover"]}>
-          <CiMenuKebab className="cursor-pointer" />
-        </Dropdown>
+      <div className="group flex items-center p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
+        <Checkbox
+          key={String(item.isCompleted)}
+          defaultChecked={item.isCompleted}
+          onChange={(e) => {
+            handelCheckbox(e.target.checked, item._id)
+          }}
+          className="text-white/90 text-2xl mr-2 flex-shrink-0"
+        />
+        <div className="w-20 flex-shrink-0">
+          <span className="text-xl font-medium text-white/60">{item.time}</span>
+        </div>
+        <div className="flex-grow space-y-1">
+          <h4 className="text-xl font-semibold text-white truncate">
+            {item.title}
+          </h4>
+          <div className="flex items-center gap-3">
+            <span className="text-white text-xl">{item.duration} min</span>
           </div>
         </div>
+        <div
+          className={`px-4 py-2 rounded-full text-xl ${statusColors[item.status as keyof typeof statusColors]}`}>
+          {item.status}
+        </div>
+        <div className="text-3xl text-white/90 px-2">
+          <Dropdown
+            getPopupContainer={() =>
+              document
+                .getElementById("feed-strater-csui")
+                ?.shadowRoot?.querySelector("#plasmo-shadow-container")
+            }
+            menu={{ items: menuItems }}
+            trigger={["hover"]}>
+            <CiMenuKebab className="cursor-pointer" />
+          </Dropdown>
+        </div>
+      </div>
       <Modal
         title={
           <div className="flex flex-col items-start px-2">
@@ -676,17 +853,11 @@ function ScheduleItem({
         zIndex={999999}
         open={isEditModalVisible}
         onOk={handleUpdateTask}
+        okText="Update"
         onCancel={() => setIsEditModalVisible(false)}
+        confirmLoading={isModalLoading}
         className="text-white modern-modal"
         width={400}
-        footer={[
-          <Button key="cancel" onClick={() => setIsEditModalVisible(false)}>
-            Cancel
-          </Button>,
-          <Button key="schedule" type="primary" onClick={handleUpdateTask}>
-            Schedule
-          </Button>
-        ]}
         getContainer={() =>
           document
             .getElementById("feed-strater-csui")
@@ -695,7 +866,6 @@ function ScheduleItem({
         <Form form={form} layout="vertical" className="pt-4">
           <Form.Item
             name="title"
-            initialValue={item.title}
             label="Task Title"
             rules={[{ required: true, message: "Please enter a task title" }]}>
             <Input
@@ -712,7 +882,6 @@ function ScheduleItem({
           <div className="grid grid-cols-2 gap-4">
             <Form.Item
               name="date"
-              initialValue={dayjs(item.date)}
               label="Date"
               rules={[{ required: true, message: "Please select a date" }]}>
               <DatePicker
@@ -732,11 +901,9 @@ function ScheduleItem({
             </Form.Item>
             <Form.Item
               name="time"
-              initialValue={dayjs(item.time, "HH:mm")}
               label="Time"
               rules={[{ required: true, message: "Please select a time" }]}>
               <TimePicker
-                defaultValue={dayjs(item.time, "HH:mm")}
                 getPopupContainer={() =>
                   document
                     .getElementById("feed-strater-csui")
@@ -750,7 +917,6 @@ function ScheduleItem({
             <Form.Item
               name="duration"
               label="Duration (minutes)"
-              initialValue={item.duration.toString()}
               rules={[
                 { required: true, message: "Please enter the duration" }
               ]}>
@@ -763,7 +929,6 @@ function ScheduleItem({
             </Form.Item>
             <Form.Item
               name="status"
-              initialValue={item.status}
               label="Status"
               rules={[{ required: true, message: "Please select a status" }]}>
               <Select
@@ -781,31 +946,31 @@ function ScheduleItem({
             </Form.Item>
 
             {/* New Form.Item for selecting a Tree Video */}
-           {!item.videoId && (<Form.Item
-              name="video"
-              initialValue={item.video}
-              label="Tree Video"
-              rules={[
-                { required: true, message: "Please select a tree video" }
-              ]}>
-              <Select
-                getPopupContainer={() =>
-                  document
-                    .getElementById("feed-strater-csui")
-                    ?.shadowRoot?.querySelector("#plasmo-shadow-container")
-                }
-                className="w-full rounded-lg"
-                placeholder="Select a tree video">
-                {treeVideos.map((video) => (
-                  <Select.Option key={video.id} value={video.title}>
-                    <div className="flex items-center justify-between w-full">
-                      <span>{video.title}</span>
-                    </div>
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-           )}
+            {!item.videoId && (
+              <Form.Item
+                name="video"
+                label="Tree Video"
+                rules={[
+                  { required: true, message: "Please select a tree video" }
+                ]}>
+                <Select
+                  getPopupContainer={() =>
+                    document
+                      .getElementById("feed-strater-csui")
+                      ?.shadowRoot?.querySelector("#plasmo-shadow-container")
+                  }
+                  className="w-full rounded-lg"
+                  placeholder="Select a tree video">
+                  {treeVideos.map((video) => (
+                    <Select.Option key={video._id} value={video.title}>
+                      <div className="flex items-center justify-between w-full">
+                        <span>{video.title}</span>
+                      </div>
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            )}
           </div>
         </Form>
         <div className="flex items-center text-xl text-gray-400 mb-1">
@@ -816,9 +981,11 @@ function ScheduleItem({
       <Modal
         title="Delete Bookmark"
         zIndex={999999}
-        visible={isDeleteModalVisible}
+        open={isDeleteModalVisible}
         onOk={handleDelete}
+        okText="Delete"
         onCancel={() => setIsDeleteModalVisible(false)}
+        confirmLoading={isModalLoading}
         getContainer={() =>
           document
             .getElementById("feed-strater-csui")

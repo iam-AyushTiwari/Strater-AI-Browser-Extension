@@ -42,6 +42,7 @@ interface ScheduleItem {
   status: string
   date: string
   videoId: string
+  isCompleted: boolean
 }
 
 const dummyVideos = [
@@ -56,6 +57,10 @@ const WatchVideoButtons = () => {
   const [pickedDate, setPickedDate] = useState<Dayjs>(dayjs())
   const [treeVideos, setTreeVideos] = useState([])
   const [videoId, setVideoId] = useState<string>("")
+  const [isModalLoading, setIsModalLoading] = useState<boolean>(false)
+
+
+
   const videoTitleParentDiv = document.querySelector(
     ".style-scope ytd-watch-metadata"
   ).childNodes[3] as HTMLElement
@@ -106,7 +111,6 @@ const WatchVideoButtons = () => {
         return
       }
       const newScheduleItem: ScheduleItem = {
-        id: uuidv4(),
         ...values,
         videoId: videoId,
         time: values.time.format("HH:mm"),
@@ -123,6 +127,7 @@ const WatchVideoButtons = () => {
       if (!scheduleItems) return
 
       try {
+        setIsModalLoading(true)
         const response = await sendToBackground({
           name: "schedule",
           body: {
@@ -132,10 +137,21 @@ const WatchVideoButtons = () => {
           extensionId: EXTENSION_ID
         })
         if (response.success) {
-          console.log("schedule added successfully")
+          console.log(
+            "schedule added successfully with scheduleItems",
+            response.data,
+            scheduleItems
+          )
+        } else {
+          console.log(
+            "schedule not added successfully with scheduleItems",
+            scheduleItems
+          )
         }
       } catch (error: any) {
         console.log("error:", error)
+      } finally {
+        setIsModalLoading(false)
       }
     }
     addTask()
@@ -181,17 +197,11 @@ const WatchVideoButtons = () => {
           zIndex={999999999999}
           open={isScheduleModalOpen}
           onOk={setSchedule}
+          okText="Schedule"
+          confirmLoading={isModalLoading}
           onCancel={() => setIsScheduleModalOpen(false)}
           className="text-white modern-modal"
           width={400}
-          footer={[
-            <Button key="cancel" onClick={() => setIsScheduleModalOpen(false)}>
-              Cancel
-            </Button>,
-            <Button key="schedule" type="primary" onClick={setSchedule}>
-              Schedule
-            </Button>
-          ]}
           getContainer={() =>
             document
               .getElementById("take-note-csui")
