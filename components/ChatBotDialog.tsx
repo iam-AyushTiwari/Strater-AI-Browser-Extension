@@ -1,5 +1,3 @@
-"use client"
-
 import { message, Tooltip } from "antd"
 import { useMainContext } from "contextAPI/MainContext"
 import {
@@ -30,6 +28,11 @@ import { Storage } from "@plasmohq/storage"
 
 // @ts-ignore
 import logo from "../assets/icon.png"
+import FlashcardsTab from "./chatbot/FlashcardsTab"
+import NotesTab from "./chatbot/NotesTab"
+import QuizTab from "./chatbot/QuizTab"
+import SummaryTab from "./chatbot/SummaryTab"
+import TypingIndicator from "./chatbot/ui/TypingIndicator"
 
 const DUMMY_MESSAGES = [
   {
@@ -628,14 +631,14 @@ const ChatBotDialog = () => {
             </div>
 
             {/* Tab Navigation */}
-            <div className="bg-slate-950 px-4 py-2 flex border-b border-neutral-700">
+            <div className="bg-slate-950 px-3 py-2 flex border-b border-neutral-700">
               {TABS.map((tab) => (
                 <button
                   key={tab.id}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                  className={`flex items-center gap-1 ${maximize ? "px-4" : "px-3"} py-2 rounded-lg transition-all ${
                     activeTab === tab.id
-                      ? "bg-neutral-900 text-white"
-                      : "hover:bg-neutral-700 text-neutral-300"
+                      ? "bg-neutral-800 text-white"
+                      : "hover:bg-neutral-900 text-neutral-300"
                   }`}
                   onClick={() => setActiveTab(tab.id)}>
                   {tab.icon}
@@ -694,7 +697,7 @@ const ChatBotDialog = () => {
             </div>
             {/* Input - Only show when drawer is closed */}
             {
-              <div className="px-4 py-3 bg-neutral-900 rounded-b-2xl flex items-center gap-2 border-t border-neutral-800 sticky bottom-0">
+              <div className="px-5 pt-3 pb-4 bg-[#0F0F0F] rounded-b-2xl flex items-center gap-3 border-t border-neutral-800 sticky bottom-0 shadow-lg">
                 <input
                   type="text"
                   placeholder="Ask anything about this video..."
@@ -703,12 +706,12 @@ const ChatBotDialog = () => {
                   onKeyDown={handleInputKeyDown}
                   onKeyUp={(event) => event.stopPropagation()}
                   disabled={loading}
-                  className="flex-1 bg-neutral-800 text-white px-4 py-2 rounded-lg focus:outline-none border text-lg border-neutral-700"
+                  className="flex-1 bg-[#1A1A1A] text-white px-4 py-3 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#FF0042]/50 border border-neutral-700 text-base placeholder-neutral-500 transition-all"
                 />
                 <button
                   onClick={() => handleSend()}
                   disabled={loading}
-                  className="bg-[#FF0042] hover:bg-[#e6003b] text-white px-4 py-2 rounded-full flex items-center justify-center transition disabled:opacity-50 disabled:cursor-not-allowed">
+                  className="bg-gradient-to-r from-[#FF0042] to-[#FF2D60] hover:from-[#e6003b] hover:to-[#e62857] text-white p-3 rounded-xl flex items-center justify-center transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-[0_0_10px_rgba(255,0,66,0.3)]">
                   <Forward size={18} />
                 </button>
               </div>
@@ -718,64 +721,77 @@ const ChatBotDialog = () => {
             {drawerOpen && (
               <div
                 ref={drawerRef}
-                className={`absolute bottom-0 left-0 right-0 bg-neutral-900 border-t border-neutral-700 rounded-t-xl shadow-lg transition-all duration-300`}
+                className={`absolute bottom-0 left-0 right-0 bg-[#121212] border-t border-stone-900 rounded-t-4xl shadow-2xl transition-all duration-300 z-50`}
                 style={{ height: drawerHeight }}>
-                <div className="flex items-center justify-between px-4 py-2 border-b border-neutral-700">
-                  <span className="font-medium text-xl">Chat History</span>
+                {/* Header */}
+                <div className="flex items-center justify-between px-4 py-2 border-b border-neutral-800 bg-[#0F0F0F]">
+                  <div className="flex items-center gap-2">
+                    <div className="h-2 w-2 bg-[#FF0042] rounded-full animate-pulse"></div>
+                    <span className="font-medium text-lg text-white">
+                      Chat History
+                    </span>
+                  </div>
                   <div className="flex gap-2">
                     <button
                       onClick={toggleDrawer}
-                      className="p-1 hover:bg-neutral-800 rounded-md">
+                      className="p-1.5 hover:bg-neutral-800 rounded-lg transition-colors">
                       {drawerHeight === "90%" ? (
-                        <ChevronDown size={18} />
+                        <ChevronDown size={18} className="text-neutral-300" />
                       ) : (
-                        <ChevronUp size={18} />
+                        <ChevronUp size={18} className="text-neutral-300" />
                       )}
                     </button>
                     <button
                       onClick={toggleDrawer}
-                      className="p-1 hover:bg-neutral-800 rounded-md">
-                      <X size={18} />
+                      className="p-1.5 hover:bg-neutral-800 rounded-lg transition-colors">
+                      <X size={18} className="text-neutral-300" />
                     </button>
                   </div>
                 </div>
-                <div className="overflow-y-auto p-4 h-[calc(100%-100px)] thin-scrollbar">
+
+                {/* Messages area */}
+                <div className="overflow-y-auto p-5 h-[calc(100%-110px)] thin-scrollbar bg-gradient-to-b from-[#121212] to-[#151515]">
                   {messages.map((msg) => (
                     <div
                       key={msg.id}
-                      className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"} mb-4`}>
+                      className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"} mb-5 last:mb-2`}>
                       {msg.sender === "bot" && (
-                        <img
-                          src={logo || "/placeholder.svg"}
-                          alt="Bot"
-                          className="h-7 w-7 rounded-full mr-2 self-end border border-neutral-700"
-                        />
+                        <div className="h-6 w-6 rounded-full mr-2 self-end border border-neutral-800 overflow-hidden flex-shrink-0 shadow-md">
+                          <img
+                            src={logo || "/placeholder.svg"}
+                            alt="Bot"
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
                       )}
                       <div
-                        className={`max-w-[87%] w-auto px-4 py-2 rounded-2xl text-xl shadow
-                          ${
-                            msg.sender === "user"
-                              ? "bg-[#29060f] text-white rounded-br-md"
-                              : "bg-neutral-800 text-white rounded-bl-md"
-                          }`}>
+                        className={`max-w-[87%] w-auto px-4 py-3 rounded-2xl text-base shadow-md
+              ${
+                msg.sender === "user"
+                  ? "bg-gradient-to-br from-[#29060f] to-[#1F0109] text-white rounded-br-sm border border-[#FF0042]/20"
+                  : "bg-[#1A1A1A] text-white rounded-bl-sm border border-neutral-800"
+              }`}>
                         {
                           <Markdown
                             markdown={msg.text}
-                            className="text-white w-auto"
+                            className="text-neutral-200 w-auto leading-relaxed"
                           />
                         }
                         {msg.sender === "bot" && (
                           <button
                             onClick={() => saveToNotes(msg.text, msg.id)}
-                            className="mt-2 flex items-center gap-1 text-sm text-neutral-400 hover:text-[#FF0042] transition-colors">
-                            <BookmarkPlus size={14} />
+                            className="mt-3 flex items-center gap-1.5 text-sm text-neutral-400 hover:text-[#FF0042] transition-colors group">
+                            <BookmarkPlus
+                              size={14}
+                              className="group-hover:scale-110 transition-transform"
+                            />
                             <span>Save to Notes</span>
                           </button>
                         )}
                       </div>
                       {msg.sender === "user" && (
-                        <div className="h-7 w-7 ml-2 bg-red-950 rounded-full flex items-center justify-center">
-                          <UserRound className="text-white" size={14} />
+                        <div className="h-8 w-8 ml-2 bg-gradient-to-br from-[#FF0042] to-[#CC0036] rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
+                          <UserRound className="text-white" size={15} />
                         </div>
                       )}
                     </div>
@@ -784,8 +800,8 @@ const ChatBotDialog = () => {
                   <div ref={messagesEndRef} />
                 </div>
 
-                {/* Input field inside drawer */}
-                <div className="px-4 pt-3 pb-4 bg-neutral-900 rounded-b-2xl flex items-center gap-2 border-t border-neutral-800 sticky bottom-0">
+                {/* Input field */}
+                <div className="px-5 pt-3 pb-4 bg-[#0F0F0F] rounded-b-2xl flex items-center gap-3 border-t border-neutral-800 sticky bottom-0 shadow-lg">
                   <input
                     type="text"
                     placeholder="Ask follow up..."
@@ -794,12 +810,12 @@ const ChatBotDialog = () => {
                     onKeyDown={handleInputKeyDown}
                     onKeyUp={(event) => event.stopPropagation()}
                     disabled={loading}
-                    className="flex-1 bg-neutral-800 text-white px-4 py-2 rounded-lg focus:outline-none border text-lg border-neutral-700"
+                    className="flex-1 bg-[#1A1A1A] text-white px-4 py-3 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#FF0042]/50 border border-neutral-700 text-base placeholder-neutral-500 transition-all"
                   />
                   <button
                     onClick={() => handleSend()}
                     disabled={loading}
-                    className="bg-[#FF0042] hover:bg-[#e6003b] text-white px-4 py-2 rounded-full flex items-center justify-center transition disabled:opacity-50 disabled:cursor-not-allowed">
+                    className="bg-gradient-to-r from-[#FF0042] to-[#FF2D60] hover:from-[#e6003b] hover:to-[#e62857] text-white p-3 rounded-xl flex items-center justify-center transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-[0_0_10px_rgba(255,0,66,0.3)]">
                     <Forward size={18} />
                   </button>
                 </div>
@@ -808,614 +824,6 @@ const ChatBotDialog = () => {
           </div>
         </Draggable>
       )}
-    </div>
-  )
-}
-
-const NotesTab = ({
-  handleSend,
-  setInput,
-  savedNotes,
-  deleteNote,
-  loading
-}) => {
-  if (loading && savedNotes.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#FF0042] mb-4"></div>
-        <p className="text-neutral-300">Loading notes...</p>
-      </div>
-    )
-  }
-
-  if (savedNotes && savedNotes.length > 0) {
-    return (
-      <div className="space-y-4 my-4">
-        <h2 className="text-2xl font-semibold text-white mb-4">Your Notes</h2>
-
-        {savedNotes.map((note) => (
-          <div
-            key={note.id}
-            className="bg-neutral-800 rounded-xl p-4 border border-neutral-700 relative group">
-            <div className="mb-3 pb-3 border-b border-neutral-700">
-              <p className="text-white">{note.question}</p>
-            </div>
-            <div>
-              <Markdown markdown={note.answer} className="text-white" />
-            </div>
-            <button
-              onClick={() => deleteNote(note.id)}
-              className="absolute top-2 right-2 p-1 bg-neutral-700 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[#FF0042]">
-              <X size={14} />
-            </button>
-          </div>
-        ))}
-
-        <div className="p-4 rounded-2xl text-white w-full max-w-md mt-6">
-          <h3 className="text-lg font-medium mb-3">Ask more questions:</h3>
-          <div className="space-y-3 p-2">
-            {[
-              "What is the main topic of this video?",
-              "What are the key takeaways from this video?"
-            ].map((question, index) => (
-              <button
-                key={index}
-                onClick={() => {
-                  setInput(question)
-                  handleSend()
-                }}
-                className="w-full text-left bg-blue-950/40 hover:bg-blue-950/70 transition-colors rounded-lg px-4 py-3 text-lg shadow-md flex items-center gap-3 cursor-pointer">
-                <Menu size={18} />
-                {question}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  return (
-    <div className="flex flex-col items-center justify-center space-y-4 my-6">
-      <div className="w-full p-6 flex flex-col items-center">
-        {/* No Notes Illustration */}
-        <div className="mb-6">
-          <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
-            <rect width="120" height="120" rx="24" fill="#2a0a18" />
-            <path d="M40 40h40v40H40z" fill="#fff" fillOpacity="0.05" />
-            <path
-              d="M50 60h20M50 68h20"
-              stroke="#FF0042"
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
-            <circle cx="60" cy="54" r="4" fill="#FF0042" />
-            <rect
-              x="40"
-              y="40"
-              width="40"
-              height="40"
-              rx="8"
-              stroke="#FF0042"
-              strokeWidth="2"
-            />
-          </svg>
-        </div>
-        {/* Title */}
-        <h2 className="text-2xl font-semibold text-white mb-2 text-center">
-          You haven't created any notes for this video yet.
-        </h2>
-        {/* Description */}
-        <p className="text-md text-neutral-300 text-center mb-6 max-w-md">
-          <span className="text-white font-medium">
-            Ask for a summary or follow up with your own questions
-          </span>{" "}
-          to take notes and capture key insights!
-        </p>
-        {/* Modern Chat-Style Question Tags */}
-        <div className="p-4 rounded-2xl text-white w-full max-w-md">
-          <div className="space-y-3 p-2">
-            {[
-              "What is the main topic of this video?",
-              "What are the key takeaways from this video?"
-            ].map((question, index) => (
-              <button
-                key={index}
-                onClick={() => {
-                  setInput(question)
-                  handleSend()
-                }}
-                className="w-full text-left bg-blue-950/40 hover:bg-blue-950/70 transition-colors rounded-lg px-4 py-3 text-lg shadow-md flex items-center gap-3 cursor-pointer">
-                <Menu size={18} />
-                {question}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// SummaryTab component
-const SummaryTab = ({
-  handleSend,
-  saveToNotes,
-  setSummaryType,
-  summaryType,
-  summaryData,
-  summaryLoading
-}) => {
-  return (
-    <div className="flex flex-col items-center justify-center space-y-4 my-6">
-      {!summaryData && (
-        <div className="w-full p-6 bg-gradient-to-r from-[#1a0010] to-[#29060f] rounded-2xl border border-[#FF0042]/20 shadow-lg">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="bg-[#FF0042] p-2 rounded-full">
-              <Notebook size={24} className="text-white" />
-            </div>
-            <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-[#FF0042]">
-              Video Summary
-            </h1>
-          </div>
-
-          {/* Summary Type Selector */}
-          <div className="mb-6">
-            <p className="text-lg text-neutral-300 leading-relaxed mb-3">
-              Get a comprehensive summary of the current video to quickly
-              understand the key points.
-            </p>
-            <div className="flex gap-3">
-              <button
-                className={`px-4 py-2 rounded-lg transition-all ${
-                  summaryType === "Concise"
-                    ? "bg-[#FF0042] text-white"
-                    : "bg-neutral-800 text-neutral-300 hover:bg-neutral-700"
-                }`}
-                onClick={() => setSummaryType("Concise")}>
-                Concise
-              </button>
-              <button
-                className={`px-4 py-2 rounded-lg transition-all ${
-                  summaryType === "Detailed"
-                    ? "bg-[#FF0042] text-white"
-                    : "bg-neutral-800 text-neutral-300 hover:bg-neutral-700"
-                }`}
-                onClick={() => setSummaryType("Detailed")}>
-                Detailed
-              </button>
-            </div>
-          </div>
-
-          {summaryLoading ? (
-            <div className="w-full flex flex-col items-center justify-center p-8">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#FF0042] mb-4"></div>
-              <p className="text-neutral-300">
-                Generating {summaryType.toLowerCase()} summary...
-              </p>
-            </div>
-          ) : (
-            <button
-              className="w-full flex items-center justify-center gap-3 p-4 bg-neutral-800/80 hover:bg-[#FF0042]/20 rounded-xl transition-all duration-300 border border-neutral-700 hover:border-[#FF0042]/50 group"
-              onClick={() => handleSend("videoSummary_Generate")}>
-              <div className="p-2 bg-neutral-700 group-hover:bg-[#FF0042]/30 rounded-lg transition-colors">
-                <Notebook size={20} className="text-white" />
-              </div>
-              <span className="font-medium">
-                Generate {summaryType} Summary
-              </span>
-            </button>
-          )}
-        </div>
-      )}
-      {summaryData && (
-        <div className="px-2">
-          <Markdown markdown={summaryData} className="text-white" />
-          <div className="flex justify-end mt-4">
-            <button
-              onClick={() => saveToNotes(summaryData, 0)}
-              className="flex items-center gap-2 px-4 py-2 bg-neutral-700 hover:bg-[#FF0042]/70 rounded-lg transition-colors">
-              <BookmarkPlus size={16} />
-              <span>Save to Notes</span>
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
-
-// QuizTab component
-const QuizTab = ({ handleSend, saveToNotes, quizData, quizLoading }) => {
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
-  const [selectedAnswers, setSelectedAnswers] = useState({})
-  const [showResults, setShowResults] = useState(false)
-
-  const handleAnswerSelect = (questionIndex, answerIndex) => {
-    setSelectedAnswers({
-      ...selectedAnswers,
-      [questionIndex]: answerIndex
-    })
-  }
-
-  const handleSubmitQuiz = () => {
-    setShowResults(true)
-  }
-
-  const resetQuiz = () => {
-    setSelectedAnswers({})
-    setShowResults(false)
-    setCurrentQuestionIndex(0)
-  }
-
-  const moveToNextQuestion = () => {
-    if (currentQuestionIndex < quizData.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1)
-    }
-  }
-
-  const moveToPrevQuestion = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1)
-    }
-  }
-
-  const saveQuizToNotes = () => {
-    let quizText = "# Quiz Results\n\n"
-    quizData.forEach((question, index) => {
-      quizText += `## Question ${index + 1}: ${question.question}\n\n`
-
-      question.options.forEach((option, optIndex) => {
-        const isSelected = selectedAnswers[index] === optIndex
-        const isCorrect = question.correctAnswer === optIndex
-
-        if (isSelected && isCorrect) {
-          quizText += `- ✅ ${option}\n`
-        } else if (isSelected && !isCorrect) {
-          quizText += `- ❌ ${option} (Your answer)\n`
-        } else if (!isSelected && isCorrect) {
-          quizText += `- ✅ ${option} (Correct answer)\n`
-        } else {
-          quizText += `- ${option}\n`
-        }
-      })
-
-      quizText += "\n"
-    })
-
-    saveToNotes(quizText, 0)
-    message.success("Quiz saved to notes!")
-  }
-
-  return (
-    <div className="flex flex-col items-center justify-center space-y-4 my-6">
-      {quizLoading ? (
-        <div className="w-full p-6 bg-gradient-to-r from-[#1a0010] to-[#29060f] rounded-2xl border border-[#FF0042]/20 shadow-lg flex flex-col items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#FF0042] mb-4"></div>
-          <p className="text-neutral-300">Generating quiz questions...</p>
-        </div>
-      ) : quizData && quizData.length > 0 ? (
-        <div className="w-full">
-          {/* Quiz Progress */}
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-neutral-300">
-              Question {currentQuestionIndex + 1} of {quizData.length}
-            </span>
-            {showResults && (
-              <div className="flex gap-2">
-                <button
-                  onClick={resetQuiz}
-                  className="px-3 py-1 bg-neutral-800 hover:bg-neutral-700 rounded-lg text-sm">
-                  Reset
-                </button>
-                <button
-                  onClick={saveQuizToNotes}
-                  className="px-3 py-1 bg-[#FF0042]/80 hover:bg-[#FF0042] rounded-lg text-sm flex items-center gap-1">
-                  <BookmarkPlus size={14} />
-                  Save
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Progress Bar */}
-          <div className="w-full h-2 bg-neutral-800 rounded-full mb-6">
-            <div
-              className="h-full bg-[#FF0042] rounded-full"
-              style={{
-                width: `${((currentQuestionIndex + 1) / quizData.length) * 100}%`
-              }}></div>
-          </div>
-
-          {/* Current Question */}
-          <div className="bg-neutral-800 rounded-xl p-6 border border-neutral-700 mb-4">
-            <h3 className="text-xl font-medium mb-4">
-              {quizData[currentQuestionIndex]?.question ||
-                "No question available"}
-            </h3>
-
-            <div className="space-y-3">
-              {quizData[currentQuestionIndex]?.options.map((option, index) => (
-                <div
-                  key={index}
-                  onClick={() =>
-                    !showResults &&
-                    handleAnswerSelect(currentQuestionIndex, index)
-                  }
-                  className={`p-4 rounded-lg border cursor-pointer transition-all ${
-                    selectedAnswers[currentQuestionIndex] === index
-                      ? showResults
-                        ? quizData[currentQuestionIndex].correctAnswer === index
-                          ? "bg-green-950/30 border-green-600"
-                          : "bg-red-950/30 border-red-600"
-                        : "bg-[#FF0042]/20 border-[#FF0042]"
-                      : showResults &&
-                          quizData[currentQuestionIndex].correctAnswer === index
-                        ? "bg-green-950/30 border-green-600"
-                        : "bg-neutral-700/50 border-neutral-700 hover:bg-neutral-700"
-                  }`}>
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                        selectedAnswers[currentQuestionIndex] === index
-                          ? "bg-[#FF0042] text-white"
-                          : "bg-neutral-700 text-neutral-300"
-                      }`}>
-                      {String.fromCharCode(65 + index)}
-                    </div>
-                    <span>{option}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {showResults && (
-              <div className="mt-4 p-4 bg-neutral-900 rounded-lg">
-                <h4 className="font-medium mb-2">Explanation:</h4>
-                <p>
-                  {quizData[currentQuestionIndex]?.explanation ||
-                    "No explanation available."}
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Navigation Buttons */}
-          <div className="flex justify-between">
-            <button
-              onClick={moveToPrevQuestion}
-              disabled={currentQuestionIndex === 0}
-              className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">
-              Previous
-            </button>
-
-            {!showResults ? (
-              currentQuestionIndex === quizData.length - 1 ? (
-                <button
-                  onClick={handleSubmitQuiz}
-                  disabled={
-                    Object.keys(selectedAnswers).length < quizData.length
-                  }
-                  className="px-4 py-2 bg-[#FF0042] hover:bg-[#e6003b] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">
-                  Submit Quiz
-                </button>
-              ) : (
-                <button
-                  onClick={moveToNextQuestion}
-                  disabled={selectedAnswers[currentQuestionIndex] === undefined}
-                  className="px-4 py-2 bg-[#FF0042] hover:bg-[#e6003b] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">
-                  Next Question
-                </button>
-              )
-            ) : (
-              <button
-                onClick={moveToNextQuestion}
-                disabled={currentQuestionIndex === quizData.length - 1}
-                className="px-4 py-2 bg-[#FF0042] hover:bg-[#e6003b] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">
-                Next Question
-              </button>
-            )}
-          </div>
-        </div>
-      ) : (
-        <div className="w-full p-6 bg-gradient-to-r from-[#1a0010] to-[#29060f] rounded-2xl border border-[#FF0042]/20 shadow-lg">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="bg-[#FF0042] p-2 rounded-full">
-              <BookCheck size={24} className="text-white" />
-            </div>
-            <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-[#FF0042]">
-              Quiz Generator
-            </h1>
-          </div>
-          <p className="text-lg text-neutral-300 leading-relaxed mb-6">
-            Test your knowledge with automatically generated quizzes based on
-            the video content.
-          </p>
-
-          <button
-            className="w-full flex items-center justify-center gap-3 p-4 bg-neutral-800/80 hover:bg-[#FF0042]/20 rounded-xl transition-all duration-300 border border-neutral-700 hover:border-[#FF0042]/50 group"
-            onClick={() => handleSend("quiz_gen")}>
-            <div className="p-2 bg-neutral-700 group-hover:bg-[#FF0042]/30 rounded-lg transition-colors">
-              <BookCheck size={20} className="text-white" />
-            </div>
-            <span className="font-medium">Take Quiz</span>
-          </button>
-        </div>
-      )}
-    </div>
-  )
-}
-
-// FlashcardsTab component
-const FlashcardsTab = ({
-  handleSend,
-  saveToNotes,
-  flashcardsData,
-  flashcardsLoading
-}) => {
-  const [currentCardIndex, setCurrentCardIndex] = useState(0)
-  const [flipped, setFlipped] = useState(false)
-
-  const handleNextCard = () => {
-    if (currentCardIndex < flashcardsData.length - 1) {
-      setCurrentCardIndex(currentCardIndex + 1)
-      setFlipped(false)
-    }
-  }
-
-  const handlePrevCard = () => {
-    if (currentCardIndex > 0) {
-      setCurrentCardIndex(currentCardIndex - 1)
-      setFlipped(false)
-    }
-  }
-
-  const toggleFlip = () => {
-    setFlipped(!flipped)
-  }
-
-  const saveFlashcardsToNotes = () => {
-    let flashcardsText = "# Flashcards\n\n"
-    flashcardsData.forEach((card, index) => {
-      flashcardsText += `## Card ${index + 1}\n\n`
-      flashcardsText += `**Question:** ${card.front}\n\n`
-      flashcardsText += `**Answer:** ${card.back}\n\n`
-    })
-
-    saveToNotes(flashcardsText, 0)
-    message.success("Flashcards saved to notes!")
-  }
-
-  return (
-    <div className="flex flex-col items-center justify-center space-y-4 my-6">
-      {flashcardsLoading ? (
-        <div className="w-full p-6 bg-gradient-to-r from-[#1a0010] to-[#29060f] rounded-2xl border border-[#FF0042]/20 shadow-lg flex flex-col items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#FF0042] mb-4"></div>
-          <p className="text-neutral-300">Generating flashcards...</p>
-        </div>
-      ) : flashcardsData && flashcardsData.length > 0 ? (
-        <div className="w-full">
-          {/* Flashcard Progress */}
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-neutral-300">
-              Card {currentCardIndex + 1} of {flashcardsData.length}
-            </span>
-            <button
-              onClick={saveFlashcardsToNotes}
-              className="px-3 py-1 bg-[#FF0042]/80 hover:bg-[#FF0042] rounded-lg text-sm flex items-center gap-1">
-              <BookmarkPlus size={14} />
-              Save All
-            </button>
-          </div>
-
-          {/* Progress Bar */}
-          <div className="w-full h-2 bg-neutral-800 rounded-full mb-6">
-            <div
-              className="h-full bg-[#FF0042] rounded-full"
-              style={{
-                width: `${((currentCardIndex + 1) / flashcardsData.length) * 100}%`
-              }}></div>
-          </div>
-
-          {/* Flashcard */}
-          <div
-            className="relative w-full aspect-[3/2] perspective-1000 mb-6 cursor-pointer"
-            onClick={toggleFlip}>
-            <div
-              className={`absolute w-full h-full transition-all duration-500 transform-style-preserve-3d ${
-                flipped ? "rotate-y-180" : ""
-              }`}>
-              {/* Front of Card */}
-              <div className="absolute w-full h-full backface-hidden bg-neutral-800 rounded-xl p-6 border border-neutral-700 flex flex-col items-center justify-center">
-                <h3 className="text-xl font-medium mb-4 text-center">
-                  {flashcardsData[currentCardIndex]?.front ||
-                    "No question available"}
-                </h3>
-                <p className="text-neutral-400 text-sm">Click to flip</p>
-              </div>
-
-              {/* Back of Card */}
-              <div className="absolute w-full h-full backface-hidden bg-[#29060f] rounded-xl p-6 border border-[#FF0042]/50 flex flex-col items-center justify-center rotate-y-180">
-                <div className="overflow-y-auto max-h-full">
-                  <Markdown
-                    markdown={
-                      flashcardsData[currentCardIndex]?.back ||
-                      "No answer available"
-                    }
-                    className="text-white text-center"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Navigation Buttons */}
-          <div className="flex justify-between">
-            <button
-              onClick={handlePrevCard}
-              disabled={currentCardIndex === 0}
-              className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">
-              Previous
-            </button>
-
-            <button
-              onClick={handleNextCard}
-              disabled={currentCardIndex === flashcardsData.length - 1}
-              className="px-4 py-2 bg-[#FF0042] hover:bg-[#e6003b] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">
-              Next
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="w-full p-6 bg-gradient-to-r from-[#1a0010] to-[#29060f] rounded-2xl border border-[#FF0042]/20 shadow-lg">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="bg-[#FF0042] p-2 rounded-full">
-              <Flashlight size={24} className="text-white" />
-            </div>
-            <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-[#FF0042]">
-              Flashcards
-            </h1>
-          </div>
-          <p className="text-lg text-neutral-300 leading-relaxed mb-6">
-            Create flashcards to help you memorize important concepts from the
-            video.
-          </p>
-
-          <button
-            className="w-full flex items-center justify-center gap-3 p-4 bg-neutral-800/80 hover:bg-[#FF0042]/20 rounded-xl transition-all duration-300 border border-neutral-700 hover:border-[#FF0042]/50 group"
-            onClick={() => handleSend("flashcard_gen")}>
-            <div className="p-2 bg-neutral-700 group-hover:bg-[#FF0042]/30 rounded-lg transition-colors">
-              <Flashlight size={20} className="text-white" />
-            </div>
-            <span className="font-medium">Generate Flashcards</span>
-          </button>
-        </div>
-      )}
-    </div>
-  )
-}
-
-function TypingIndicator() {
-  return (
-    <div className="flex items-center gap-2 mt-2">
-      <div className="avatar">
-        <img
-          src={logo || "/placeholder.svg"}
-          alt="Bot"
-          className="h-7 w-7 rounded-full mr-2 border border-neutral-700"
-        />
-      </div>
-
-      <div className="message-typing">
-        <div className="typing-dots bg-neutral-800 px-3 py-2 rounded-2xl flex items-center">
-          <h1 className="2xl animate-pulse">
-            <Markdown markdown="Thinking... ✨" className="text-white" />
-          </h1>
-          <div className="dot bg-neutral-400 mx-1 rounded-full animate-pulse" />
-          <div className="dot bg-neutral-400 mx-1 rounded-full animate-pulse delay-100" />
-          <div className="dot bg-neutral-400 mx-1 rounded-full animate-pulse delay-200" />
-        </div>
-      </div>
     </div>
   )
 }

@@ -1,29 +1,6 @@
 import type { PlasmoMessaging } from "@plasmohq/messaging";
-import { Storage } from "@plasmohq/storage";
+import callAPI from "utils/api";
 import { API_ROUTES } from "~constants";
-
-const storage = new Storage();
-
-const callAPI = async <T = any>(url: string, options: {method?: string, body?: any} = {}) => {
-    const token = await storage.get("token");
-
-    const response = await fetch(url, {
-        method: options.method || "GET",
-        headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-        },
-        body: options.body ? JSON.stringify(options.body) : undefined,
-    });
-
-    if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-
-    const data = (await response.json()) as T;
-
-    return data;
-}
 
 const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
     const body: any = req.body;

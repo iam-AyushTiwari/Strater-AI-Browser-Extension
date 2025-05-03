@@ -1,50 +1,25 @@
-export interface ApiRequestParams {
-    url: string; // API endpoint
-    method?: "GET" | "POST" | "PUT" | "DELETE"; // HTTP method
-    body?: Record<string, any>; // Request payload
-    headers?: Record<string, string>; // Additional headers
-  }
-  
-  export interface ApiResponse<T = any> {
-    success: boolean;
-    data?: T;
-    error?: string;
-  }
-  
-  export const apiRequest = async <T = any>({
-    url,
-    method = "GET",
-    body,
-    headers = {},
-  }: ApiRequestParams): Promise<ApiResponse<T>> => {
-    try {
-      const response = await fetch(url, {
-        method,
+const storage = new Storage();
+import { Storage } from "@plasmohq/storage";
+
+const callAPI = async <T = any>(url: string, options: {method?: string, body?: any} = {}) => {
+    const token = await storage.get("token");
+
+    const response = await fetch(url, {
+        method: options.method || "GET",
         headers: {
-          "Content-Type": "application/json",
-          ...headers,
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
         },
-        body: body ? JSON.stringify(body) : undefined,
-        credentials: "include", // Include cookies for authentication
-      });
-  
-      if (!response.ok) {
-        return {
-          success: false,
-          error: `HTTP Error: ${response.status} - ${response.statusText}`,
-        };
-      }
-  
-      const data = await response.json();
-      return {
-        success: true,
-        data,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: `Network Error: ${error.message}`,
-      };
+        body: options.body ? JSON.stringify(options.body) : undefined,
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
     }
-  };
-  
+
+    const data = (await response.json()) as T;
+
+    return data;
+}
+
+export default callAPI

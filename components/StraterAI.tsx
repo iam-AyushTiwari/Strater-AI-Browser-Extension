@@ -36,7 +36,7 @@ const StraterAI = () => {
               <img
                 src={logo}
                 alt="Strater AI"
-                className="h-7 w-7 rounded-full border-2 border-white"
+                className="h-6 w-6 rounded-full border-2 border-white"
               />
               <h1 className="text-xl">Strater AI</h1>
             </div>
