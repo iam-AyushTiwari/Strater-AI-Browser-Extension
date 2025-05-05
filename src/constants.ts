@@ -20,6 +20,7 @@ export const API_ROUTES = {
 
     // for user contents constants
     NOTES: `${endPoint}/user_content/notes`,
+    SUMMARY: `${endPoint}/user_content/summary`,
 
     // schedules
     CREATE_SCHEDULE: `${endPoint}/Schedule/create_schedule`,

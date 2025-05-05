@@ -1,4 +1,13 @@
 import { cn } from "@sglara/cn"
+import katex from "katex"
+import { useEffect } from "react"
+
+import "katex/dist/katex.min.css"
+
+// Import Highlight.js for code syntax highlighting
+import hljs from "highlight.js" // Import Highlight.js
+
+import "highlight.js/styles/github.css" // Import Highlight.js theme
 
 interface MarkdownProps {
   markdown: string
@@ -6,15 +15,29 @@ interface MarkdownProps {
 }
 
 export default function Markdown({ markdown, className }: MarkdownProps) {
+  useEffect(() => {
+    // Highlight all code blocks after markdown is rendered
+    const codeBlocks = document.querySelectorAll("pre code")
+    codeBlocks.forEach((block) => {
+      hljs.highlightBlock(block as HTMLElement)
+    })
+  }, [markdown])
+
   const convertToHtml = (markdownText: string) => {
     // Escape HTML to prevent injection
     markdownText = markdownText.replace(/</g, "&lt;").replace(/>/g, "&gt;")
 
-    // Fenced code blocks (``` code ```)
+    // Handle code blocks (``` code ``` with auto language detection)
     markdownText = markdownText.replace(
       /```([\s\S]*?)```/gim,
       (match, code) => {
-        return `<pre class="bg-gray-800 text-green-300 text-xl font-mono p-4 rounded-md overflow-x-auto my-4"><code>${code.trim()}</code></pre>`
+        const highlightedCode = hljs.highlightAuto(code.trim()).value // Use Highlight.js for automatic language detection
+
+        return `
+          <pre class="bg-gray-800 rounded-lg my-4 overflow-x-auto">
+            <code class="hljs">${highlightedCode}</code>
+          </pre>
+        `
       }
     )
 
@@ -38,13 +61,11 @@ export default function Markdown({ markdown, className }: MarkdownProps) {
       '<h1 class="text-3xl font-extrabold text-cyan-200 mb-4 mt-6">$1</h1>'
     )
 
-    // Bold
+    // Bold & Italic
     markdownText = markdownText.replace(
       /\*\*(.*?)\*\*/gim,
       '<strong class="font-bold text-yellow-200">$1</strong>'
     )
-
-    // Italic
     markdownText = markdownText.replace(
       /\*(.*?)\*/gim,
       '<i class="italic text-gray-300">$1</i>'
@@ -62,7 +83,7 @@ export default function Markdown({ markdown, className }: MarkdownProps) {
       '<blockquote class="border-l-4 border-gray-500 pl-4 italic text-gray-300 bg-gray-900/40 py-2 px-4 rounded-md my-2">$1</blockquote>'
     )
 
-    // Unordered lists
+    // Unordered list
     markdownText = markdownText.replace(
       /^(?:-|\+|\*)\s+(.+)$/gim,
       '<li class="list-disc ml-5 text-[18px] text-white">$1</li>'
@@ -72,7 +93,7 @@ export default function Markdown({ markdown, className }: MarkdownProps) {
       '<ul class="list-inside space-y-1 my-2">$1</ul>'
     )
 
-    // Ordered lists
+    // Ordered list
     markdownText = markdownText.replace(
       /^\d+\.\s+(.+)$/gim,
       '<li class="list-decimal ml-5 text-[18px] text-white">$1</li>'
@@ -81,6 +102,33 @@ export default function Markdown({ markdown, className }: MarkdownProps) {
       /((?:<li class="list-decimal.+<\/li>\s*)+)/gim,
       '<ol class="list-decimal list-inside space-y-1 my-2">$1</ol>'
     )
+
+    // LaTeX Block ($$...$$)
+    markdownText = markdownText.replace(/\$\$([^$]+)\$\$/gim, (_, expr) => {
+      try {
+        return `<div class="katex-block text-inherit my-4">${katex.renderToString(
+          expr.trim(),
+          {
+            throwOnError: false,
+            displayMode: true
+          }
+        )}</div>`
+      } catch {
+        return `<div class="text-red-400">Invalid LaTeX: ${expr}</div>`
+      }
+    })
+
+    // LaTeX Inline ($...$)
+    markdownText = markdownText.replace(/\$([^$\n]+)\$/gim, (_, expr) => {
+      try {
+        return katex.renderToString(expr.trim(), {
+          throwOnError: false,
+          displayMode: false
+        })
+      } catch {
+        return `<span class="text-red-400">Invalid LaTeX: ${expr}</span>`
+      }
+    })
 
     // Paragraphs
     markdownText = markdownText.replace(

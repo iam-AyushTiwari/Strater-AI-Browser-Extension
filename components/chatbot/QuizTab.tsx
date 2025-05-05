@@ -2,6 +2,8 @@ import { message } from "antd"
 import { BookCheck, BookmarkPlus } from "lucide-react"
 import { useState } from "react"
 
+import Loader from "./ui/Loader"
+
 const QuizTab = ({ handleSend, saveToNotes, quizData, quizLoading }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [selectedAnswers, setSelectedAnswers] = useState({})
@@ -66,10 +68,7 @@ const QuizTab = ({ handleSend, saveToNotes, quizData, quizLoading }) => {
   return (
     <div className="flex flex-col items-center justify-center space-y-4 my-6">
       {quizLoading ? (
-        <div className="w-full p-6 bg-gradient-to-r from-[#1a0010] to-[#29060f] rounded-2xl border border-[#FF0042]/20 shadow-lg flex flex-col items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#FF0042] mb-4"></div>
-          <p className="text-neutral-300">Generating quiz questions...</p>
-        </div>
+        <Loader eventText="We're generating quiz for you..." />
       ) : quizData && quizData.length > 0 ? (
         <div className="w-full">
           {/* Quiz Progress */}

@@ -3,6 +3,8 @@ import { BookmarkPlus, Flashlight } from "lucide-react"
 import { useState } from "react"
 import Markdown from "utils/markdown"
 
+import Loader from "./ui/Loader"
+
 const FlashcardsTab = ({
   handleSend,
   saveToNotes,
@@ -45,10 +47,7 @@ const FlashcardsTab = ({
   return (
     <div className="flex flex-col items-center justify-center space-y-4 my-6">
       {flashcardsLoading ? (
-        <div className="w-full p-6 bg-gradient-to-r from-[#1a0010] to-[#29060f] rounded-2xl border border-[#FF0042]/20 shadow-lg flex flex-col items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#FF0042] mb-4"></div>
-          <p className="text-neutral-300">Generating flashcards...</p>
-        </div>
+        <Loader eventText="We're generating flashcards for you..." />
       ) : flashcardsData && flashcardsData.length > 0 ? (
         <div className="w-full">
           {/* Flashcard Progress */}

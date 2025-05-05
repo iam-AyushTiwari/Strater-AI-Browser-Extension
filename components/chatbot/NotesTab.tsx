@@ -1,6 +1,8 @@
 import { Menu, X } from "lucide-react"
 import Markdown from "utils/markdown"
 
+import Loader from "./ui/Loader"
+
 const NotesTab = ({
   handleSend,
   setInput,
@@ -10,9 +12,8 @@ const NotesTab = ({
 }) => {
   if (loading && savedNotes.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-full py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#FF0042] mb-4"></div>
-        <p className="text-neutral-300">Loading notes...</p>
+      <div className="flex-1 justify-center items-center">
+        <Loader eventText="Fetching your notes..." />
       </div>
     )
   }

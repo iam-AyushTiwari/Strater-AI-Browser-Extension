@@ -49,7 +49,7 @@ const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
                 const response = await callAPI(`${API_ROUTES.NOTES}?videoId=${body.videoId}`, {method: "GET"});
                 if (response) {
                     console.log("got video notes response ===>", response)
-                    res.send({success: true, data: response});
+                    res.send({success: true, data: response.data});
                 }
             } catch (error) {
                 res.send({success: false, error: (error as Error).message});

@@ -29,6 +29,12 @@ importers:
       dayjs:
         specifier: ^1.11.13
         version: 1.11.13
+      highlight.js:
+        specifier: ^11.11.1
+        version: 11.11.1
+      katex:
+        specifier: ^0.16.22
+        version: 0.16.22
       lucide-react:
         specifier: ^0.469.0
         version: 0.469.0(react@18.2.0)
@@ -3114,8 +3120,8 @@ packages:
   jsonfile@6.1.0:
     resolution: {integrity: sha512-5dgndWOriYSm5cnYaJNhalLNDKOqFwyDB/rr1E9ZsGciGvKPs8R2xYGCacuf3z6K1YKDz182fd+fY3cn3pMqXQ==}
 
-  katex@0.16.21:
-    resolution: {integrity: sha512-XvqR7FgOHtWupfMiigNzmh+MgUVmDGU2kXZm899ZkPfcuoPuFxyHmXsgATDpFZDAXCI8tvinaVcDo8PIIJSo4A==}
+  katex@0.16.22:
+    resolution: {integrity: sha512-XCHRdUw4lf3SKBaJe4EvgqIuWwkPSo9XoeO8GjQW94Bp7TWv9hNhzZjZ+OH9yf1UmLygb7DIT5GSFQiyt16zYg==}
     hasBin: true
 
   keycode@2.2.1:
@@ -7991,7 +7997,7 @@ snapshots:
     optionalDependencies:
       graceful-fs: 4.2.11
 
-  katex@0.16.21:
+  katex@0.16.22:
     dependencies:
       commander: 8.3.0
 
@@ -8559,7 +8565,7 @@ snapshots:
       '@types/node': 22.10.7
       cmdk: 1.0.4(@types/react-dom@18.2.18)(@types/react@18.2.48)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       jotai: 2.11.1(@types/react@18.2.48)(react@18.2.0)
-      katex: 0.16.21
+      katex: 0.16.22
       react: 18.2.0
       react-markdown: 9.0.3(@types/react@18.2.48)(react@18.2.0)
       react-moveable: 0.56.0

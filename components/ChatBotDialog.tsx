@@ -165,7 +165,7 @@ const ChatBotDialog = () => {
           console.log("Got the notes data from server: ", notesData)
 
           // Handle different response formats
-          let snippets = notesData[0].snippets
+          let snippets = notesData.snippets
           console.log("This is the snippets ====>> ", snippets)
           if (typeof snippets === "string") {
             try {
@@ -464,6 +464,7 @@ const ChatBotDialog = () => {
           setSummaryData(response.data || "Failed to generate summary.")
           setSummaryLoading(false)
         } else if (action === "quiz_gen") {
+          console.log("Quiz gen Response data:", response.data)
           try {
             // Assuming the response is a string that can be parsed as JSON
             const parsedData =
@@ -478,6 +479,7 @@ const ChatBotDialog = () => {
           }
           setQuizLoading(false)
         } else if (action === "flashcard_gen") {
+          console.log("Flashcard gen Response data:", response.data)
           try {
             // Assuming the response is a string that can be parsed as JSON
             const parsedData =
