@@ -1,4 +1,6 @@
-import { BookmarkPlus, Notebook } from "lucide-react"
+"use client"
+
+import { BookmarkPlus, Notebook, Save } from "lucide-react"
 import { useEffect, useState } from "react"
 import Markdown from "utils/markdown"
 
@@ -8,7 +10,9 @@ const SummaryTab = ({
   setSummaryType,
   summaryType,
   summaryData,
-  summaryLoading
+  summaryLoading,
+  saved,
+  onSave
 }) => {
   const [fadeIn, setFadeIn] = useState(false)
 
@@ -96,6 +100,22 @@ const SummaryTab = ({
             transitionDuration: "0.3s"
           }}>
           <div className="p-6 bg-[#121212] rounded-2xl border border-neutral-800 w-full shadow-lg">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-semibold text-white">Summary</h2>
+              {saved ? (
+                <div className="flex items-center gap-2 text-green-500">
+                  <Save size={16} />
+                  <span className="text-sm">Saved to database</span>
+                </div>
+              ) : (
+                <button
+                  onClick={onSave}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-[#1A1A1A] hover:bg-[#252525] text-white rounded-lg border border-neutral-700 transition-colors">
+                  <Save size={16} />
+                  <span className="text-sm">Save to database</span>
+                </button>
+              )}
+            </div>
             <div className="prose prose-invert max-w-none prose-headings:text-[#FF0042] prose-a:text-[#FF6699] prose-strong:text-neutral-200">
               <Markdown markdown={summaryData} className="text-neutral-300" />
             </div>

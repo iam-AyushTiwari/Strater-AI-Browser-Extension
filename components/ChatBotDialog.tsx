@@ -1,3 +1,5 @@
+"use client"
+
 import { message, Tooltip } from "antd"
 import { useMainContext } from "contextAPI/MainContext"
 import {
@@ -10,17 +12,18 @@ import {
   Forward,
   Lock,
   Maximize,
-  Menu,
   Minimize,
   Minus,
   Notebook,
   Pen,
+  Save,
   UserRound,
   X
 } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import Draggable from "react-draggable"
 import toast from "react-hot-toast"
+import { extractJSONArray } from "utils/extractArray"
 import Markdown from "utils/markdown"
 
 import { sendToBackground } from "@plasmohq/messaging"
@@ -38,7 +41,7 @@ const DUMMY_MESSAGES = [
   {
     id: 1,
     sender: "bot",
-    text: "Hello! 👋 How can I help you today?"
+    text: "🚀 Hey there! Welcome to Strater AI. How can I boost your learning today? 🤔"
   }
 ]
 
@@ -64,6 +67,7 @@ const ChatBotDialog = () => {
   const [chatBotOpened, setChatBotOpened] = useState(chatBotVisible || false)
   const [opacity, setOpacity] = useState(0)
   const [videoId, setVideoId] = useState<string | null>(null)
+  const [videoTitle, setVideoTitle] = useState<string | null>()
   const [user, setUser] = useState(null)
   const [activeTab, setActiveTab] = useState("notes")
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -74,7 +78,7 @@ const ChatBotDialog = () => {
 
   // Add these new state variables after the existing state declarations
   const [summaryData, setSummaryData] = useState("")
-  const [summaryType, setSummaryType] = useState("Detailed")
+  const [summaryType, setSummaryType] = useState("Detailed") // issues with the captal and small letter
   const [summaryLoading, setSummaryLoading] = useState(false)
   const [quizData, setQuizData] = useState([])
   const [quizLoading, setQuizLoading] = useState(false)
@@ -83,23 +87,155 @@ const ChatBotDialog = () => {
   const [notesLoading, setNotesLoading] = useState(false)
   const [notesCache, setNotesCache] = useState<Record<string, any>>({})
 
+  // state for saved in the db materials
+  const [notesSaved, setNotesSaved] = useState(false)
+  const [summarySaved, setSummarySaved] = useState(false)
+  const [quizSaved, setQuizSaved] = useState(false)
+  const [flashcardsSaved, setFlashcardsSaved] = useState(false)
+
+  // New state for saving indicators
+  const [isSaving, setIsSaving] = useState(false)
+  const [savingType, setSavingType] = useState<string | null>(null)
+
+  const saveContent = async (body, type) => {
+    try {
+      setIsSaving(true)
+      setSavingType(type)
+
+      const response = await sendToBackground({
+        //@ts-ignore
+        name: "saveContents",
+        body: {
+          body: body,
+          type: type
+        }
+      })
+
+      if (response.success) {
+        // Set the appropriate saved state based on the type
+        switch (type) {
+          case "videoSummary_Generate":
+            setSummarySaved(true)
+            break
+          case "quiz_gen":
+            setQuizSaved(true)
+            break
+          case "flashcard_gen":
+            setFlashcardsSaved(true)
+            break
+        }
+        toast.success(
+          `${type.split("_")[0].charAt(0).toUpperCase() + type.split("_")[0].slice(1)} saved successfully!`
+        )
+        return true
+      } else {
+        toast.error(`Failed to save ${type.split("_")[0]}`)
+        return false
+      }
+    } catch (error) {
+      console.error(`Error saving ${type}:`, error)
+      toast.error(`Error saving ${type.split("_")[0]}`)
+      return false
+    } finally {
+      setIsSaving(false)
+      setSavingType(null)
+    }
+  }
+
+  const saveUserContents = async (action, data) => {
+    const formatResponse = (input) =>
+      typeof input === "string" ? input : JSON.stringify(input)
+
+    switch (action) {
+      case "videoSummary_Generate":
+        console.log("Saved action for video summary!", videoTitle, action, data)
+        const summaryBody = {
+          title: videoTitle,
+          videoId: videoId,
+          response: formatResponse(data || summaryData),
+          type: summaryType.toLowerCase()
+        }
+        return await saveContent(summaryBody, action)
+
+      case "quiz_gen":
+        console.log("Saved action for quiz!", videoTitle, action, data)
+        const quizBody = {
+          title: videoTitle,
+          videoId: videoId,
+          response: formatResponse(data || quizData)
+        }
+        return await saveContent(quizBody, action)
+
+      case "flashcard_gen":
+        console.log("Saved action for flashcard!", videoTitle, action, data)
+        const flashcardBody = {
+          title: videoTitle,
+          videoId: videoId,
+          response: formatResponse(data || flashcardsData)
+        }
+        return await saveContent(flashcardBody, action)
+
+      default:
+        return false
+    }
+  }
+
   useEffect(() => {
     const getVideoId = () => {
       return new URLSearchParams(window.location.search).get("v")
     }
-    const fetchVideoData = async () => {
+
+    const getVideoTitle = () => {
+      const titleElement = document.querySelector("h1.ytd-watch-metadata")
+      console.log(
+        "==> Got the video title",
+        titleElement ? titleElement.textContent.trim() : "YouTube Video"
+      )
+      return titleElement ? titleElement.textContent.trim() : "YouTube Video"
+    }
+
+    const handleVideoChange = () => {
       const id = getVideoId()
-      if (id && id !== videoId) {
+      const title = getVideoTitle()
+
+      if (id && id !== videoId && title && title !== "YouTube Video") {
         setVideoId(id)
-        // Reset notes when video changes
+        setVideoTitle(title)
+
+        // Reset states when a new video loads
         setSavedNotes([])
+        setSummaryData("")
+        setQuizData([])
+        setFlashcardsData([])
+        setSummarySaved(false)
+        setQuizSaved(false)
+        setFlashcardsSaved(false)
       }
     }
-    fetchVideoData()
 
-    const intervalId = setInterval(fetchVideoData, 2000)
+    // --- MutationObserver: Reacts to DOM changes ---
+    const observer = new MutationObserver(() => {
+      const titleElement = document.querySelector("h1.ytd-watch-metadata")
+      if (titleElement && titleElement.textContent.trim()) {
+        handleVideoChange()
+      }
+    })
 
-    return () => clearInterval(intervalId)
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    })
+
+    // --- Fallback Interval: Checks every 5s just in case ---
+    const intervalId = setInterval(() => {
+      handleVideoChange()
+    }, 5000)
+
+    // Cleanup
+    return () => {
+      observer.disconnect()
+      clearInterval(intervalId)
+    }
   }, [videoId])
 
   useEffect(() => {
@@ -263,6 +399,9 @@ const ChatBotDialog = () => {
     await storage.set(`notes-${videoId}`, JSON.stringify(updatedNotes))
 
     try {
+      setIsSaving(true)
+      setSavingType("notes")
+
       // Send to API
       const response = await sendToBackground({
         name: "notes",
@@ -278,6 +417,7 @@ const ChatBotDialog = () => {
           position: "top-right",
           duration: 2000
         })
+        setNotesSaved(true)
       } else {
         toast.error("Failed to save note to server", {
           position: "top-right",
@@ -290,6 +430,9 @@ const ChatBotDialog = () => {
         position: "top-right",
         duration: 2000
       })
+    } finally {
+      setIsSaving(false)
+      setSavingType(null)
     }
 
     // Switch to notes tab to show the saved note
@@ -311,6 +454,9 @@ const ChatBotDialog = () => {
     await storage.set(`notes-${videoId}`, JSON.stringify(updatedNotes))
 
     try {
+      setIsSaving(true)
+      setSavingType("notes")
+
       // Send to API
       const response = await sendToBackground({
         name: "notes",
@@ -338,6 +484,9 @@ const ChatBotDialog = () => {
         position: "top-right",
         duration: 2000
       })
+    } finally {
+      setIsSaving(false)
+      setSavingType(null)
     }
   }
 
@@ -422,17 +571,20 @@ const ChatBotDialog = () => {
       setInput("")
     } else if (action === "videoSummary_Generate") {
       setSummaryLoading(true)
+      setSummarySaved(false)
     } else if (action === "quiz_gen") {
       setQuizLoading(true)
+      setQuizSaved(false)
     } else if (action === "flashcard_gen") {
       setFlashcardsLoading(true)
+      setFlashcardsSaved(false)
     }
 
     const body = {
       prompt: input || "abcd",
       action: action === "chat" ? "null" : action,
       videoID: videoId,
-      type: summaryType // Use the selected summary type
+      type: summaryType.toLowerCase()
     }
 
     try {
@@ -461,17 +613,37 @@ const ChatBotDialog = () => {
           ])
           setLoading(false)
         } else if (action === "videoSummary_Generate") {
-          setSummaryData(response.data || "Failed to generate summary.")
+          const summaryContent = response.data || "Failed to generate summary."
+          setSummaryData(summaryContent)
+
+          // If response is from AI (not from DB), save it to DB
+          if (response.success && response.source === "ai") {
+            saveUserContents(action, summaryContent)
+          } else if (response.success && response.source === "db") {
+            setSummarySaved(true)
+          }
+
           setSummaryLoading(false)
         } else if (action === "quiz_gen") {
           console.log("Quiz gen Response data:", response.data)
+          const quizContent = extractJSONArray(response.data)
+          console.log("Final quizData", quizContent)
           try {
             // Assuming the response is a string that can be parsed as JSON
             const parsedData =
-              typeof response.data === "string"
-                ? JSON.parse(response.data)
-                : response.data || []
-            setQuizData(Array.isArray(parsedData) ? parsedData : [])
+              typeof quizContent === "string"
+                ? JSON.parse(quizContent)
+                : quizContent || []
+
+            const finalQuizData = Array.isArray(parsedData) ? parsedData : []
+            setQuizData(finalQuizData)
+
+            // If response is from AI (not from DB), save it to DB
+            if (response.success && response.source === "ai") {
+              saveUserContents(action, finalQuizData)
+            } else if (response.success && response.source === "db") {
+              setQuizSaved(true)
+            }
           } catch (error) {
             console.error("Error parsing quiz data:", error)
             setQuizData([])
@@ -479,14 +651,27 @@ const ChatBotDialog = () => {
           }
           setQuizLoading(false)
         } else if (action === "flashcard_gen") {
+          const flashcardContent = extractJSONArray(response.data)
           console.log("Flashcard gen Response data:", response.data)
+          console.log("Flashcard gen extracted data:", flashcardContent)
           try {
             // Assuming the response is a string that can be parsed as JSON
             const parsedData =
-              typeof response.data === "string"
-                ? JSON.parse(response.data)
-                : response.data || []
-            setFlashcardsData(Array.isArray(parsedData) ? parsedData : [])
+              typeof flashcardContent === "string"
+                ? JSON.parse(flashcardContent)
+                : flashcardContent || []
+
+            const finalFlashcardData = Array.isArray(parsedData)
+              ? parsedData
+              : []
+            setFlashcardsData(finalFlashcardData)
+
+            // If response is from AI (not from DB), save it to DB
+            if (response.success && response.source === "ai") {
+              saveUserContents(action, finalFlashcardData)
+            } else if (response.success && response.source === "db") {
+              setFlashcardsSaved(true)
+            }
           } catch (error) {
             console.error("Error parsing flashcard data:", error)
             setFlashcardsData([])
@@ -574,6 +759,18 @@ const ChatBotDialog = () => {
     }
   }
 
+  // Function to render the saving indicator
+  const renderSavingIndicator = () => {
+    if (!isSaving) return null
+
+    return (
+      <div className="flex items-center gap-2 ml-4 text-neutral-300 animate-pulse">
+        <Save size={14} />
+        <span className="text-sm">Saving {savingType}...</span>
+      </div>
+    )
+  }
+
   return (
     <div className="fixed inset-0 pointer-events-none z-50">
       {chatBotOpened && (
@@ -583,7 +780,7 @@ const ChatBotDialog = () => {
           bounds="parent">
           <div
             ref={nodeRef}
-            className={`absolute top-24 left-24 ${
+            className={`absolute right-24 top-24 ${
               maximize ? "w-4/6 h-5/6" : "w-1/4 h-5/6"
             } max-w-full bg-neutral-900 text-white rounded-2xl shadow-2xl pointer-events-auto flex flex-col transition-all duration-200 strater-ai-bot-opacity-handle overflow-hidden`}>
             {/* Header */}
@@ -595,6 +792,7 @@ const ChatBotDialog = () => {
                   className="h-7 w-7 rounded-full border-2 border-white"
                 />
                 <h1 className="text-xl">Strater AI</h1>
+                {renderSavingIndicator()}
               </div>
               <div className="options flex gap-3">
                 <Tooltip title={`${maximize ? "Minimize" : "Expand"}`}>
@@ -645,6 +843,15 @@ const ChatBotDialog = () => {
                   onClick={() => setActiveTab(tab.id)}>
                   {tab.icon}
                   <span className="text-lg">{tab.label}</span>
+                  {tab.id === "summary" && summarySaved && (
+                    <span className="ml-1 w-2 h-2 bg-green-500 rounded-full"></span>
+                  )}
+                  {tab.id === "quiz" && quizSaved && (
+                    <span className="ml-1 w-2 h-2 bg-green-500 rounded-full"></span>
+                  )}
+                  {tab.id === "flashcards" && flashcardsSaved && (
+                    <span className="ml-1 w-2 h-2 bg-green-500 rounded-full"></span>
+                  )}
                 </button>
               ))}
             </div>
@@ -658,6 +865,7 @@ const ChatBotDialog = () => {
                   savedNotes={savedNotes}
                   deleteNote={deleteNote}
                   loading={notesLoading}
+                  saved={notesSaved}
                 />
               )}
               {activeTab === "summary" && (
@@ -668,6 +876,10 @@ const ChatBotDialog = () => {
                   summaryType={summaryType}
                   summaryData={summaryData}
                   summaryLoading={summaryLoading}
+                  saved={summarySaved}
+                  onSave={() =>
+                    saveUserContents("videoSummary_Generate", summaryData)
+                  }
                 />
               )}
               {activeTab === "quiz" && (
@@ -676,6 +888,8 @@ const ChatBotDialog = () => {
                   saveToNotes={saveToNotes}
                   quizData={quizData}
                   quizLoading={quizLoading}
+                  saved={quizSaved}
+                  onSave={() => saveUserContents("quiz_gen", quizData)}
                 />
               )}
               {activeTab === "flashcards" && (
@@ -684,6 +898,10 @@ const ChatBotDialog = () => {
                   saveToNotes={saveToNotes}
                   flashcardsData={flashcardsData}
                   flashcardsLoading={flashcardsLoading}
+                  saved={flashcardsSaved}
+                  onSave={() =>
+                    saveUserContents("flashcard_gen", flashcardsData)
+                  }
                 />
               )}
             </div>

@@ -85,6 +85,7 @@ export const SettingPage = () => {
               console.error("Error requesting notification permission:", error)
             })
         } else if (Notification.permission === "granted") {
+          toggleNotification()
           console.log("Notifications are already enabled.")
         } else {
           console.log("Notifications are disabled.")

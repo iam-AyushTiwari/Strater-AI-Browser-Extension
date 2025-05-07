@@ -1,4 +1,6 @@
-import { Menu, X } from "lucide-react"
+"use client"
+
+import { Menu, Save, X } from "lucide-react"
 import Markdown from "utils/markdown"
 
 import Loader from "./ui/Loader"
@@ -8,7 +10,8 @@ const NotesTab = ({
   setInput,
   savedNotes,
   deleteNote,
-  loading
+  loading,
+  saved
 }) => {
   if (loading && savedNotes.length === 0) {
     return (
@@ -21,7 +24,15 @@ const NotesTab = ({
   if (savedNotes && savedNotes.length > 0) {
     return (
       <div className="space-y-4 my-4">
-        <h2 className="text-2xl font-semibold text-white mb-4">Your Notes</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-semibold text-white mb-4">Your Notes</h2>
+          {saved && (
+            <div className="flex items-center gap-2 text-green-500">
+              <Save size={16} />
+              <span className="text-sm">Saved</span>
+            </div>
+          )}
+        </div>
 
         {savedNotes.map((note) => (
           <div

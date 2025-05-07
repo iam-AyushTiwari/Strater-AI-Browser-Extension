@@ -245,7 +245,7 @@ export function TodaySchedule() {
             action: "ADD_SCHEDULE",
             data: newTask
           },
-          extensionId: "aodjmfiabicdmbnaaeljcldpamjimmff"
+          extensionId: EXTENSION_ID
         })
 
         if (response.success) {
@@ -666,7 +666,7 @@ function ScheduleItem({
             action: "UPDATE_SCHEDULE",
             data: updatedTask
           },
-          extensionId: "EXTENSION_ID"
+          extensionId: EXTENSION_ID
         })
 
         if (response.success) {
@@ -729,7 +729,7 @@ function ScheduleItem({
           action: "UPDATE_SCHEDULE",
           data: { _id: id, isCompleted: checked }
         },
-        extensionId: "aodjmfiabicdmbnaaeljcldpamjimmff"
+        extensionId: EXTENSION_ID
       })
       if (response.success) {
         console.log("Schedule updated successfully in Td", response.data)

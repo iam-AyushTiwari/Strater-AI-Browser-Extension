@@ -1,25 +1,29 @@
-const storage = new Storage();
-import { Storage } from "@plasmohq/storage";
+import { Storage } from "@plasmohq/storage"
 
-const callAPI = async <T = any>(url: string, options: {method?: string, body?: any} = {}) => {
-    const token = await storage.get("token");
+const storage = new Storage()
 
-    const response = await fetch(url, {
-        method: options.method || "GET",
-        headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-        },
-        body: options.body ? JSON.stringify(options.body) : undefined,
-    });
+const callAPI = async <T = any>(
+  url: string,
+  options: { method?: string; body?: any } = {}
+) => {
+  const token = await storage.get("token")
 
-    if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-    }
+  const response = await fetch(url, {
+    method: options.method || "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json"
+    },
+    body: options.body ? JSON.stringify(options.body) : undefined
+  })
 
-    const data = (await response.json()) as T;
+  // if (!response.ok) {
+  //   throw new Error(`HTTP error! Status: ${response.status}`)
+  // }
 
-    return data;
+  const data = (await response.json()) as T
+
+  return data
 }
 
 export default callAPI
