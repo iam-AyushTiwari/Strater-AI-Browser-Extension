@@ -10,7 +10,13 @@ export const config: PlasmoCSConfig = {
 }
 
 export const getStyle = () => {
+  const baseFontSize = 12
   let updatedCssText = tailwindcss.replaceAll(":root", ":host(plasmo-csui)")
+  const remRegex = /([\d.]+)rem/g
+  updatedCssText = updatedCssText.replace(remRegex, (match, remValue) => {
+    const pixels = parseFloat(remValue) * baseFontSize
+    return `${pixels}px`
+  })
   const style = document.createElement("style")
   style.textContent = antdResetCssText + updatedCssText
   return style

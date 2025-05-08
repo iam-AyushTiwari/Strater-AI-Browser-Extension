@@ -1,33 +1,53 @@
-This is a [Plasmo extension](https://docs.plasmo.com/) project bootstrapped with [`plasmo init`](https://www.npmjs.com/package/plasmo).
+# Strater AI
 
-## Getting Started
+Strater AI is a Plasmo browser extension built for YouTube learners. It helps you stay focused while learning from videos by offering tools to take structured notes, organize them into folders, and convert them into flashcards.
 
-First, run the development server:
+---
 
-```bash
-pnpm dev
-# or
-npm run dev
-```
+## ⚙️ Architecture Overview
 
-Open your browser and load the appropriate development build. For example, if you are developing for the chrome browser, using manifest v3, use: `build/chrome-mv3-dev`.
+To help contributors and developers understand the data flow and architecture behind the Strater extension, here's a visual representation:
 
-You can start editing the popup by modifying `popup.tsx`. It should auto-update as you make changes. To add an options page, simply add a `options.tsx` file to the root of the project, with a react component default exported. Likewise to add a content page, add a `content.ts` file to the root of the project, importing some module and do some logic, then reload the extension on your browser.
+![Strater Extension Flow](./assets/strater-architecture.jpeg)
 
-For further guidance, [visit our Documentation](https://docs.plasmo.com/)
+### Key Concepts:
 
-## Making production build
+- **CSUI Browser Extension** communicates with the **Background Script (Service Worker)** to avoid CORS issues by delegating API calls.
+- The **Service Worker** fetches data from the **Strater Vercel Server** (connected to **MongoDB** and a **CDN**) and stores it using the **Storage API**.
+- The **Context API** picks this data up and shares it across all components (notes, folders, bookmarks, etc.).
+- Data flow is unidirectional—from background fetch to storage, then shared across the extension UI.
 
-Run the following:
+---
+
+## 📁 Folder Structure
+
+- **`components`** – Contains UI components like chatbot, video player, notes, folders, etc.
+- **`contents`** – All content scripts (CSUIs) that get injected into the YouTube page.
+- **`contextAPI`** – Global context management for user state, notes, bookmarks, etc.
+- **`data-text`** – Static CSS and text assets.
+- **`utils`** – Reusable utility functions (e.g., parsing, random string generation).
+
+---
+
+## 🧠 How to Contribute
+
+1. Clone the repo.
+2. Run `pnpm install` to install dependencies.
+3. Modify the code as needed.
+4. Run `pnpm build` to build the extension.
+5. Load it in Chrome:
+   - Go to `chrome://extensions/`
+   - Enable Developer Mode
+   - Click "Load unpacked" and select the `build` folder
+6. Test your changes.
+7. Submit a pull request.
+
+---
+
+## 🛠️ Build the Extension
+
+To create a production-ready bundle:
 
 ```bash
 pnpm build
-# or
-npm run build
 ```
-
-This should create a production bundle for your extension, ready to be zipped and published to the stores.
-
-## Submit to the webstores
-
-The easiest way to deploy your Plasmo extension is to use the built-in [bpp](https://bpp.browser.market) GitHub action. Prior to using this action however, make sure to build your extension and upload the first version to the store to establish the basic credentials. Then, simply follow [this setup instruction](https://docs.plasmo.com/framework/workflows/submit) and you should be on your way for automated submission!

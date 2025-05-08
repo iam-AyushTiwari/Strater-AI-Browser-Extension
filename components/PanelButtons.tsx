@@ -213,7 +213,7 @@ const PanelButtons = () => {
       </Drawer>
       <Tooltip title={"Strater Sidebar"} placement="left">
         <div
-          className="gap-4 top-32 right-5 fixed bg-inherit border-2 border-primary/60 flex items-center justify-center text-white rounded-full h-16 w-16 cursor-pointer"
+          className="gap-4 p-4 top-32 right-5 fixed bg-inherit border-2 border-primary/60 flex items-center justify-center text-white rounded-full cursor-pointer"
           onClick={showDrawer}>
           <PanelRight className="text-white" size={18} />
         </div>
