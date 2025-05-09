@@ -3,6 +3,13 @@ import { Storage } from "@plasmohq/storage"
 
 import { API_ROUTES } from "~constants"
 
+import {
+  addSchedule,
+  deleteSchedule,
+  getAllSchedules,
+  updateSchedule
+} from "../../../utils/db"
+
 const storage = new Storage()
 
 interface ScheduleItems {
@@ -12,57 +19,46 @@ interface ScheduleItems {
   duration: number
   status: string
   date: string
-  videoId:string
+  videoId: string
   isCompleted: boolean
 }
 
 const setUpdateIndicator = async () => {
-  await storage.set("scheduleUpdated", true); // Set the flag to true
-};
+  await storage.set("scheduleUpdated", true) // Set the flag to true
+}
 
 const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
   const { action, data } = req.body as { action: string; data: ScheduleItems }
-  const token = 'eyJhbGciOiJSUzI1NiIsImNhdCI6ImNsX0I3ZDRQRDIyMkFBQSIsImtpZCI6Imluc18ycG5wQnhkZFltMUhzWlhTcFltU29MUlNGZUEiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE3ODYxNjQ2NDUsImlhdCI6MTc0NjE2NDY0NSwiaXNzIjoiaHR0cHM6Ly9kZWVwLWRhbmUtMzcuY2xlcmsuYWNjb3VudHMuZGV2IiwianRpIjoiMDliOTE0ZDJiYTI3MGJjMWQ0NjciLCJuYmYiOjE3NDYxNjQ2NDAsInN1YiI6InVzZXJfMnJmRlhmQzg1UGpRdmw5bWRSdHpwRmIwVXVPIn0.VvTQG5Mwj1x5Cmak_DDtQ4xrEJoQChcet5Ti4euKU7FylGIahKD-sViAHP-tj2R5n4dnlQYPDFfihMJzh6XmgB3m2gxTYOnu9WPX76uB7rWfIOnEnvq8cMJ99s0qnPexo0WkF8MJpUazCCZpqwah4CFRE43zSR_F0Ctp52epcXMSwQsz1XZAL0FziVxWqM5uIes553CoA3Nh7DwBgI8u8X3QpBBz9zA_yY3fNt83Ry4XV7mFwH4LbItyS2PPhTPTu11efbIcEPOv1lf3Xwf6L9xCv88BnQ6mV_8AFXb4S-7oQjEpvrQVzx2uNyBXZNibQvPAk-bHRvKDUiGu03oMFQ'
+  const token =
+    "eyJhbGciOiJSUzI1NiIsImNhdCI6ImNsX0I3ZDRQRDIyMkFBQSIsImtpZCI6Imluc18ycG5wQnhkZFltMUhzWlhTcFltU29MUlNGZUEiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE3ODYxNjQ2NDUsImlhdCI6MTc0NjE2NDY0NSwiaXNzIjoiaHR0cHM6Ly9kZWVwLWRhbmUtMzcuY2xlcmsuYWNjb3VudHMuZGV2IiwianRpIjoiMDliOTE0ZDJiYTI3MGJjMWQ0NjciLCJuYmYiOjE3NDYxNjQ2NDAsInN1YiI6InVzZXJfMnJmRlhmQzg1UGpRdmw5bWRSdHpwRmIwVXVPIn0.VvTQG5Mwj1x5Cmak_DDtQ4xrEJoQChcet5Ti4euKU7FylGIahKD-sViAHP-tj2R5n4dnlQYPDFfihMJzh6XmgB3m2gxTYOnu9WPX76uB7rWfIOnEnvq8cMJ99s0qnPexo0WkF8MJpUazCCZpqwah4CFRE43zSR_F0Ctp52epcXMSwQsz1XZAL0FziVxWqM5uIes553CoA3Nh7DwBgI8u8X3QpBBz9zA_yY3fNt83Ry4XV7mFwH4LbItyS2PPhTPTu11efbIcEPOv1lf3Xwf6L9xCv88BnQ6mV_8AFXb4S-7oQjEpvrQVzx2uNyBXZNibQvPAk-bHRvKDUiGu03oMFQ"
   switch (action) {
     case "ADD_SCHEDULE":
       try {
         console.log("called for add task")
-        // const scheduleData: ScheduleItems[] = (await storage.getItem("schedules")) || []
         const response = await fetch(API_ROUTES.CREATE_SCHEDULE, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`
           },
-          body: JSON.stringify(data),
-        });
+          body: JSON.stringify(data)
+        })
 
-        const res_data = await response.json();
+        const res_data = await response.json()
         console.log("Update res_data ====>", res_data, response.ok)
 
         if (response.ok) {
-          // if (scheduleData && scheduleData.length > 0) {
-          //   const updatedScheduleData = [...scheduleData, res_data.data]
-          //   try {
-          //     await storage.setItem("schedules", updatedScheduleData)
-          //   } catch (storageError) {
-          //     console.error("Failed to save schedules to local storage", storageError);
-          //   }
-          // } else {
-          //   try {
-          //     await storage.setItem("schedules", [res_data.data])
-          //   } catch (storageError) {
-          //     console.error("Failed to save schedules to local storage", storageError);
-          //   }
-          // }
-          console.log("Schedule created successfully", res_data.data);
+          console.log("Schedule created successfully", res_data.data)
 
-          await setUpdateIndicator(); // Set the update indicator to true for notification api fetch on update
-          
-          res.send({ success: true, data: res_data.data });
+          //add schedule to db
+          await addSchedule(res_data.data)
+
+          await setUpdateIndicator() // Set the update indicator to true for notification api fetch on update
+
+          res.send({ success: true, data: res_data.data })
         } else {
-          console.log("Failed to create schedule", res_data.error);
-          res.send({ success: false, error: res_data.error });
+          console.log("Failed to create schedule", res_data.error)
+          res.send({ success: false, error: res_data.error })
         }
       } catch (error) {
         res.send({ success: false, error: (error as Error).message })
@@ -71,51 +67,47 @@ const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
 
     case "GET_SCHEDULES":
       try {
-        // const scheduleData: ScheduleItems[] = (await storage.getItem("schedules")) || []
-        // if (scheduleData && scheduleData.length > 0) {
-        //   console.log("Schedule data from storage", scheduleData)
-        //   res.send({ success: true, data: scheduleData })
-        //   return
-        // }
+        const cachedSchedules = await getAllSchedules()
+        console.log("cachedSchedules====>", cachedSchedules)
+        if (cachedSchedules && cachedSchedules.length > 0) {
+          console.log("cached schedules found")
+          res.send({ success: true, data: cachedSchedules })
+          return
+        }
+
         const response = await fetch(API_ROUTES.FETCH_SCHEDULE, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`
-          },
-        });
-        const data = await response.json();
-        console.log("data====>", data,data.schedules)
+          }
+        })
+        const data = await response.json()
+        console.log("data from api====>", data, data.schedules)
 
         if (response.ok) {
           console.log(
             "Schedule data fetched and data",
-            data.schedules,
+            data.schedules
             // dayjs(data.schedules[0].date).utc().format("YYYY-MM-DD")
-          );
-          if (data.schedules && data.schedules.length > 0) {
-           try { await storage.setItem("schedules", data.schedules);
-          } catch (storageError) {
-            console.error("Failed to save schedules to local storage", storageError);
+          )
+          // add schedules to the db
+          for (const item of data.schedules) {
+            await addSchedule(item)
           }
-          res.send({ success: true, data: data.schedules });
-          }
-          else {
-            res.send({ success: true, data: [] });
-          }
+
+          res.send({ success: true, data: data.schedules })
         } else {
-          console.error("Failed to fetch schedule from Api", data.error);
+          console.error("Failed to fetch schedule from Api", data.error)
         }
-      } catch (error:any) {
-        console.error("Error fetching schedule", error);
+      } catch (error: any) {
+        console.error("Error fetching schedule", error)
         res.send({ success: false, error: (error as Error).message })
       }
       break
     case "UPDATE_SCHEDULE":
       try {
-        // const scheduleData: ScheduleItems[] = (await storage.getItem("schedules")) || []
-
-        console.log("called for update task in background",data)
+        console.log("called for update task in background", data)
         const response = await fetch(API_ROUTES.UPDATE_SCHEDULE, {
           method: "PUT",
           headers: {
@@ -131,30 +123,23 @@ const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
             status: data.status,
             videoId: data.videoId,
             isCompleted: data.isCompleted
-          }),
-        });
+          })
+        })
         console.log("response ====>", response)
-        const res_data = await response.json();
+        const res_data = await response.json()
         console.log("Update res_data ====>", res_data, response.ok)
-        if(response.ok) {
-          // if((scheduleData && scheduleData.length > 0) && res_data.data) {
-          //   const updatedScheduleData = scheduleData.filter((item) => item._id !== res_data._id? item : res_data.data)
-          //   try{
-          //   await storage.setItem("schedules", updatedScheduleData)
-          //   }
-          //   catch (storageError) {
-          //     console.error("Failed to save schedules to local storage", storageError);
-          //   }
-          // }
-          console.log("Schedule updated successfully", res_data.data);
+        if (response.ok) {
+          console.log("Schedule updated successfully", res_data.data)
 
-          await setUpdateIndicator(); // Set the update indicator to true for notification api fetch on update
+          // update schedule in the db
+          await updateSchedule(res_data.data)
 
-          res.send({ success: true, data: res_data.data });
-        }
-        else {
-          console.log("Failed to update schedule", res_data.error);
-          res.send({ success: false, error: res_data.error });
+          await setUpdateIndicator() // Set the update indicator to true for notification api fetch on update
+
+          res.send({ success: true, data: res_data.data })
+        } else {
+          console.log("Failed to update schedule", res_data.error)
+          res.send({ success: false, error: res_data.error })
         }
       } catch (error: any) {
         console.log("Error in updating schedules", error?.message)
@@ -168,31 +153,24 @@ const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
-             Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${token}`
           },
-          body: JSON.stringify({ _id: data._id }),
-        });
-        const res_data = await response.json();
+          body: JSON.stringify({ _id: data._id })
+        })
+        const res_data = await response.json()
         console.log("data====>", data)
         if (response.ok) {
-          // const scheduleData: ScheduleItems[] = (await storage.getItem("schedules")) || []
-          // if (scheduleData && scheduleData.length > 0) {
-          //   const updatedScheduleData = scheduleData.filter((item) => item._id !== res_data._id)
-          //   try {
-          //     await storage.setItem("schedules", updatedScheduleData)
-          //   } catch (storageError) {
-          //     console.error("Failed to save schedules to local storage", storageError);
-          //   }
-          // }
-          console.log("Schedule deleted successfully", res_data.data);
+          console.log("Schedule deleted successfully", res_data.data)
 
-          await setUpdateIndicator(); // Set the update indicator to true for notification api fetch on update
+          // delete schedule from db
+          await deleteSchedule(data._id)
 
-          res.send({ success: true, data: res_data.data });
+          await setUpdateIndicator() // Set the update indicator to true for notification api fetch on update
+
+          res.send({ success: true, data: res_data.data })
         } else {
-          console.error("Failed to delete schedule", res_data.error);
+          console.error("Failed to delete schedule", res_data.error)
         }
-
       } catch (error: any) {
         console.log("Error in deleting schedules", error?.message)
         res.send({ success: false, error: (error as Error).message })
@@ -218,6 +196,7 @@ const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
         console.error("Error fetching video data:", error)
         res.send({ success: false, error: error.message })
       }
+      break;
     default:
       res.send({ success: false, error: "Invalid action" })
   }

@@ -34,6 +34,7 @@ const fetchSchedules = async () =>{
     return scheduleDate.isSame(today, "day"); // Compare only the "day" unit
   });
   await storage.set("cachedSchedules", filteredSchedules);
+  await storage.set("filteredDate",filteredSchedules[0].date)
 
   // Reset the update indicator
   await storage.set("scheduleUpdated", false);
@@ -70,6 +71,12 @@ const checkSchedule = async () => {
       return
     }
     const scheduleUpdated = await storage.get("scheduleUpdated")
+    const lastDate = await storage.get("filteredDate")
+    
+    if(dayjs(lastDate).utc().format("YYYY-MM-DD") !== dayjs().utc().format("YYYY-MM-DD")){
+      await storage.set("scheduleUpdated", true); // Initialize the flag
+    }
+
     if (scheduleUpdated === undefined) {
       await storage.set("scheduleUpdated", true); // Initialize the flag
     }
