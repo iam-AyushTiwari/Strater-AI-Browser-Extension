@@ -108,30 +108,30 @@ const Bookmark = () => {
     <>
       <h1 className="text-3xl font-bold text-white mb-4">Bookmarks</h1>
       <div className="flex items-center justify-center w-full h-full">
-      <div className="w-full flex flex-col justify-center items-center gap-2 ">
-        {bookmarks.length > 0 ? (
-          Object.keys(bookmarksByVideoId).map((videoId) => (
-            <BookmarkCard
-              key={videoId}
-              videoId={videoId}
-              videoTitle={
-                bookmarksByVideoId[videoId][0].videoTitle || "Untitled Video"
-              }
-              bookmarks={bookmarksByVideoId[videoId]}
-              isExpanded={expandedCard === videoId}
-              setExpandedCard={setExpandedCard}
-              updateBookmark={updateBookmark}
-              deleteBookmark={deleteBookmark}
-            />
-          ))
-        ) : (
-          <div className="flex items-center w-full rounded-lg overflow-hidden shadow-md bg-zinc-900 p-8 cursor-pointer">
-            <span className="text-xl text-gray-200 ml-4">
-              No bookmarks added yet.
-            </span>
-          </div>
-        )}
-      </div>
+        <div className="w-full flex flex-col justify-center items-center gap-2 ">
+          {bookmarks.length > 0 ? (
+            Object.keys(bookmarksByVideoId).map((videoId) => (
+              <BookmarkCard
+                key={videoId}
+                videoId={videoId}
+                videoTitle={
+                  bookmarksByVideoId[videoId][0].videoTitle || "Untitled Video"
+                }
+                bookmarks={bookmarksByVideoId[videoId]}
+                isExpanded={expandedCard === videoId}
+                setExpandedCard={setExpandedCard}
+                updateBookmark={updateBookmark}
+                deleteBookmark={deleteBookmark}
+              />
+            ))
+          ) : (
+            <div className="flex items-center w-full rounded-lg overflow-hidden shadow-md bg-zinc-900 p-8 cursor-pointer">
+              <span className="text-xl text-gray-200 ml-4">
+                No bookmarks added yet.
+              </span>
+            </div>
+          )}
+        </div>
       </div>
     </>
   )

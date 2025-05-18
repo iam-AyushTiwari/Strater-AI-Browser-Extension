@@ -17,8 +17,12 @@ interface BookmarkData {
 const BookmarkPopover = ({ onAddBookmark }) => {
   const [bookmarkName, setBookmarkName] = useState("")
   const videoElement = document.querySelector("video")
-  const videoTitleParentDiv = (document.querySelector(".style-scope ytd-watch-metadata").childNodes[3] as HTMLElement)
-  const videoTitle = (videoTitleParentDiv.children[0].children[1] as HTMLElement).innerText
+  const videoTitleParentDiv = document.querySelector(
+    ".style-scope ytd-watch-metadata"
+  ).childNodes[3] as HTMLElement
+  const videoTitle = (
+    videoTitleParentDiv.children[0].children[1] as HTMLElement
+  ).innerText
 
   if (videoElement) {
     videoElement.pause()
@@ -26,13 +30,20 @@ const BookmarkPopover = ({ onAddBookmark }) => {
 
   const handleAddBookmark = () => {
     if (bookmarkName.trim()) {
-      console.log("Bookmark trying to add: and video Title parent div ", bookmarkName,videoTitle)
-      onAddBookmark(bookmarkName,videoTitle)
+      console.log(
+        "Bookmark trying to add: and video Title parent div ",
+        bookmarkName,
+        videoTitle
+      )
+      onAddBookmark(bookmarkName, videoTitle)
       setBookmarkName("")
     }
   }
 
   const handleInputKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleAddBookmark()
+    }
     e.stopPropagation()
   }
 
@@ -50,6 +61,7 @@ const BookmarkPopover = ({ onAddBookmark }) => {
         value={bookmarkName}
         onChange={(e) => setBookmarkName(e.target.value)}
         onKeyDown={handleInputKeyDown}
+        onKeyUp={(event) => event.stopPropagation()}
       />
       <Button type="primary" block onClick={handleAddBookmark}>
         Add to Bookmark
@@ -69,7 +81,6 @@ const AddToBookmark = () => {
     return urlParams.get("v")
   }
 
-  
   const getCurrentVideoTime = () => {
     const videoElement = document.querySelector("video")
     return videoElement ? Math.floor(videoElement.currentTime) : 0

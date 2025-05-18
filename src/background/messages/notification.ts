@@ -13,7 +13,7 @@ const storage = new Storage()
 
 // Utility: Send a browser notification using chrome.notifications API
 const fetchSchedules = async () =>{
-  const token = 'eyJhbGciOiJSUzI1NiIsImNhdCI6ImNsX0I3ZDRQRDIyMkFBQSIsImtpZCI6Imluc18ycG5wQnhkZFltMUhzWlhTcFltU29MUlNGZUEiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE3ODYxNjQ2NDUsImlhdCI6MTc0NjE2NDY0NSwiaXNzIjoiaHR0cHM6Ly9kZWVwLWRhbmUtMzcuY2xlcmsuYWNjb3VudHMuZGV2IiwianRpIjoiMDliOTE0ZDJiYTI3MGJjMWQ0NjciLCJuYmYiOjE3NDYxNjQ2NDAsInN1YiI6InVzZXJfMnJmRlhmQzg1UGpRdmw5bWRSdHpwRmIwVXVPIn0.VvTQG5Mwj1x5Cmak_DDtQ4xrEJoQChcet5Ti4euKU7FylGIahKD-sViAHP-tj2R5n4dnlQYPDFfihMJzh6XmgB3m2gxTYOnu9WPX76uB7rWfIOnEnvq8cMJ99s0qnPexo0WkF8MJpUazCCZpqwah4CFRE43zSR_F0Ctp52epcXMSwQsz1XZAL0FziVxWqM5uIes553CoA3Nh7DwBgI8u8X3QpBBz9zA_yY3fNt83Ry4XV7mFwH4LbItyS2PPhTPTu11efbIcEPOv1lf3Xwf6L9xCv88BnQ6mV_8AFXb4S-7oQjEpvrQVzx2uNyBXZNibQvPAk-bHRvKDUiGu03oMFQ'
+  const token = await storage.get("token");
   const res = await fetch(API_ROUTES.FETCH_SCHEDULE, {
     headers: {
       "Content-Type": "application/json",

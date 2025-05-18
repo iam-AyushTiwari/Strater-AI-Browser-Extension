@@ -45,6 +45,8 @@ import { v4 as uuidv4 } from "uuid"
 
 import { sendToBackground } from "@plasmohq/messaging"
 
+import { EXTENSION_ID } from "~constants"
+
 import { Card } from "./Card"
 
 dayjs.extend(utc)
@@ -121,7 +123,7 @@ export function TodaySchedule() {
           body: {
             action: "FETCH_ALLCASPULEVIDEOS"
           },
-          extensionId: "aodjmfiabicdmbnaaeljcldpamjimmff"
+          extensionId: EXTENSION_ID
         })
         if (response.success) {
           console.log("Get tree videos from background", response.data)
@@ -141,7 +143,7 @@ export function TodaySchedule() {
           body: {
             action: "GET_SCHEDULES"
           },
-          extensionId: "aodjmfiabicdmbnaaeljcldpamjimmff"
+          extensionId: EXTENSION_ID
         })
         if (response.success) {
           console.log("Get schedule data from background")
@@ -243,7 +245,7 @@ export function TodaySchedule() {
             action: "ADD_SCHEDULE",
             data: newTask
           },
-          extensionId: "aodjmfiabicdmbnaaeljcldpamjimmff"
+          extensionId: EXTENSION_ID
         })
 
         if (response.success) {
@@ -664,7 +666,7 @@ function ScheduleItem({
             action: "UPDATE_SCHEDULE",
             data: updatedTask
           },
-          extensionId: "aodjmfiabicdmbnaaeljcldpamjimmff"
+          extensionId: EXTENSION_ID
         })
 
         if (response.success) {
@@ -704,7 +706,7 @@ function ScheduleItem({
           action: "DELETE_SCHEDULE",
           data: item
         },
-        extensionId: "aodjmfiabicdmbnaaeljcldpamjimmff"
+        extensionId: EXTENSION_ID
       })
 
       if (response.success) {
@@ -727,7 +729,7 @@ function ScheduleItem({
           action: "UPDATE_SCHEDULE",
           data: { _id: id, isCompleted: checked }
         },
-        extensionId: "aodjmfiabicdmbnaaeljcldpamjimmff"
+        extensionId: EXTENSION_ID
       })
       if (response.success) {
         console.log("Schedule updated successfully in Td", response.data)

@@ -1,3 +1,4 @@
+import { SyncOutlined } from "@ant-design/icons"
 import { Drawer, FloatButton, Tabs, Tooltip, type TabsProps } from "antd"
 import Folders from "components/Folders"
 import tailwindcss from "data-text:~style.css"
@@ -16,11 +17,16 @@ import { BsBookmarks, BsLayoutTextSidebarReverse } from "react-icons/bs"
 import { FaArrowRightFromBracket } from "react-icons/fa6"
 import { HiArrowTurnRightDown } from "react-icons/hi2"
 
-import  NotesFolders  from "./feed/NotesFolder"
+import { Storage } from "@plasmohq/storage"
+
+import { API_ENDPOINT, HOST_LINK } from "~constants"
+
+import NotesFolders from "./feed/NotesFolder"
 import Providers from "./Providers"
 import Account from "./sidebar/Account"
 import Bookmark from "./sidebar/Bookmark"
 
+const storage = new Storage()
 
 const PanelButtons = () => {
   const onChange = (key: string) => {
@@ -72,6 +78,24 @@ const PanelButtons = () => {
 
   const [open, setOpen] = useState(false)
   const [applied, setApplied] = useState(false)
+  const [loader, setLoader] = useState(false)
+  const [user, setUser] = useState(null)
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      setLoader(true)
+      const isUser = (await storage.get("user")) as any | undefined
+      if (isUser !== undefined) {
+        setUser(isUser)
+        console.log("user in the storage: ", isUser)
+        setLoader(false)
+      } else {
+        setUser(null)
+        setLoader(false)
+      }
+    }
+    fetchUser()
+  }, [storage.get])
 
   const showDrawer = () => {
     setOpen(true)
@@ -113,23 +137,48 @@ const PanelButtons = () => {
         // @ts-ignore
         getContainer={() => document.body}
         footer={
-          <div className="rounded-lg w-full p-2 gap-2">
-            <p className="text-center text-base flex items-center justify-center gap-2 text-zinc-300">
-              Not connected to Strater yet? - Sync your contents to Strater
-              <HiArrowTurnRightDown />
-            </p>
-            <div
-              className="w-full bg-zinc-900 hover:bg-zinc-800/50 border-2 border-white mt-2 rounded-xl py-4 text-center cursor-pointer flex justify-center items-center gap-4"
-              onClick={() =>
-                window.open(
-                  "https://strater-app.vercel.app/sign-in?redirect_url=https%3A%2F%2Fwww.youtube.com",
-                  "_blank"
-                )
-              }>
-              <CloudCog size={18} />
-              <p>Connect to Strater</p>
+          !user ? (
+            <div className="rounded-lg w-full p-2 gap-2">
+              <p className="text-center text-base flex items-center justify-center gap-2 text-zinc-300">
+                Not connected to Strater yet? - Sync your contents to Strater
+                <HiArrowTurnRightDown />
+              </p>
+              <div
+                className="w-full bg-zinc-900 hover:bg-zinc-800/50 border-2 border-white mt-2 rounded-xl py-4 text-center cursor-pointer flex justify-center items-center gap-4"
+                onClick={() =>
+                  window.open(
+                    `${HOST_LINK}/sign-in?redirect_url=https%3A%2F%2Fwww.youtube.com`,
+                    "_blank"
+                  )
+                }>
+                <CloudCog size={18} />
+                <p>Connect to Strater</p>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="rounded-xl w-full p-4 bg-zinc-900 shadow-lg border border-zinc-800">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center space-x-4">
+                  <div className="relative">
+                    <div className="rounded-full h-16 w-16 bg-gradient-to-br from-slate-700 to-slate-600 text-white text-2xl font-semibold flex items-center justify-center shadow-md border border-zinc-800">
+                      {user?.fullName.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="absolute bottom-0 right-0 bg-green-500 rounded-full h-4 w-4 border-2 border-zinc-900"></div>
+                  </div>
+                  <div>
+                    <p className="text-lg font-bold text-white">
+                      {user?.fullName}
+                    </p>
+                    <p className="text-zinc-500 text-sm">{user?.email}</p>
+                  </div>
+                </div>
+                <button className="bg-gradient-to-r from-slate-700 to-slate-600 hover:from-slate-600 hover:to-slate-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out flex items-center space-x-2 shadow-md">
+                  <SyncOutlined className="animate-spin" />
+                  <span>Sync</span>
+                </button>
+              </div>
+            </div>
+          )
         }
         style={{
           backgroundColor: "#0f0f0f",
@@ -144,7 +193,7 @@ const PanelButtons = () => {
             <FaArrowRightFromBracket />
           </div>
         </Tooltip>
-        <div className="flex justify-center items-center">
+        <div className="flex justify-center items-center relative">
           <Tabs
             defaultActiveKey="1"
             items={items}
@@ -155,13 +204,16 @@ const PanelButtons = () => {
             }}
             tabBarGutter={12}
             centered={true}
-            style={{ color: "white", width: "100%" }}
+            style={{
+              color: "white",
+              width: "100%"
+            }}
           />
         </div>
       </Drawer>
       <Tooltip title={"Strater Sidebar"} placement="left">
         <div
-          className="gap-4 top-32 right-5 fixed bg-inherit border-2 border-primary/60 flex items-center justify-center text-white rounded-full h-16 w-16 cursor-pointer"
+          className="gap-4 p-4 top-32 right-5 fixed bg-inherit border-2 border-primary/60 flex items-center justify-center text-white rounded-full cursor-pointer"
           onClick={showDrawer}>
           <PanelRight className="text-white" size={18} />
         </div>

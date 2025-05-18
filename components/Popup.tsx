@@ -4,6 +4,8 @@ import { useEffect, useState } from "react"
 
 import { Storage } from "@plasmohq/storage"
 
+import { API_ENDPOINT, EXTENSION_ID, HOST_LINK } from "~constants"
+
 // @ts-ignore
 import logo from "../assets/icon.png"
 
@@ -164,7 +166,7 @@ const LoggedInContent = ({ user, isFocusMode }) => (
           </div>
         </div>
       </div>
-      ... {/* Buttons */}
+      {/* Buttons */}
       <div className="flex gap-3">
         <button className="group/btn relative flex-1 overflow-hidden rounded-xl bg-gradient-to-r from-[#FF0042] to-[#FF0042] p-px font-medium text-white shadow-[0_1000px_0_0_hsl(0_0%_100%_/_0%)_inset] transition-colors hover:shadow-[0_1000px_0_0_hsl(0_0%_100%_/_2%)_inset]">
           <div className="relative rounded-xl bg-slate-950/50 px-4 py-3 transition-colors group-hover/btn:bg-transparent">
@@ -189,7 +191,13 @@ const LoggedInContent = ({ user, isFocusMode }) => (
             </a>
           </div>
         </button>
-        <button className="flex items-center justify-center rounded-xl bg-slate-900 px-4 py-3 font-medium text-white transition-colors hover:bg-slate-800">
+        <button
+          className="flex items-center justify-center rounded-xl bg-slate-900 px-4 py-3 font-medium text-white transition-colors hover:bg-slate-800"
+          onClick={() =>
+            chrome.tabs.create({
+              url: `chrome-extension://${EXTENSION_ID}/tabs/setting.html`
+            })
+          }>
           Settings
         </button>
       </div>
@@ -281,7 +289,7 @@ const LoggedOutContent = () => (
         className="w-full group/btn relative overflow-hidden rounded-xl bg-gradient-to-r from-[#FF0042] to-[#FF0042] p-px font-medium text-white shadow-[0_1000px_0_0_hsl(0_0%_100%_/_0%)_inset] transition-colors hover:shadow-[0_1000px_0_0_hsl(0_0%_100%_/_2%)_inset]"
         onClick={() =>
           window.open(
-            "https://strater-app.vercel.app/sign-up?redirect_url=https%3A%2F%2Fwww.youtube.com",
+            `${HOST_LINK}/sign-in?redirect_url=https%3A%2F%2Fwww.youtube.com`,
             "_blank"
           )
         }>
@@ -307,7 +315,7 @@ const LoggedOutContent = () => (
         className="w-full flex items-center justify-center rounded-xl bg-slate-900 px-3 py-2 font-medium text-white transition-colors hover:bg-slate-800 text-sm"
         onClick={() =>
           window.open(
-            "https://strater-app.vercel.app/sign-in?redirect_url=https%3A%2F%2Fwww.youtube.com",
+            `${HOST_LINK}/sign-in?redirect_url=https%3A%2F%2Fwww.youtube.com`,
             "_blank"
           )
         }>

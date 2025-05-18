@@ -1,8 +1,13 @@
 import { useMainContext } from "contextAPI/MainContext"
+import type { PlasmoCSConfig } from "plasmo"
 import React, { useEffect } from "react"
 
 import { sendToBackground } from "@plasmohq/messaging"
 import { Storage } from "@plasmohq/storage"
+
+export const config: PlasmoCSConfig = {
+  matches: ["https://www.youtube.com/*"]
+}
 
 const storage = new Storage()
 
@@ -15,6 +20,7 @@ const Root = () => {
   }, [user])
 
   useEffect(() => {
+    console.log("Let me fetch the user from the background")
     const fetchUser = async () => {
       const response = await sendToBackground({
         name: "fetch-user",

@@ -76,6 +76,10 @@ export const ThemeProvider = ({ children = null as ReactNode }) => (
         },
         Form: {
           labelRequiredMarkColor: "#ff0042"
+        },
+        // @ts-ignore
+        Tooltip: {
+          colorBgSpotlight: "rgba(2,2,2,0.95)"
         }
       }
     }}>

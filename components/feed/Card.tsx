@@ -7,7 +7,6 @@ interface CardProps {
   collapsible?: boolean
 }
 
-
 export function Card({ title, children, collapsible = true }: CardProps) {
   const [isCollapsed, setIsCollapsed] = useState(false)
 
