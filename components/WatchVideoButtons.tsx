@@ -20,10 +20,19 @@ import {
   message,
   Modal,
   Select,
-  TimePicker
+  TimePicker,
+  Tooltip
 } from "antd"
 import dayjs, { Dayjs } from "dayjs"
 import duration from "dayjs/plugin/duration"
+import {
+  AlarmClock,
+  Folder,
+  NotebookPen,
+  Pin,
+  Plus,
+  Settings
+} from "lucide-react"
 // import { SiYoutube } from "react-icons/si"
 import React, { useEffect, useState } from "react"
 import { v4 as uuidv4 } from "uuid"
@@ -58,8 +67,6 @@ const WatchVideoButtons = () => {
   const [treeVideos, setTreeVideos] = useState([])
   const [videoId, setVideoId] = useState<string>("")
   const [isModalLoading, setIsModalLoading] = useState<boolean>(false)
-
-
 
   const videoTitleParentDiv = document.querySelector(
     ".style-scope ytd-watch-metadata"
@@ -159,7 +166,7 @@ const WatchVideoButtons = () => {
   return (
     <>
       <div className="my-2 flex justify-between items-center bg-inherit rounded-xl text-6xl w-full">
-        <div className="flex gap-4">
+        {/* <div className="flex gap-4">
           <Button
             onClick={() => {
               setIsScheduleModalOpen(true)
@@ -174,13 +181,50 @@ const WatchVideoButtons = () => {
             <PlusOutlined />
             Add to Capsules
           </Button>
+          <div>
+            <Button type="primary" className="flex gaap-4">
+              <ReadOutlined />
+              Take Note
+            </Button>
+          </div>
+        </div> */}
+
+        <div className="flex gap-4 bg-neutral-800 backdrop-blur-md rounded-full px-4 py-2">
+          <Tooltip title="Schedule this video">
+            <div
+              onClick={() => {
+                setIsScheduleModalOpen(true)
+                getCurrentVideoId()
+              }}
+              className="cursor-pointer p-2 rounded hover:bg-neutral-900/50 transition-all">
+              <AlarmClock size={20} className="text-white" />
+            </div>
+          </Tooltip>
+
+          <Tooltip title="Add to Capsules">
+            <div className="cursor-pointer p-2 rounded hover:bg-neutral-900/50 transition-all">
+              <Folder size={20} className="text-white" />
+            </div>
+          </Tooltip>
+
+          <Tooltip title="Take Note">
+            <div className="cursor-pointer p-2 rounded hover:bg-neutral-900/50 transition-all">
+              <NotebookPen size={20} className="text-white" />
+            </div>
+          </Tooltip>
+          <Tooltip title="Settings">
+            <div
+              className="cursor-pointer p-2 rounded hover:bg-neutral-900/50 transition-all"
+              onClick={() =>
+                chrome.tabs.create({
+                  url: `chrome-extension://${EXTENSION_ID}/tabs/setting.html`
+                })
+              }>
+              <Settings size={20} className="text-white" />
+            </div>
+          </Tooltip>
         </div>
-        <div>
-          <Button type="primary" className="flex gaap-4">
-            <ReadOutlined />
-            Take Note
-          </Button>
-        </div>
+
         <Modal
           title={
             <div className="flex flex-col items-start px-2">
